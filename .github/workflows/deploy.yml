@@ -42,5 +42,5 @@ jobs:
           docker-compose build 
           docker-compose push 
 
-      - name: Deploy to ECS 
+      - name: Deploy to ECS  
         run: ecs-cli compose --file docker-compose.yml up
