@@ -30,6 +30,5 @@ app.get('/api', (req: any, res: any) => {
   return res.json({ test: true });
 });
 
-app.listen(httpPort, () => {
-  console.log(`Server listening on ${httpPort}`);
+app.listen(httpPort, () => { console.log(`Server listening on ${httpPort}`);
 });
