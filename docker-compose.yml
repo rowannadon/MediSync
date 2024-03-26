@@ -2,7 +2,7 @@ version: '3.0'
 
 services:
   frontend:
-    image: rowannadon/medisync:frontend
+    image: ${DOCKER_REGISTRY}/medisync:frontend
     container_name: frontend
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
@@ -17,7 +17,7 @@ services:
       - network
 
   backend:
-    image: rowannadon/medisync:backend
+    image: ${DOCKER_REGISTRY}/medisync:backend
     container_name: backend
     environment:
       - STAGE=prod
