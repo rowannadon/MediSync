@@ -3,7 +3,7 @@
 # It will lint your code using ESLint.
 
 # Run ESLint for frontend
-(cd frontend && npm run lint) || exit 1
+(cd client && npm run lint) || exit 1
 
 # Run ESLint for backend
-(cd backend && npm run lint) || exit 1
+(cd server && npm run lint) || exit 1
