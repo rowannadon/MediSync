@@ -4,7 +4,8 @@
   "description": "MongoDB should be running on `127.0.0.1:27017`",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
   },
   "author": "",
   "license": "ISC",
