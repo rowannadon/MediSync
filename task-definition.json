@@ -1,0 +1,53 @@
+{
+    "family": "medisync",
+    "containerDefinitions": [
+        {
+            "name": "frontend",
+            "image": "125308813332.dkr.ecr.us-east-1.amazonaws.com/medisync:frontend",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [
+                {
+                    "name": "frontend-80-tcp",
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "systemControls": []
+        },
+        {
+            "name": "backend",
+            "image": "125308813332.dkr.ecr.us-east-2.amazonaws.com/medisync-frontend:cefd0f28d7a5b8fa27945cb0454a515d57da7ab1-frontend",
+            "cpu": 256,
+            "memory": 512,
+            "portMappings": [
+                {
+                    "name": "backend-3002-tcp",
+                    "containerPort": 3002,
+                    "hostPort": 3002,
+                    "protocol": "tcp"
+                },
+                {
+                    "name": "backend-3001-tcp",
+                    "containerPort": 3001,
+                    "hostPort": 3001,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "systemControls": []
+        }
+    ],
+    "executionRoleArn": "arn:aws:iam::125308813332:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "cpu": "1024",
+    "memory": "1024"
+}
