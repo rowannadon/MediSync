@@ -22,7 +22,7 @@
         },
         {
             "name": "backend",
-            "image": "125308813332.dkr.ecr.us-east-2.amazonaws.com/medisync-frontend:d82cd7690506c227466ef2b8ef7105ae9db61e88-frontend",
+            "image": "125308813332.dkr.ecr.us-east-1.amazonaws.com/medisync:backend",
             "cpu": 256,
             "memory": 256,
             "portMappings": [
