@@ -21,47 +21,12 @@ jobs:
       - name: Git clone the repository
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+      - name: Deploy to EC2
+      - id: deploy
+        uses: bitovi/github-actions-deploy-docker-to-ec2@v1.0.1
         with:
           role-to-assume: arn:aws:iam::125308813332:role/medisync-deploy-role
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
-          aws-region: ${{ env.AWS_REGION }}
+          aws_default_region: us-east-1
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push backend image to Amazon ECR
-        id: build-image-backend
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: medisync
-          IMAGE_TAG: ${{ github.sha }}-backend
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.backend .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-      
-      - name: Pull Docker image backend
-        run: docker pull ${{ steps.build-image-backend.outputs.image }}
-
-      - name: Run Docker container
-        run: docker run -d --name backend -p 3001:3001 -p 3002:3002 ${{ steps.build-image-backend.outputs.image }}
-
-      - name: Build, tag, and push frontend image to Amazon ECR
-        id: build-image-frontend
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: medisync
-          IMAGE_TAG: ${{ github.sha }}-frontend
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.frontend .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-      
-      - name: Pull Docker image backend
-        run: docker pull ${{ steps.build-image-frontend.outputs.image }}
-
-      - name: Run Docker container
-        run: docker run -d --name frontend -p 80:80 ${{ steps.build-image-frontend.outputs.image }}
+          aws_elb_app_port: 8080
