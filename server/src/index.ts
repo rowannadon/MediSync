@@ -26,8 +26,8 @@ mongoose
 io.on('connection', (_) => {});
 
 // check if a guess is valid
-app.get('/api', (req: any, res: any) => {
-  return res.json({ test: true });
+app.get('/test', (req: any, res: any) => {
+  return res.json({ test: "Response from server!" });
 });
 
 app.listen(httpPort, () => {

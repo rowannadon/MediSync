@@ -10,3 +10,5 @@ FROM nginx:alpine
 
 
 COPY --from=frontend-build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
