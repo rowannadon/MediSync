@@ -37,6 +37,10 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-frontend.json
+
       - name: Build, tag, and push frontend image to Amazon ECR
         id: build-image-frontend
         env:
@@ -48,10 +52,6 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       
-      - name: Download task definition
-        run: |
-          aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-frontend.json
-
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def-frontend
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -63,7 +63,7 @@ jobs:
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: ${{ steps.task-def-frontend.outputs.task-definition }}
           service: frontend
           cluster: medisync
           wait-for-service-stability: true
