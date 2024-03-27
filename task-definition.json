@@ -1,21 +1,18 @@
 {
-    "family": "medisync",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-2:125308813332:task-definition/medisync:10",
     "containerDefinitions": [
         {
             "name": "frontend",
             "image": "125308813332.dkr.ecr.us-east-1.amazonaws.com/medisync:frontend",
             "cpu": 256,
-            "memory": 256,
+            "memory": 512,
             "portMappings": [
                 {
-                    "name": "frontend-80-tcp",
                     "containerPort": 80,
                     "hostPort": 80,
-                    "protocol": "tcp"
+                    "protocol": "tcp",
+                    "name": "frontend-80-tcp"
                 }
-            ],
-            "links": [
-                "backend"
             ],
             "essential": true,
             "environment": [],
@@ -25,21 +22,21 @@
         },
         {
             "name": "backend",
-            "image": "125308813332.dkr.ecr.us-east-2.amazonaws.com/medisync-frontend:cefd0f28d7a5b8fa27945cb0454a515d57da7ab1-frontend",
+            "image": "125308813332.dkr.ecr.us-east-2.amazonaws.com/medisync-frontend:d82cd7690506c227466ef2b8ef7105ae9db61e88-frontend",
             "cpu": 256,
             "memory": 256,
             "portMappings": [
                 {
-                    "name": "backend-3002-tcp",
                     "containerPort": 3002,
                     "hostPort": 3002,
-                    "protocol": "tcp"
+                    "protocol": "tcp",
+                    "name": "backend-3002-tcp"
                 },
                 {
-                    "name": "backend-3001-tcp",
                     "containerPort": 3001,
                     "hostPort": 3001,
-                    "protocol": "tcp"
+                    "protocol": "tcp",
+                    "name": "backend-3001-tcp"
                 }
             ],
             "essential": true,
@@ -49,8 +46,33 @@
             "systemControls": []
         }
     ],
+    "family": "medisync",
     "executionRoleArn": "arn:aws:iam::125308813332:role/ecsTaskExecutionRole",
-    "networkMode": "bridge",
+    "networkMode": "awsvpc",
+    "revision": 10,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2"
+    ],
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "requiresCompatibilities": [
+        "EC2"
+    ],
     "cpu": "1024",
-    "memory": "768"
+    "memory": "819",
+    "registeredAt": "2024-03-27T19:22:49.377000+00:00",
+    "registeredBy": "arn:aws:sts::125308813332:assumed-role/medisync-deploy-role/GitHub_to_AWS_via_FederatedOIDC"
 }
