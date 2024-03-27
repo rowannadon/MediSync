@@ -42,6 +42,14 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.backend .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new image ID in the Amazon ECS task definition for backend
+        id: medisync-task-def-backend
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: backend
+          image: ${{ steps.build-image-backend.outputs.image }}
       
       - name: Build, tag, and push frontend image to Amazon ECR
         id: build-image-frontend
@@ -58,13 +66,7 @@ jobs:
       #   run: |
       #     aws ecs describe-task-definition --task-definition medisync --query taskDefinition > task-definition-d.json
           
-      - name: Fill in the new image ID in the Amazon ECS task definition for backend
-        id: medisync-task-def-backend
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: backend
-          image: ${{ steps.build-image-backend.outputs.image }}
+
 
       - name: Fill in the new image ID in the Amazon ECS task definition for frontend
         id: medisync-task-def-frontend
