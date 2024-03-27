@@ -35,9 +35,10 @@ const App = () => {
                 console.log(res.data);
               });
             }}
-          >
-            Get API response: {response}
+            
+          >Get API Response
           </button>
+          <p>API response: {response}</p>
         </p>
       </header>
     </div>

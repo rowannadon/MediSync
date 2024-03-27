@@ -27,7 +27,7 @@ io.on('connection', (_) => {});
 
 // check if a guess is valid
 app.get('/test', (req: any, res: any) => {
-  return res.json({ test: 'Response from server!' });
+  return res.json({ test: 'This is a response from the server!' });
 });
 
 app.listen(httpPort, () => {
