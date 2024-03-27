@@ -14,6 +14,9 @@
                     "protocol": "tcp"
                 }
             ],
+            "links": [
+                "backend"
+            ],
             "essential": true,
             "environment": [],
             "mountPoints": [],
@@ -47,7 +50,7 @@
         }
     ],
     "executionRoleArn": "arn:aws:iam::125308813332:role/ecsTaskExecutionRole",
-    "networkMode": "awsvpc",
+    "networkMode": "bridge",
     "cpu": "1024",
     "memory": "1024"
 }
