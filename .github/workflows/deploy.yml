@@ -42,5 +42,26 @@ jobs:
           docker-compose build 
           docker-compose push 
 
-      - name: Deploy to ECS  
-        run: ecs-cli compose --file docker-compose.yml up
+      - name: Download task definition frontend
+      run: |
+        aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-frontend.json
+
+    - name: Download task definition backend
+      run: |
+        aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-backend.json
+
+      - name: Deploy Amazon ECS task definition frontend
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: task-definition-frontend.json
+          service: frontend
+          cluster: medisync
+          wait-for-service-stability: true
+
+      - name: Deploy Amazon ECS task definition backend
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: task-definition-backend.json
+          service: backend
+          cluster: medisync
+          wait-for-service-stability: true
