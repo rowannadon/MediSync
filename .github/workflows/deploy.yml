@@ -21,11 +21,6 @@ jobs:
       - name: Git clone the repository
         uses: actions/checkout@v3
 
-      - name: Install ECS CLI
-        run: |
-          sudo curl -Lo /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest
-          sudo chmod +x /usr/local/bin/ecs-cli
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1.7.0
         with:
@@ -36,10 +31,6 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Download task definition
-        run: |
-          aws ecs describe-task-definition --task-definition backend-def --query taskDefinition > task-definition-backend.json
 
       - name: Build, tag, and push backend image to Amazon ECR
         id: build-image-backend
@@ -52,25 +43,11 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def-backend
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition-backend.json
-          container-name: backend
-          image: ${{ steps.build-image-backend.outputs.image }}
+      - name: Pull Docker image backend
+        run: docker pull ${{ steps.build-image-backend.outputs.image }}
 
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
-          service: backend
-          cluster: medisync
-          wait-for-service-stability: true
-
-      - name: Download task definition
-        run: |
-          aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-frontend.json
+      - name: Run Docker container
+        run: docker run -d --name backend -p 3001:3001 -p 3002:3002 ${{ steps.build-image-backend.outputs.image }}
 
       - name: Build, tag, and push frontend image to Amazon ECR
         id: build-image-frontend
@@ -83,18 +60,8 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def-frontend
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition-frontend.json
-          container-name: frontend
-          image: ${{ steps.build-image-frontend.outputs.image }}
+      - name: Pull Docker image backend
+        run: docker pull ${{ steps.build-image-frontend.outputs.image }}
 
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def-frontend.outputs.task-definition }}
-          service: frontend
-          cluster: medisync
-          wait-for-service-stability: true
+      - name: Run Docker container
+        run: docker run -d --name frontend -p 80:80 ${{ steps.build-image-frontend.outputs.image }}
