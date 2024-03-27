@@ -62,7 +62,7 @@ jobs:
         id: medisync-task-def-backend
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition-d.json
+          task-definition: task-definition.json
           container-name: backend
           image: ${{ steps.build-image-backend.outputs.image }}
 
@@ -70,7 +70,7 @@ jobs:
         id: medisync-task-def-frontend
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition-d.json
+          task-definition: task-definition.json
           container-name: backend
           image: ${{ steps.build-image-frontend.outputs.image }}
 
