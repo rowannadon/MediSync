@@ -43,12 +43,12 @@ jobs:
           docker-compose push 
 
       - name: Download task definition frontend
-      run: |
-        aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-frontend.json
+        run: |
+          aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-frontend.json
 
-    - name: Download task definition backend
-      run: |
-        aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-backend.json
+      - name: Download task definition backend
+        run: |
+          aws ecs describe-task-definition --task-definition frontend-def --query taskDefinition > task-definition-backend.json
 
       - name: Deploy Amazon ECS task definition frontend
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
