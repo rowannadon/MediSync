@@ -19,8 +19,6 @@ services:
   backend:
     image: ${DOCKER_REGISTRY}/medisync:backend
     container_name: backend
-    environment:
-      - STAGE=prod
     build:
       context: .
       dockerfile: Dockerfile.backend
