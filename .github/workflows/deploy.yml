@@ -58,7 +58,7 @@ jobs:
         with:
           task-definition: task-definition-frontend.json
           container-name: medisync-frontend
-          image: ${{ steps.build-image.outputs.image }}
+          image: ${{ steps.build-image-frontend.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -89,7 +89,7 @@ jobs:
         with:
           task-definition: task-definition-backend.json
           container-name: medisync-backend
-          image: ${{ steps.build-image.outputs.image }}
+          image: ${{ steps.build-image-backend.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
