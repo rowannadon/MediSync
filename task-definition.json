@@ -5,7 +5,7 @@
             "name": "frontend",
             "image": "125308813332.dkr.ecr.us-east-1.amazonaws.com/medisync:frontend",
             "cpu": 256,
-            "memory": 512,
+            "memory": 256,
             "portMappings": [
                 {
                     "name": "frontend-80-tcp",
@@ -52,5 +52,5 @@
     "executionRoleArn": "arn:aws:iam::125308813332:role/ecsTaskExecutionRole",
     "networkMode": "bridge",
     "cpu": "1024",
-    "memory": "1024"
+    "memory": "768"
 }

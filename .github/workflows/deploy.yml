@@ -54,11 +54,15 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition --task-definition medisync --query taskDefinition > task-definition-d.json
+          
       - name: Fill in the new image ID in the Amazon ECS task definition for backend
         id: medisync-task-def-backend
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition.json
+          task-definition: task-definition-d.json
           container-name: backend
           image: ${{ steps.build-image-backend.outputs.image }}
 
@@ -66,7 +70,7 @@ jobs:
         id: medisync-task-def-frontend
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition.json
+          task-definition: task-definition-d.json
           container-name: backend
           image: ${{ steps.build-image-frontend.outputs.image }}
 
@@ -74,6 +78,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.medisync-task-def-frontend.outputs.task-definition }}
-          service: medisync
+          service: medisync-service
           cluster: medisync
           wait-for-service-stability: true
