@@ -27,7 +27,7 @@
             "name": "backend",
             "image": "125308813332.dkr.ecr.us-east-2.amazonaws.com/medisync-frontend:cefd0f28d7a5b8fa27945cb0454a515d57da7ab1-frontend",
             "cpu": 256,
-            "memory": 512,
+            "memory": 256,
             "portMappings": [
                 {
                     "name": "backend-3002-tcp",
