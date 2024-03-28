@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "frontend",
-            "image": "125308813332.dkr.ecr.us-east-1.amazonaws.com/medisync:frontend",
+            "image": "125308813332.dkr.ecr.us-east-2.amazonaws.com/medisync-frontend:a28ecb8c2dcf702f9395e02e591c2d47f012e741-frontend",
             "cpu": 256,
             "memory": 512,
             "portMappings": [
@@ -22,7 +22,7 @@
         },
         {
             "name": "backend",
-            "image": "125308813332.dkr.ecr.us-east-1.amazonaws.com/medisync:backend",
+            "image": "125308813332.dkr.ecr.us-east-2.amazonaws.com/medisync-backend:a28ecb8c2dcf702f9395e02e591c2d47f012e741-backend",
             "cpu": 256,
             "memory": 256,
             "portMappings": [
