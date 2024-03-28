@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import io from 'socket.io-client';
- 
-const websocketURL = `ws://${window.location.hostname}:${window.location.port}`
+
+const websocketURL = `ws://${window.location.hostname}:${window.location.port}`;
 console.log(websocketURL);
 const socket = io(websocketURL);
 
@@ -83,7 +83,7 @@ const App = () => {
             Get last saved time from database
           </button>
           Saved times:{' '}
-          {savedTime.map((time : any, index: number) => (
+          {savedTime.map((time: any, index: number) => (
             <p key={index}>time: {time.msg}</p>
           ))}
         </div>

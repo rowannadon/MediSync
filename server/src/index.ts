@@ -13,10 +13,11 @@ const socketIOPort = 3002;
 
 const io = new Server(socketIOPort);
 const app = express();
-app.use(express.json()) 
+app.use(express.json());
 
 console.log(process.argv);
-const mongoDomain = process.argv[2].split('=')[1] === 'local' ? 'mongodb' : '127.0.0.1';
+const mongoDomain =
+  process.argv[2].split('=')[1] === 'local' ? 'mongodb' : '127.0.0.1';
 console.log(mongoDomain);
 
 mongoose
@@ -41,7 +42,7 @@ io.on('connection', (socket: any) => {
 
 // check if a guess is valid
 app.get('/test', (req: any, res: any) => {
-  console.log('test')
+  console.log('test');
   return res.json({ test: 'This is a response from the server!' });
 });
 

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const databaseTestSchema = new mongoose.Schema({
   //primary key
@@ -6,6 +6,6 @@ const databaseTestSchema = new mongoose.Schema({
   msg: { type: String, required: true },
 });
 
-const databaseTest: any = mongoose.model("databaseTest", databaseTestSchema);
+const databaseTest: any = mongoose.model('databaseTest', databaseTestSchema);
 
-export { databaseTest }
+export { databaseTest };
