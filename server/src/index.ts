@@ -25,6 +25,8 @@ const mongoDomain =
       ? '127.0.0.1'
       : process.env.MONGO_URI;
 
+console.log('mongodomain ', mongoDomain);
+
 mongoose
   .connect(`mongodb://${mongoDomain}:27017/medisync`)
   .then(() => {
