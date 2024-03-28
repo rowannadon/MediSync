@@ -16,9 +16,14 @@ const app = express();
 app.use(express.json());
 
 console.log(process.argv);
+const stage = process.env.STAGE;
+
 const mongoDomain =
-  process.argv[2].split('=')[1] === 'local' ? 'mongodb' : '127.0.0.1';
-console.log(mongoDomain);
+  stage === 'local'
+    ? 'mongodb'
+    : stage === 'dev'
+      ? '127.0.0.1'
+      : process.env.MONGO_URI;
 
 mongoose
   .connect(`mongodb://${mongoDomain}:27017/medisync`)

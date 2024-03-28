@@ -1,4 +1,9 @@
+ARG stage=local
+ARG mongo
+
 FROM node
+ARG stage
+ARG mongo
 
 WORKDIR /usr/src/app
 COPY server/package*.json ./
@@ -10,4 +15,7 @@ COPY server/src .
 EXPOSE 3001
 EXPOSE 3002
 
-CMD ["ts-node", "index.ts", "stage=local"]
+ENV MONGO_URI=${mongo}
+ENV STAGE=${stage}
+
+CMD ["ts-node", "index.ts"]

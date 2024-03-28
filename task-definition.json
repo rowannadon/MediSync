@@ -48,7 +48,7 @@
     ],
     "family": "medisync",
     "executionRoleArn": "arn:aws:iam::125308813332:role/ecsTaskExecutionRole",
-    "networkMode": "host",
+    "networkMode": "bridge",
     "revision": 10,
     "volumes": [],
     "status": "ACTIVE",
