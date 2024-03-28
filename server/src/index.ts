@@ -23,7 +23,16 @@ mongoose
     console.log(err);
   });
 
-io.on('connection', (_) => {});
+io.on('connection', (socket: any) => {
+  console.log('a user connected');
+  socket.on('disconnect', () => {
+    console.log('a user disconnected');
+  });
+  socket.on('testSocketIo', (msg: any) => {
+    console.log(msg);
+    io.emit('test', 'This is a response from the server!');
+  });
+});
 
 // check if a guess is valid
 app.get('/test', (req: any, res: any) => {

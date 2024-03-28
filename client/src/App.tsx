@@ -1,9 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from './assets/images/logo.svg';
 import axios from 'axios';
+import io from 'socket.io-client';
+
+const socket = io('ws://localhost:80');
 
 const App = () => {
   const [response, setResponse] = useState('');
+  const [socketIoResponse, setSocketIoResponse] = useState('');
+
+  useEffect(() => {
+    function testResponse(message: string) {
+      setSocketIoResponse(message);
+    }
+
+    socket.on('test', testResponse);
+
+    return () => {
+      socket.off('test', testResponse);
+    };
+  }, []);
 
   return (
     <div className="text-center selection:bg-green-900">
@@ -25,7 +41,7 @@ const App = () => {
         <p className="bg-gradient-to-r from-emerald-300 to-sky-300 bg-clip-text text-5xl font-black text-transparent selection:bg-transparent">
           Vite + React + Typescript + Tailwindcss
         </p>
-        <p className="mt-3">
+        <div className="mt-3">
           <button
             type="button"
             className="my-6 rounded bg-gray-300 px-2 py-2 text-[#282C34] transition-all hover:bg-gray-200"
@@ -35,11 +51,24 @@ const App = () => {
                 console.log(res.data);
               });
             }}
-            
-          >Get API Response
+          >
+            Get API Response
           </button>
           <p>API response: {response}</p>
-        </p>
+          <button
+            type="button"
+            className="my-6 rounded bg-gray-300 px-2 py-2 text-[#282C34] transition-all hover:bg-gray-200"
+            onClick={() => {
+              socket.emit(
+                'testSocketIo',
+                'This is a test message from the client!',
+              );
+            }}
+          >
+            Get socket.io Response
+          </button>
+          <p>socket.io response: {socketIoResponse}</p>
+        </div>
       </header>
     </div>
   );
