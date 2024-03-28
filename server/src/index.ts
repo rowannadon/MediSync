@@ -66,6 +66,10 @@ app.get('/time', async (req: any, res: any) => {
   return res.json({ time: times });
 });
 
+app.get('/health', (req: any, res: any) => {
+  return res.json({ status: 'healthy' });
+});
+
 app.listen(httpPort, () => {
   console.log(`Server listening on ${httpPort}`);
 });
