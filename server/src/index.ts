@@ -28,7 +28,7 @@ const mongoDomain =
 console.log('mongodomain ', mongoDomain);
 
 mongoose
-  .connect(`mongodb://${mongoDomain}:27017/medisync`, {ssl: true})
+  .connect(`mongodb://${mongoDomain}:27017/medisync`, { ssl: true })
   .then(() => {
     console.log('Connected to mongodb');
   })
