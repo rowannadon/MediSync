@@ -42,7 +42,7 @@ const App = () => {
           >
             Get API Response
           </button>
-          <p>API response: {response}</p>
+          <p id="api-response">API response: {response}</p>
           <button
             type="button"
             className="my-6 rounded bg-gray-300 px-2 py-2 text-[#282C34] transition-all hover:bg-gray-200"
@@ -55,7 +55,7 @@ const App = () => {
           >
             Get socket.io Response
           </button>
-          <p>socket.io response: {socketIoResponse}</p>
+          <p id="socket.io-response">socket.io response: {socketIoResponse}</p>
           <button
             type="button"
             className="my-6 rounded bg-gray-300 px-2 py-2 text-[#282C34] transition-all hover:bg-gray-200"
@@ -67,7 +67,7 @@ const App = () => {
           >
             Write current time to database
           </button>
-          <p>current time: {currentTime}</p>
+          <p id="current-time">{currentTime}</p>
           <button
             type="button"
             className="my-6 rounded bg-gray-300 px-2 py-2 text-[#282C34] transition-all hover:bg-gray-200"
@@ -80,11 +80,13 @@ const App = () => {
               });
             }}
           >
-            Get last saved time from database
+            Get saved times from database
           </button>
           Saved times:{' '}
           {savedTime.map((time: any, index: number) => (
-            <p key={index}>time: {time.msg}</p>
+            <p className="time" key={index}>
+              time: {time.msg}
+            </p>
           ))}
         </div>
       </header>

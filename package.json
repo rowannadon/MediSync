@@ -4,13 +4,13 @@
   "description": "MongoDB should be running on `127.0.0.1:27017`",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run start & cypress run",
+    "start": "npm run start --prefix ./server & npm run dev --prefix ./client",
     "prepare": "husky"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^13.7.1",
     "eslint": "^8.57.0",
     "husky": "^9.0.11"
   },
@@ -18,5 +18,8 @@
     "hooks": {
       "pre-commit": "./.husky/pre-commit"
     }
+  },
+  "dependencies": {
+    "cypress": "^13.7.1"
   }
 }

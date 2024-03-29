@@ -25,19 +25,23 @@ const mongoDomain =
       ? '127.0.0.1'
       : process.env.MONGO_URI;
 
-console.log('mongodomain ', mongoDomain);
+console.log(mongoDomain);
 
-mongoose
-  .connect(`mongodb://${mongoDomain}:27017/medisync`, {
-    ssl: true,
-    retryWrites: false,
-  })
-  .then(() => {
-    console.log('Connected to mongodb');
-  })
-  .catch((err: MongooseError) => {
-    console.log(err);
-  });
+try {
+  mongoose
+    .connect(`mongodb://${mongoDomain}:27017/medisync`, {
+      ssl: stage === 'prod' ? true : false,
+      retryWrites: false,
+    })
+    .then(() => {
+      console.log('Connected to mongodb');
+    })
+    .catch((err: MongooseError) => {
+      console.log(err);
+    });
+} catch (err) {
+  console.log(err);
+}
 
 io.on('connection', (socket: any) => {
   console.log('a user connected');
