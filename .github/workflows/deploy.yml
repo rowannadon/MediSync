@@ -24,7 +24,9 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          start: npm i --prefix=client & npm i --prefix=server & npm start
+          install-client: npm i --prefix=client
+          install-server: npm i --prefix=server
+          start: npm start
           wait-on: 'http://localhost:5173'
   deploy:
     runs-on: ubuntu-latest
