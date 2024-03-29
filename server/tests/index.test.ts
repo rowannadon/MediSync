@@ -19,3 +19,20 @@ describe('GET /health', () => {
   });
 });
 
+describe('POST /time', () => {
+  test('save time', async () => {
+    const response = await request(app).post('/time').send({ time: '6:00 AM' });
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({ time: '6:00 AM' });
+  });
+});
+
+describe('POST /time', () => {
+  test('get saved time', async () => {
+    const time  = new Date().toLocaleTimeString();
+    const response1 = await request(app).post('/time').send({ time: time });
+    const response = await request(app).get('/time');
+    expect(response.statusCode).toBe(200);
+    expect(response.body.time.map((time: any) => time.msg)).toContainEqual(time);
+  });
+});

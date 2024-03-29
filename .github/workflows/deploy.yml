@@ -26,6 +26,17 @@ jobs:
         with:
           start: npm start
           wait-on: 'http://localhost:5173'
+  test-backend-supertest:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      # Install npm dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Backend test
+        run: |
+          npm install
+          npm run test --prefix=server
   deploy:
     runs-on: ubuntu-latest
     environment: prod
