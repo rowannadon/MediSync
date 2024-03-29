@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run start & cypress run",
-    "start": "npm run start --prefix ./server & npm run dev --prefix ./client",
+    "postinstall": "(cd server && npm install); (cd client && npm install);",
+    "start": "concurrently --kill-others \"npm run start --prefix ./server\" \"npm run dev --prefix ./client\"",
     "prepare": "husky"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "husky": "^9.0.11"
   },
