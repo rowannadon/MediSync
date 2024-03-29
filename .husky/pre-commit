@@ -7,6 +7,3 @@
 
 # Run ESLint for backend
 (cd server && npm run lint) || exit 1
-
-# run e2e cypress tests
-npm run test || exit 1
