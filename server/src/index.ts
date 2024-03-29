@@ -80,3 +80,5 @@ app.get('/health', (req: any, res: any) => {
 app.listen(httpPort, () => {
   console.log(`Server listening on ${httpPort}`);
 });
+
+export default app;
