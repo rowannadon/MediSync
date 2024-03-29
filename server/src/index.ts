@@ -21,9 +21,9 @@ const stage = process.env.STAGE;
 const mongoDomain =
   stage === 'local'
     ? 'mongodb'
-    : stage === 'dev'
-      ? '127.0.0.1'
-      : process.env.MONGO_URI;
+    : stage === 'prod'
+      ? process.env.MONGO_URI
+      : '127.0.0.1';
 
 console.log(mongoDomain);
 
