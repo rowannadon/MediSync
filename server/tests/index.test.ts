@@ -1,5 +1,5 @@
 import request from 'supertest';
-import {app, cleanup} from '../src/index';
+import { app, cleanup } from '../src/index';
 
 describe('GET /test', () => {
   test('responds with message from server', async () => {

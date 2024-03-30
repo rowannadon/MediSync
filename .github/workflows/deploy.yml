@@ -64,7 +64,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}-backend
           MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
-          docker build --build-arg stage=prod --build-arg mongo=$MONGO_URI -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.backend .
+          docker build --build-arg stage=prod --build-arg mongo=$MONGO_URI -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f server/Dockerfile.backend .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
@@ -83,7 +83,7 @@ jobs:
           ECR_REPOSITORY: medisync-frontend
           IMAGE_TAG: ${{ github.sha }}-frontend
         run: |
-          docker build --build-arg stage=prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile.frontend .
+          docker build --build-arg stage=prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f client/Dockerfile.frontend .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 

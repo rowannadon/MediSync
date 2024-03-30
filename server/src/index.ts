@@ -101,4 +101,4 @@ export const cleanup = () => {
   io.close();
   server.close();
   console.log('Cleaning up...');
-}
+};
