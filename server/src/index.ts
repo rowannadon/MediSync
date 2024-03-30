@@ -28,7 +28,9 @@ switch (stage) {
     mongoDomain = `mongodb://${process.env.MONGO_URI}:27017/medisync`;
     break;
   case 'test':
-    mongoDomain = process.env.MONGO_URI ? process.env.MONGO_URI : 'mongodb://127.0.0.1:27017/medisync';
+    mongoDomain = process.env.MONGO_URI
+      ? process.env.MONGO_URI
+      : 'mongodb://127.0.0.1:27017/medisync';
     break;
   default:
     mongoDomain = 'mongodb://127.0.0.1:27017/medisync';
