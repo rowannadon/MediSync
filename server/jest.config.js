@@ -7,6 +7,5 @@ module.exports = {
   },
   globalSetup: './tests/jest.globalSetup.ts',
   globalTeardown: './tests/jest.globalTeardown.ts',
-  openHandlesTimeout: 0,
   setupFilesAfterEnv: ['./tests/jest.setup.ts'],
 };

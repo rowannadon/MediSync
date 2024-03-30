@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '../src/index';
+import {app, cleanup} from '../src/index';
 
 describe('GET /test', () => {
   test('responds with message from server', async () => {
@@ -37,4 +37,8 @@ describe('POST /time', () => {
       time,
     );
   });
+});
+
+afterAll(() => {
+  cleanup();
 });

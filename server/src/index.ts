@@ -11,8 +11,8 @@ const httpPort = 3001;
 
 const socketIOPort = 3002;
 
-const io = new Server(socketIOPort);
-const app = express();
+export const io = new Server(socketIOPort);
+export const app = express();
 app.use(express.json());
 
 console.log(process.argv);
@@ -88,14 +88,17 @@ app.get('/health', (req: any, res: any) => {
   return res.json({ status: 'healthy' });
 });
 
-app.listen(httpPort, () => {
+const server = app.listen(httpPort, () => {
   console.log(`Server listening on ${httpPort}`);
 });
 
 // clean up on exit
 process.on('exit', () => {
-  db.close();
-  console.log('Exiting');
+  cleanup();
 });
 
-export default app;
+export const cleanup = () => {
+  io.close();
+  server.close();
+  console.log('Cleaning up...');
+}
