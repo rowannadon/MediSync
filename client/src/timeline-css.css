@@ -1,0 +1,36 @@
+.vis-time-axis .vis-grid.vis-odd {
+  background: #f5f5f5;
+}
+
+.vis-panel .vis-left {
+  background: green;
+}
+
+.vis-item {
+  background-color: rgb(167, 242, 181);
+}
+
+.vis-timeline {
+  border: 1px #fff solid;
+  border-radius: 10px;
+}
+
+.vis-rolling-mode-btn {
+  background: #5b5b5b;
+  border-radius: 50%;
+  color: #fff;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 28px;
+  font-weight: 700;
+  height: 40px;
+  opacity: 0.8;
+  position: absolute;
+  right: 20px;
+  text-align: center;
+  top: 7px;
+  width: 40px;
+}

@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run start & cypress run",
+    "lint": "(cd server && npm run lint); (cd client && npm run lint);",
     "postinstall": "(cd server && npm install); (cd client && npm install);",
     "start": "concurrently --kill-others \"npm run start --prefix ./server\" \"npm run dev --prefix ./client\"",
     "prepare": "husky"

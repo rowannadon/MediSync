@@ -5,6 +5,8 @@
 /pnpm-workspace.yaml
 .DS_Store
 
+src/components
+
 /package.json
 /tsconfig.json
 **/*.md
