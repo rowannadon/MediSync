@@ -38,7 +38,7 @@ jobs:
           npm install
           npm run test --prefix=server
   deploy:
-    depends-on: [test-e2e-cypress, test-backend-supertest]
+    needs: [test-e2e-cypress, test-backend-supertest]
     runs-on: ubuntu-latest
     environment: prod
     steps:

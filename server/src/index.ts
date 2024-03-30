@@ -25,7 +25,7 @@ switch (stage) {
     mongoDomain = 'mongodb://mongodb:27017/medisync';
     break;
   case 'prod':
-    mongoDomain = `mongodb://${process.env.MONGO_URL}:27017/medisync`
+    mongoDomain = `mongodb://${process.env.MONGO_URL}:27017/medisync`;
     break;
   case 'test':
     mongoDomain = process.env.MONGO_URI ? process.env.MONGO_URI : 'mongodb://';
@@ -36,14 +36,14 @@ switch (stage) {
 
 console.log(mongoDomain);
 
-var db : any = null;
+let db: any = null;
 try {
   mongoose
     .connect(mongoDomain, {
       ssl: stage === 'prod' ? true : false,
       retryWrites: false,
     })
-  .then((connection: any) => {
+    .then((connection: any) => {
       db = connection;
       console.log('Connected to mongodb');
     })
