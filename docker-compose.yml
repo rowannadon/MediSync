@@ -6,7 +6,7 @@ services:
     container_name: frontend
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: client/Dockerfile.frontend
     ports:
       - "80:80"
     depends_on:
@@ -19,7 +19,7 @@ services:
     container_name: backend
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: server/Dockerfile.backend
     expose:
       - "3001"
       - "3002"

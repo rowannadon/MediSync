@@ -17,23 +17,34 @@ app.use(express.json());
 
 console.log(process.argv);
 const stage = process.env.STAGE;
+console.log(stage);
 
-const mongoDomain =
-  stage === 'local'
-    ? 'mongodb'
-    : stage === 'prod'
-      ? process.env.MONGO_URI
-      : '127.0.0.1';
+let mongoDomain = '';
+switch (stage) {
+  case 'local':
+    mongoDomain = 'mongodb://mongodb:27017/medisync';
+    break;
+  case 'prod':
+    mongoDomain = `mongodb://${process.env.MONGO_URL}:27017/medisync`
+    break;
+  case 'test':
+    mongoDomain = process.env.MONGO_URI ? process.env.MONGO_URI : 'mongodb://';
+    break;
+  default:
+    mongoDomain = 'mongodb://127.0.0.1:27017/medisync';
+}
 
 console.log(mongoDomain);
 
+var db : any = null;
 try {
   mongoose
-    .connect(`mongodb://${mongoDomain}:27017/medisync`, {
+    .connect(mongoDomain, {
       ssl: stage === 'prod' ? true : false,
       retryWrites: false,
     })
-    .then(() => {
+  .then((connection: any) => {
+      db = connection;
       console.log('Connected to mongodb');
     })
     .catch((err: MongooseError) => {
@@ -79,6 +90,12 @@ app.get('/health', (req: any, res: any) => {
 
 app.listen(httpPort, () => {
   console.log(`Server listening on ${httpPort}`);
+});
+
+// clean up on exit
+process.on('exit', () => {
+  db.close();
+  console.log('Exiting');
 });
 
 export default app;
