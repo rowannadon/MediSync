@@ -11,11 +11,17 @@ import { stages } from './TempData';
 
 export const StageLibrary = (props: any) => {
   const displayedStages = stages.map((stage) => {
-    return <StageDisplay stage={stage} key={stage.name} onClick={() => props.onStageClick(stage)} />;
+    return (
+      <StageDisplay
+        stage={stage}
+        key={stage.name}
+        onClick={() => props.onStageClick(stage)}
+      />
+    );
   });
 
   return (
-    <Card className='mb-2 mt-2 flex flex-grow flex-col min-w-[270px] w-[270px] max-w-[270px]'>
+    <Card className="mb-2 mt-2 flex w-[270px] min-w-[270px] max-w-[270px] flex-grow flex-col">
       <ScrollArea className="flex-gro overflow-hidden">
         <Accordion type="single" collapsible className="w-full text-foreground">
           <AccordionItem value="Stages">

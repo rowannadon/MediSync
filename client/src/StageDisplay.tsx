@@ -8,7 +8,7 @@ interface StageProps {
   onClick: any;
 }
 
-const Display = (props: { stage: Stage; color: string, onClick: any }) => {
+const Display = (props: { stage: Stage; color: string; onClick: any }) => {
   return (
     <Card
       onClick={props.onClick}

@@ -41,32 +41,42 @@ const buildNodesFromProcedure = (procedure: Procedure) => {
       position: { x: 0, y: 0 },
     };
   });
-}
+};
 
 const buildEdgesFromProcedure = (procedure: Procedure) => {
   const edges: Edge[] = [];
   procedure.stages.forEach((stage: Stage) => {
     if (stage.next) {
       console.log(stage);
-      // check if stage.next is an array 
-      if (Array.isArray(stage.next))  {
-        
+      // check if stage.next is an array
+      if (Array.isArray(stage.next)) {
         (stage.next as string[]).forEach((next) => {
-          edges.push({ id: `${stage.name}-${next}`, source: stage.name, target: next, type: 'default' });
+          edges.push({
+            id: `${stage.name}-${next}`,
+            source: stage.name,
+            target: next,
+            type: 'default',
+          });
         });
       } else {
-        edges.push({ id: `${stage.name}`, source: stage.name, target: (stage.next as string), type: 'default' });
+        edges.push({
+          id: `${stage.name}`,
+          source: stage.name,
+          target: stage.next as string,
+          type: 'default',
+        });
       }
     }
-    
   });
 
   return edges;
-}
+};
 
 const PathwayEditor = () => {
   const [nodes, setNodes] = useState(buildNodesFromProcedure(procedures[0]));
-  const [edges, setEdges] = useState<Edge[]>(buildEdgesFromProcedure(procedures[0]));
+  const [edges, setEdges] = useState<Edge[]>(
+    buildEdgesFromProcedure(procedures[0]),
+  );
   const [selectedNode, setSelectedNode] = useState<any>(null);
 
   const onNodesChange = useCallback(
