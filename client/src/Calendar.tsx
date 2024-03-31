@@ -12,10 +12,16 @@ import { Button } from './components/ui/button';
 import { Pin, Plus, Trash } from 'lucide-react';
 import { Input } from './components/ui/input';
 import { createRoot } from 'react-dom/client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Procedure, procedures } from './TempData';
+import { BeatLoader } from 'react-spinners';
 
 const Calendar = () => {
   const timelineRef = useRef<Timeline>(null);
+  const [patientFilter, setPatientFilter] = useState<string>('');
+  const [displayedPathways, setDisplayedPathways] =
+    useState<Procedure[]>(procedures);
+  const [calendarLoading, setCalendarLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (timelineRef.current) {
@@ -23,6 +29,55 @@ const Calendar = () => {
       //timelineRef.current.timeline.fit({ animation: true });
     }
   }, [timelineRef]);
+
+  useEffect(() => {
+    if (procedures && timelineRef.current) {
+      setCalendarLoading(true);
+      setTimeout(() => {
+        setCalendarLoading(false);
+      }, 1000);
+      setDisplayedPathways(
+        procedures.filter((procedure: Procedure) =>
+          procedure.patient.toLowerCase().includes(patientFilter.toLowerCase()),
+        ),
+      );
+    }
+  }, [procedures, patientFilter]);
+
+  useEffect(() => {
+    if (timelineRef.current) {
+      const items2 = displayedPathways
+        .flatMap((procedure: Procedure) =>
+          procedure.stages.map((stage) => ({
+            ...stage,
+            patient: procedure.patient,
+          })),
+        )
+        .map((stage) => {
+          const start = new Date(stage.date);
+          return {
+            id: stage.name,
+            start: start,
+            end: start.valueOf() + stage.duration * 60 * 1000,
+            content: stage.name,
+            group: stage.patient,
+            subGroup: stage.patient,
+          };
+        });
+
+      const groups2 = displayedPathways.map((procedure: Procedure) => {
+        return {
+          id: procedure.patient,
+          content: procedure.patient,
+        };
+      });
+
+      timelineRef.current.timeline.setData({
+        items: items2,
+        groups: groups2,
+      });
+    }
+  }, [displayedPathways]);
 
   const options = {
     width: 'calc(100vw - 100px)',
@@ -52,59 +107,6 @@ const Calendar = () => {
     },
   };
 
-  const items = [
-    {
-      id: 1,
-      start: new Date(2024, 2, 15),
-      end: new Date(2024, 3, 15),
-      content: 'Stage 1',
-      group: 1,
-    },
-    {
-      id: 2,
-      start: new Date(2024, 2, 19),
-      end: new Date(2024, 3, 22),
-      content: 'Stage 2',
-      group: 1,
-    },
-    {
-      id: 3,
-      start: new Date(2024, 3, 19),
-      end: new Date(2024, 4, 1),
-      content: 'Stage A',
-      group: 2,
-    },
-    {
-      id: 4,
-      start: new Date(2024, 4, 12),
-      end: new Date(2024, 4, 29),
-      content: 'Stage B',
-      group: 2,
-    },
-    {
-      id: 5,
-      start: new Date(2024, 3, 12),
-      end: new Date(2024, 3, 29),
-      content: 'Stage C',
-      group: 3,
-    },
-  ];
-
-  const groups = [
-    {
-      id: 1,
-      content: 'Patient 1',
-    },
-    {
-      id: 2,
-      content: 'Patient 2',
-    },
-    {
-      id: 3,
-      content: 'Patient 3',
-    },
-  ];
-
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -117,6 +119,7 @@ const Calendar = () => {
                   <Input
                     className="w-[300px]"
                     type="search"
+                    onChange={(e) => setPatientFilter(e.target.value)}
                     placeholder="Filter patients..."
                   />
                 </TooltipTrigger>
@@ -133,7 +136,7 @@ const Calendar = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" sideOffset={5}>
-                  <p>Add Node</p>
+                  <p>Start New Patient Pathway</p>
                 </TooltipContent>
               </Tooltip>
               <Tooltip>
@@ -143,20 +146,25 @@ const Calendar = () => {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" sideOffset={5}>
-                  <p>Delete Node</p>
+                  <p>Delete Patient Pathway</p>
                 </TooltipContent>
               </Tooltip>
             </div>
           </div>
         </TooltipProvider>
-        <Card className="flex flex-1">
-          <Timeline
-            ref={timelineRef}
-            options={options}
-            initialItems={items}
-            initialGroups={groups}
-          />
+        <Card
+          className="flex flex-1"
+          style={{
+            display: calendarLoading ? 'none' : 'flex',
+          }}
+        >
+          <Timeline ref={timelineRef} options={options} />
         </Card>
+        {calendarLoading && (
+          <div className="flex flex-1 items-center justify-center">
+            <BeatLoader size={40} />
+          </div>
+        )}
       </Card>
     </div>
   );

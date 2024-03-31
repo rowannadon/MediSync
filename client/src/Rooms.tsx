@@ -41,16 +41,23 @@ export const columns: ColumnDef<HospitalRoom>[] = [
     accessorKey: 'equipment',
     header: 'Equipment',
     cell: ({ row }) => {
-      return (row.getValue('equipment') as Equipment[]).map((eq: Equipment) => (
-        <Card className="m-1 flex w-[150px] justify-start p-1" key={eq.type}>
-          <h1>
-            {eq.type.charAt(0).toUpperCase()}
-            {eq.type.slice(1)}
-            {'\t:\t'}
-            {eq.count}
-          </h1>
-        </Card>
-      ));
+      return (
+        <div className="flex flex-row">
+          {(row.getValue('equipment') as Equipment[]).map((eq: Equipment) => (
+            <Card
+              className="m-1 flex w-[160px] justify-center p-1"
+              key={eq.type}
+            >
+              <h1>
+                {eq.type.charAt(0).toUpperCase()}
+                {eq.type.slice(1)}
+                {'\t:\t'}
+                {eq.count}
+              </h1>
+            </Card>
+          ))}
+        </div>
+      );
     },
   },
   {

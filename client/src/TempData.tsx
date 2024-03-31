@@ -308,12 +308,16 @@ export type Stage = {
   required_room: string;
   required_equipment: Equipment[];
   date: string;
+  time?: string;
+  duration: number;
   next: string | string[] | null;
+  start: boolean;
 };
 
 export type Procedure = {
   title: string;
   desc: string;
+  patient: string;
   stages: Stage[];
 };
 
@@ -321,6 +325,7 @@ export const procedures: Procedure[] = [
   {
     title: 'Appendectomy',
     desc: 'Surgical removal of the appendix.',
+    patient: 'Michael Johnson',
     stages: [
       {
         name: 'PreOpAssessment',
@@ -330,7 +335,10 @@ export const procedures: Procedure[] = [
         required_room: 'Pre-Op Room',
         required_equipment: [],
         date: '2024-03-30',
+        time: '08:00',
+        duration: 120,
         next: 'SurgicalDecision',
+        start: true,
       },
       {
         name: 'SurgicalDecision',
@@ -339,8 +347,11 @@ export const procedures: Procedure[] = [
         staff_required: ['Surgeon', 'Nurse'],
         required_room: 'Operating Room',
         required_equipment: [],
-        date: '2024-03-30',
+        date: '2024-04-11',
+        time: '08:00',
+        duration: 60,
         next: ['OpenAppendectomy', 'LaparoscopicAppendectomy'],
+        start: false,
       },
       {
         name: 'OpenAppendectomy',
@@ -355,8 +366,11 @@ export const procedures: Procedure[] = [
             desc: 'Set of surgical instruments',
           },
         ],
-        date: '2024-03-31',
+        duration: 60,
+        time: '10:00',
+        date: '2024-04-12',
         next: 'PostOpRecovery',
+        start: false,
       },
       {
         name: 'LaparoscopicAppendectomy',
@@ -371,8 +385,11 @@ export const procedures: Procedure[] = [
             desc: 'Laparoscopic tower',
           },
         ],
+        duration: 30,
         date: '2024-03-31',
+        time: '12:00',
         next: 'PostOpRecovery',
+        start: false,
       },
       {
         name: 'PostOpRecovery',
@@ -382,13 +399,17 @@ export const procedures: Procedure[] = [
         required_room: 'Recovery Room',
         required_equipment: [],
         date: '2024-04-01',
+        time: '03:00',
+        duration: 1200,
         next: null,
+        start: false,
       },
     ],
   },
   {
     title: 'Treatment Decision for Cancer Patients',
     desc: 'Decision-making process for the treatment of cancer patients.',
+    patient: 'Sarah Williams',
     stages: [
       {
         name: 'PatientEvaluation',
@@ -399,6 +420,8 @@ export const procedures: Procedure[] = [
         required_equipment: [],
         date: '2024-03-30',
         next: 'TreatmentDecision',
+        duration: 60,
+        start: true,
       },
       {
         name: 'TreatmentDecision',
@@ -408,7 +431,9 @@ export const procedures: Procedure[] = [
         required_room: 'Meeting Room',
         required_equipment: [],
         date: '2024-03-30',
+        duration: 60,
         next: ['Chemotherapy', 'RadiationTherapy', 'Surgery'],
+        start: false,
       },
       {
         name: 'Chemotherapy',
@@ -420,7 +445,9 @@ export const procedures: Procedure[] = [
           { type: 'Chemotherapy Drugs', count: 1, desc: 'Chemotherapy drugs' },
         ],
         date: '2024-03-31',
+        duration: 60,
         next: 'PostTreatmentMonitoring',
+        start: false,
       },
       {
         name: 'RadiationTherapy',
@@ -432,7 +459,9 @@ export const procedures: Procedure[] = [
           { type: 'Radiation Machine', count: 1, desc: 'Linear accelerator' },
         ],
         date: '2024-03-31',
+        duration: 60,
         next: 'PostTreatmentMonitoring',
+        start: false,
       },
       {
         name: 'Surgery',
@@ -448,7 +477,9 @@ export const procedures: Procedure[] = [
           },
         ],
         date: '2024-03-31',
+        duration: 60,
         next: 'PostTreatmentMonitoring',
+        start: false,
       },
       {
         name: 'PostTreatmentMonitoring',
@@ -458,7 +489,10 @@ export const procedures: Procedure[] = [
         required_room: 'Consultation Room',
         required_equipment: [],
         date: '2024-04-01',
+        time: '09:00',
+        duration: 60,
         next: null,
+        start: false,
       },
     ],
   },

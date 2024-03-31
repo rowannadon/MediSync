@@ -30,6 +30,7 @@ const StageEditor = () => {
         <div className="flex flex-grow flex-row">
           <StageLibrary
             onStageClick={(stage: Stage) => setSelectedStage(stage)}
+            selectedStage={selectedStage}
           />
           <div className="flex h-screen flex-grow flex-col">
             <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
@@ -68,7 +69,7 @@ const StageEditor = () => {
                   </Tooltip>
                 </div>
                 <div className="flex flex-grow flex-row items-center p-1">
-                  <h1 className="text-xl font-bold">My Pathway Stage</h1>
+                  <h1 className="text-lg">My Pathway Stage</h1>
                 </div>
                 <div className="flex flex-grow flex-row-reverse space-x-2 space-x-reverse p-1">
                   <Tooltip>
@@ -94,7 +95,7 @@ const StageEditor = () => {
                 </div>
               </TooltipProvider>
             </Card>
-            <Card className="m-2 flex flex-grow p-2">
+            <Card className="m-2 flex flex-grow p-4">
               {selectedStage && <h1>{JSON.stringify(selectedStage)}</h1>}
               {selectedStage === null && <h1>No stage selected...</h1>}
             </Card>
