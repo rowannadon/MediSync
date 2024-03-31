@@ -41,7 +41,7 @@ const Calendar = () => {
       }
       const root = createRoot(element as HTMLElement);
       root.render(
-        <div className="flex min-h-[40px] flex-grow flex-row items-center justify-center space-x-2 pr-2">
+        <div className="flex min-h-[40px] flex-grow flex-row items-center justify-center space-x-2 pl-1 pr-1">
           <Button className="h-8 w-8" size="icon" variant="ghost">
             <Pin className="h-5 w-5" />
           </Button>
@@ -117,11 +117,11 @@ const Calendar = () => {
                   <Input
                     className="w-[300px]"
                     type="search"
-                    placeholder="Filter patients"
+                    placeholder="Filter patients..."
                   />
                 </TooltipTrigger>
                 <TooltipContent side="bottom" sideOffset={5}>
-                  <p>Filter patients</p>
+                  <p>Filter patients by name</p>
                 </TooltipContent>
               </Tooltip>
             </div>

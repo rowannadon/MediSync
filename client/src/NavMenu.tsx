@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'wouter';
+import { Link, LinkProps } from 'wouter';
 import {
   BookUser,
   Building2,
@@ -20,26 +20,20 @@ import {
 
 const NavMenu: React.FC = () => {
   const StyledLink = (props: any) => {
-    if (window.location.pathname === props.href) {
-      return (
-        <Link
-          href={props.href}
-          className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground md:h-10 md:w-10"
-        >
-          {props.children}
-        </Link>
-      );
-    } else {
-      return (
-        <Link
-          href={props.href}
-          className="flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-foreground md:h-10 md:w-10"
-        >
-          {props.children}
-        </Link>
-      );
-    }
+    return (
+      <Link
+        href={props.href}
+        className={
+          window.location.pathname === props.href
+            ? 'flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground md:h-10 md:w-10'
+            : 'flex h-8 w-8 items-center justify-center text-muted-foreground hover:text-foreground md:h-10 md:w-10'
+        }
+      >
+        {props.children}
+      </Link>
+    );
   };
+
   return (
     <div className="flex h-screen w-14 min-w-14 bg-secondary">
       <nav className="flex flex-grow flex-col items-center justify-between">
