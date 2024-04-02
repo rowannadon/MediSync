@@ -11,15 +11,39 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  ArrowUpDown,
+  ChevronsUpDown,
   Circle,
   CircleAlert,
   CircleX,
   MoreHorizontal,
-  X,
 } from 'lucide-react';
 import { DataTable } from './DataTable';
 import { displayedRooms, Equipment, HospitalRoom } from './TempData';
+
+const generateColors = (
+  displayedRooms: HospitalRoom[],
+): Map<string, string> => {
+  const equipment = displayedRooms.flatMap((room) => room.equipment);
+  const colors = new Map();
+  for (var eq of equipment) {
+    if (!colors.get(eq.type)) {
+      colors.set(
+        eq.type,
+        'hsl(' +
+          360 * Math.random() +
+          ',' +
+          (25 + 70 * Math.random()) +
+          '%,' +
+          (90 + 10 * Math.random()) +
+          '%)',
+      );
+    }
+  }
+  console.log(colors);
+  return colors;
+};
+
+const colors = generateColors(displayedRooms);
 
 export const columns: ColumnDef<HospitalRoom>[] = [
   {
@@ -32,7 +56,22 @@ export const columns: ColumnDef<HospitalRoom>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Room Number
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: 'type',
+    accessorFn: (row) => row.type,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Type
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
@@ -42,18 +81,23 @@ export const columns: ColumnDef<HospitalRoom>[] = [
     header: 'Equipment',
     cell: ({ row }) => {
       return (
-        <div className="flex flex-row">
+        <div className="flex flex-row flex-wrap">
           {(row.getValue('equipment') as Equipment[]).map((eq: Equipment) => (
             <Card
-              className="m-1 flex w-[160px] justify-center p-1"
+              className="m-1 flex flex-shrink flex-row justify-center"
+              style={{ backgroundColor: colors.get(eq.type) }}
               key={eq.type}
             >
-              <h1>
-                {eq.type.charAt(0).toUpperCase()}
-                {eq.type.slice(1)}
-                {'\t:\t'}
-                {eq.count}
-              </h1>
+              <div className="p-1">
+                <h1>
+                  {eq.type.charAt(0).toUpperCase()}
+                  {eq.type.slice(1)}
+                </h1>
+              </div>
+
+              <div className="border-l-[1px] border-l-[muted] bg-muted p-1">
+                <h1>{eq.count}</h1>
+              </div>
             </Card>
           ))}
         </div>
@@ -62,7 +106,32 @@ export const columns: ColumnDef<HospitalRoom>[] = [
   },
   {
     accessorKey: 'occupied',
-    header: 'Occupancy',
+    sortingFn: (rowA, rowB, direction) => {
+      const bedsA = (rowA.getValue('equipment') as Equipment[]).find(
+        (eq: Equipment) => eq.type === 'bed',
+      )?.count as number;
+      const bedsB = (rowB.getValue('equipment') as Equipment[]).find(
+        (eq: Equipment) => eq.type === 'bed',
+      )?.count as number;
+
+      const occupiedA = rowA.getValue('occupied') as number;
+      const occupiedB = rowB.getValue('occupied') as number;
+
+      return direction === 'asc'
+        ? occupiedA / bedsA - occupiedB / bedsB
+        : occupiedB / bedsB - occupiedA / bedsA;
+    },
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Occupancy
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const occupied = row.getValue('occupied') as string;
       const beds = (row.getValue('equipment') as Equipment[]).find(

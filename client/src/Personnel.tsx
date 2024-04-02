@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ArrowUpDown, Check, MoreHorizontal, X } from 'lucide-react';
+import { Check, ChevronsUpDown, MoreHorizontal, X } from 'lucide-react';
 import { DataTable } from './DataTable';
 import { displayedPeople, Person } from './TempData';
 
@@ -24,18 +24,38 @@ export const columns: ColumnDef<Person>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
     accessorKey: 'email',
-    header: 'Email',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Email
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'role',
-    header: 'Role',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Role
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'phone',
@@ -43,21 +63,55 @@ export const columns: ColumnDef<Person>[] = [
   },
   {
     accessorKey: 'department',
-    header: 'Department',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Department
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'location',
-    header: 'Location',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Location
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'admin',
-    header: 'Admin',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Admin
+          <ChevronsUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
-      if (row.getValue('admin')) {
-        return <Check className="text-right font-medium" />;
-      } else {
-        return <X className="text-right font-medium" />;
-      }
+      return (
+        <div className="flex flex-row justify-center">
+          {row.getValue('admin') ? (
+            <Check className="text-center font-medium text-green-400" />
+          ) : (
+            <X className="text-center font-medium text-destructive" />
+          )}
+        </div>
+      );
     },
   },
   {

@@ -7,12 +7,6 @@ import {
   Trash,
 } from 'lucide-react';
 import NavMenu from './NavMenu';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from './components/ui/accordion';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
 import ReactFlow, {
@@ -22,9 +16,11 @@ import ReactFlow, {
   Controls,
   Edge,
   Node,
+  ReactFlowProvider,
+  useStoreApi,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -32,8 +28,9 @@ import {
   TooltipTrigger,
 } from './components/ui/tooltip';
 import { StageLibrary } from './StageLibrary';
-import { Procedure, procedures, Stage } from './TempData';
+import { procedures, Stage } from './TempData';
 import { StageNode } from './StageNode';
+import { useDrop } from 'react-dnd';
 
 function convertToNodesAndEdges(
   linkedList: Stage[],
@@ -56,12 +53,14 @@ function convertToNodesAndEdges(
 
     nodes.push({
       id: node.name,
-      data: { label: node.name, stage: node },
-      position: { x: nodesByDepth[depth].length * 310, y: y },
+      data: { label: node.name, stage: node, depth: depth },
+      position: { x: 0, y: y },
       type: 'stage',
     });
 
-    nodesByDepth[depth].push(nodes[nodes.length - 1]);
+    if (!nodesByDepth[depth].find((n) => n.id === node.name)) {
+      nodesByDepth[depth].push(nodes[nodes.length - 1]);
+    }
 
     let nextDepth = depth;
     if (Array.isArray(node.next)) {
@@ -90,25 +89,40 @@ function convertToNodesAndEdges(
   // Start traversing from the provided starting node
   traverse(startingNode, 0);
 
+  nodes.forEach((node) => {
+    const nodesAtDepth = nodesByDepth[node.data.depth];
+    console.log(nodesAtDepth);
+    if (nodesAtDepth.length > 1) {
+      const index = nodesAtDepth.findIndex((n) => n.id === node.id);
+      if (index > 0) {
+        node.position.x = 270 * index;
+      }
+    } else {
+      // if there is only one node at depth, offset by 1/2 of the max number of nodes at any level minus 1
+      const max = Math.max(...nodesByDepth.map((n) => n.length));
+      node.position.x = 270 * ((max - 1) / 2);
+    }
+  });
+
   return { nodes, edges, nodesByDepth };
 }
 
-const PathwayEditor = () => {
+const PathwayEditorInner = () => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNode, setSelectedNode] = useState<any>(null);
-
+  const dropRef = useRef<HTMLDivElement>(null);
   const nodeTypes = useMemo(() => ({ stage: StageNode }), []);
 
+  const pathway = procedures[0];
+
   useEffect(() => {
-    if (procedures[0]) {
-      const startStage = procedures[0].stages.find(
-        (stage) => stage.start !== null,
-      );
+    if (pathway) {
+      const startStage = pathway.stages.find((stage) => stage.start !== null);
       console.log(startStage);
       if (startStage) {
         const convertedNodesAndEdges = convertToNodesAndEdges(
-          procedures[0].stages,
+          pathway.stages,
           startStage.name,
         );
         setNodes(convertedNodesAndEdges.nodes);
@@ -136,87 +150,153 @@ const PathwayEditor = () => {
     [],
   );
 
+  const getCorrectDroppedOffsetValue = (
+    initialPosition: any,
+    finalPosition: any,
+  ) => {
+    // get the container (view port) position by react ref...
+    if (!dropRef.current) return { x: 0, y: 0 };
+    const dropTargetPosition = dropRef.current.getBoundingClientRect();
+
+    const { y: finalY, x: finalX } = finalPosition;
+    const { y: initialY, x: initialX } = initialPosition;
+
+    // calculate the correct position removing the viewport position.
+    // finalY > initialY, I'm dragging down, otherwise, dragging up
+    const newYposition =
+      finalY > initialY
+        ? initialY + (finalY - initialY) - dropTargetPosition.top
+        : initialY - (initialY - finalY) - dropTargetPosition.top;
+
+    const newXposition =
+      finalX > initialX
+        ? initialX + (finalX - initialX) - dropTargetPosition.left
+        : initialX - (initialX - finalX) - dropTargetPosition.left;
+
+    return {
+      x: newXposition,
+      y: newYposition,
+    };
+  };
+
+  const store = useStoreApi();
+
+  const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    // The type (or types) to accept - strings or symbols
+    accept: 'stage',
+    // Props to collect
+    drop: (item: any, monitor: any) => {
+      const node = item.props.stage;
+      console.log(item.props.stage.name);
+      const coords = getCorrectDroppedOffsetValue(
+        monitor.getInitialSourceClientOffset(),
+        monitor.getSourceClientOffset(),
+      );
+      const state = store.getState();
+      const zoomMultiplier = 1 / state.transform[2];
+      console.log(state.transform);
+      const newNode: Node = {
+        id: node.name,
+        data: { label: node.name, stage: node },
+        position: {
+          x: (coords.x - state.transform[0]) * zoomMultiplier,
+          y: (coords.y - state.transform[1]) * zoomMultiplier,
+        },
+        type: 'stage',
+      };
+      console.log(newNode);
+      setNodes((prevNodes) => [...prevNodes, newNode]);
+    },
+    collect: (monitor: any) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }));
+
   return (
-    <div className="flex h-screen max-h-screen w-screen flex-row overflow-clip bg-secondary">
+    <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
-      <div className="h-screen max-h-screen flex-grow">
-        <div className="flex flex-grow flex-row">
-          <StageLibrary className="w-[300px]" />
-          <div className="flex h-screen flex-grow flex-col">
-            <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
-              <TooltipProvider>
-                <div className="flex flex-grow flex-row space-x-2 p-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-8 w-8">
-                        <FilePlus className="h-6 w-6" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={5}>
-                      <p>New</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-8 w-8">
-                        <Save className="h-6 w-6" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={5}>
-                      <p>Save</p>
-                    </TooltipContent>
-                  </Tooltip>
+      <div className="flex h-screen max-h-screen flex-grow flex-row">
+        <StageLibrary onStageClick={() => null} selected="" />
+        <div className="flex h-screen flex-grow flex-col">
+          <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
+            <TooltipProvider>
+              <div className="flex flex-grow flex-row space-x-4 p-4">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <FilePlus className="h-6 w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={5}>
+                    <p>New</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Save className="h-6 w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={5}>
+                    <p>Save</p>
+                  </TooltipContent>
+                </Tooltip>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-8 w-8">
-                        <FolderOpen className="h-6 w-6" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={5}>
-                      <p>Open</p>
-                    </TooltipContent>
-                  </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <FolderOpen className="h-6 w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={5}>
+                    <p>Open</p>
+                  </TooltipContent>
+                </Tooltip>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-8 w-8">
-                        <RefreshCcw className="h-6 w-6" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={5}>
-                      <p>Reload</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <div className="flex flex-grow flex-row items-center p-1">
-                  <h1 className="text-lg">My Pathway Template</h1>
-                </div>
-                <div className="flex flex-grow flex-row-reverse space-x-2 space-x-reverse p-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-8 w-8">
-                        <Plus className="h-6 w-6" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={5}>
-                      <p>Add Node</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="icon" className="h-8 w-8">
-                        <Trash className="h-6 w-6" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={5}>
-                      <p>Delete Node</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </TooltipProvider>
-            </Card>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <RefreshCcw className="h-6 w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={5}>
+                    <p>Reload</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="flex flex-grow flex-row items-center p-4">
+                <h1 className="border-muted-background rounded-lg px-2 text-lg hover:border-[1px]">
+                  {pathway.title}
+                </h1>
+              </div>
+              <div className="flex flex-grow flex-row-reverse space-x-4 space-x-reverse p-4">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Plus className="h-6 w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={5}>
+                    <p>Add Node</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Trash className="h-6 w-6" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={5}>
+                    <p>Delete Node</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            </TooltipProvider>
+          </Card>
+          <div className="flex flex-grow" ref={dropRef}>
             <ReactFlow
+              ref={drop}
               nodes={nodes}
               edges={edges}
               nodeTypes={nodeTypes}
@@ -228,16 +308,24 @@ const PathwayEditor = () => {
               <Controls />
             </ReactFlow>
           </div>
-          <Card className="mb-2 mr-2 mt-2 flex w-[300px] p-4">
-            {selectedNode === null && <h1>No node selected...</h1>}
-            {selectedNode && (
-              <p className="break-all">{JSON.stringify(selectedNode)}</p>
-            )}
-          </Card>
         </div>
+        <Card className="mb-2 mr-2 mt-2 flex w-[300px] p-4">
+          {selectedNode === null && <h1>No node selected...</h1>}
+          {selectedNode && (
+            <p className="break-all">{JSON.stringify(selectedNode)}</p>
+          )}
+        </Card>
       </div>
     </div>
   );
 };
+
+function PathwayEditor(props: any) {
+  return (
+    <ReactFlowProvider>
+      <PathwayEditorInner {...props} />
+    </ReactFlowProvider>
+  );
+}
 
 export default PathwayEditor;

@@ -11,6 +11,8 @@ import { ScrollArea } from './components/ui/scroll-area';
 import { StageDisplay } from './StageDisplay';
 import { Stage, stages } from './TempData';
 
+import { useDrag } from 'react-dnd';
+
 export const StageLibrary = (props: any) => {
   const [filter, setFilter] = useState<string>('');
   const filteredStages = stages.filter((stage: Stage) =>
@@ -56,20 +58,23 @@ export const StageLibrary = (props: any) => {
     });
 
   return (
-    <Card className="mb-2 mt-2 flex w-[270px] min-w-[270px] max-w-[270px] flex-grow flex-col overflow-scroll p-2">
-      <Input
-        className=""
-        type="search"
-        placeholder="Filter stage templates..."
-        onChange={(event) => {
-          setFilter(event.target.value);
-          if (event.target.value === '') {
-            setAccordionValue([]);
-          } else {
-            setAccordionValue(['Pre', 'Peri', 'Post']); // Open all accordion items when filtering
-          }
-        }}
-      />
+    <Card className="mb-2 mt-2 flex w-[320px] min-w-[320px] max-w-[320px] flex-col space-y-4 p-4">
+      <div className="">
+        <Input
+          className=""
+          type="search"
+          placeholder="Filter stage templates..."
+          onChange={(event) => {
+            setFilter(event.target.value);
+            if (event.target.value === '') {
+              setAccordionValue([]);
+            } else {
+              setAccordionValue(['Pre', 'Peri', 'Post']); // Open all accordion items when filtering
+            }
+          }}
+        />
+      </div>
+
       <ScrollArea className="flex-grow">
         <Accordion
           type="multiple"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, LinkProps } from 'wouter';
+import { Link } from 'wouter';
 import {
   BookUser,
   Building2,

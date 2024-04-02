@@ -160,6 +160,7 @@ export type Equipment = {
 
 export type HospitalRoom = {
   room_number: number;
+  type: string;
   equipment: Equipment[];
   occupied: number;
 };
@@ -167,6 +168,7 @@ export type HospitalRoom = {
 export const displayedRooms: HospitalRoom[] = [
   {
     room_number: 101,
+    type: 'Standard',
     equipment: [
       {
         type: 'bed',
@@ -183,6 +185,7 @@ export const displayedRooms: HospitalRoom[] = [
   },
   {
     room_number: 102,
+    type: 'Intensive Care Unit',
     equipment: [
       {
         type: 'bed',
@@ -199,6 +202,7 @@ export const displayedRooms: HospitalRoom[] = [
   },
   {
     room_number: 103,
+    type: 'Operating Room',
     equipment: [
       {
         type: 'bed',
@@ -215,6 +219,7 @@ export const displayedRooms: HospitalRoom[] = [
   },
   {
     room_number: 201,
+    type: 'Critical Care Unit',
     equipment: [
       {
         type: 'bed',
@@ -236,6 +241,7 @@ export const displayedRooms: HospitalRoom[] = [
   },
   {
     room_number: 202,
+    type: 'Bariatric Care',
     equipment: [
       {
         type: 'bed',
@@ -252,6 +258,7 @@ export const displayedRooms: HospitalRoom[] = [
   },
   {
     room_number: 203,
+    type: 'Maternity Ward',
     equipment: [
       {
         type: 'bed',
@@ -273,6 +280,7 @@ export const displayedRooms: HospitalRoom[] = [
   },
   {
     room_number: 204,
+    type: 'Pediatric Ward',
     equipment: [
       {
         type: 'bed',
@@ -355,6 +363,25 @@ export const procedures: Procedure[] = [
       },
       {
         name: 'OpenAppendectomy',
+        desc: 'Surgical procedure for open appendectomy.',
+        type: 'peri-operative',
+        staff_required: ['Surgeon', 'Nurse', 'Surgical Technician'],
+        required_room: 'Operating Room',
+        required_equipment: [
+          {
+            type: 'Surgical Instruments',
+            count: 1,
+            desc: 'Set of surgical instruments',
+          },
+        ],
+        duration: 60,
+        time: '10:00',
+        date: '2024-04-12',
+        next: 'PostOpRecovery',
+        start: false,
+      },
+      {
+        name: 'OpenAppendectomyTest',
         desc: 'Surgical procedure for open appendectomy.',
         type: 'peri-operative',
         staff_required: ['Surgeon', 'Nurse', 'Surgical Technician'],

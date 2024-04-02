@@ -1,0 +1,61 @@
+<FormField
+  control={form.control}
+  name="patient"
+  render={({ field }) => {
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState('');
+
+    return (
+      <FormItem className="flex flex-col">
+        <FormLabel>Patient</FormLabel>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-[200px] justify-between"
+            >
+              {value
+                ? displayedPeople.find((person) => person.name === value)?.name
+                : 'Select patient...'}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandInput placeholder="Search patients..." />
+              <CommandEmpty>No patient found.</CommandEmpty>
+              <CommandList>
+                <CommandGroup className="max-h-[200px]">
+                  {displayedPeople.map((person: any) => (
+                    <CommandItem
+                      aria-disabled={true}
+                      key={person.name}
+                      value={person.name}
+                      onSelect={(currentValue) => {
+                        setValue(currentValue === value ? '' : currentValue);
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          value === person.name ? 'opacity-100' : 'opacity-0',
+                        )}
+                      />
+                      {person.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        <FormDescription>Patient.</FormDescription>
+        <FormMessage />
+      </FormItem>
+    );
+  }}
+/>;
