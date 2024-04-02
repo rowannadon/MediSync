@@ -84,9 +84,16 @@ const StageEditor = () => {
                 </Tooltip>
               </div>
               <div className="flex flex-grow flex-row items-center p-1">
-                <h1 className="border-muted-background rounded-lg px-2 text-lg hover:border-[1px]">
-                  {selectedStage && selectedStage.name}
-                </h1>
+                {selectedStage && (
+                  <h1 className="border-muted-background rounded-lg px-2 text-lg hover:border-[1px]">
+                    {selectedStage.name}
+                  </h1>
+                )}
+                {!selectedStage && (
+                  <h1 className="text-lg text-muted-foreground">
+                    None selected...
+                  </h1>
+                )}
               </div>
               <div className="flex flex-grow flex-row-reverse space-x-2 space-x-reverse p-4">
                 <Tooltip>

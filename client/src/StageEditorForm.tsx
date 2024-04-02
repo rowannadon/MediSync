@@ -87,7 +87,6 @@ export function StageEditorForm(props: any) {
 
   return (
     <div>
-      {!props.stage && <h1 className="text-lg">No stage selected...</h1>}
       {props.stage && (
         <div className="flex flex-row space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
           <SidebarNav

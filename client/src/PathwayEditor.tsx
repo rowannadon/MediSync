@@ -221,7 +221,7 @@ const PathwayEditorInner = () => {
         <div className="flex h-screen flex-grow flex-col">
           <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
             <TooltipProvider>
-              <div className="flex flex-grow flex-row space-x-4 p-4">
+              <div className="flex flex-grow flex-row space-x-2 p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -270,7 +270,7 @@ const PathwayEditorInner = () => {
                   {pathway.title}
                 </h1>
               </div>
-              <div className="flex flex-grow flex-row-reverse space-x-4 space-x-reverse p-4">
+              <div className="flex flex-grow flex-row-reverse space-x-2 space-x-reverse p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="icon">

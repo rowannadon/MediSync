@@ -58,8 +58,8 @@ export const StageLibrary = (props: any) => {
     });
 
   return (
-    <Card className="mb-2 mt-2 flex w-[320px] min-w-[320px] max-w-[320px] flex-col space-y-4 p-4">
-      <div className="">
+    <Card className="mb-2 mt-2 flex w-[300px] min-w-[300px] max-w-[300px] flex-col">
+      <div className="mx-4 mt-4">
         <Input
           className=""
           type="search"
@@ -75,7 +75,7 @@ export const StageLibrary = (props: any) => {
         />
       </div>
 
-      <ScrollArea className="flex-grow">
+      <ScrollArea className="flex-grow px-2">
         <Accordion
           type="multiple"
           className="w-full text-foreground"

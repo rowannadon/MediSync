@@ -35,7 +35,7 @@ const Display = (props: {
         ref={drag}
         onClick={props.onClick}
         key={props.stage.name}
-        className={`m-0 flex min-h-[70px] min-w-[260px] cursor-pointer flex-col items-center justify-center p-2 hover:brightness-95 hover:filter ${
+        className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center p-2 hover:brightness-95 hover:filter ${
           props.color
         } ${props.selected ? 'border-[2px] border-blue-300' : ''}`}
       >
