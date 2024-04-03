@@ -1,0 +1,141 @@
+import { useState } from 'react';
+import { Card } from './components/ui/card';
+import { Badge } from './components/ui/badge';
+import { Minus, Plus, PlusCircle, X } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from './components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from './components/ui/command';
+import { Button } from './components/ui/button';
+
+export const ResourceField = (props: any) => {
+  const [selectedResources, setSelectedResources] = useState<
+    { count: number; value: string }[]
+  >([]);
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="flex flex-grow flex-col space-y-4">
+      <Card className="flex min-h-[100px] w-full flex-row flex-wrap space-x-2 p-4">
+        {selectedResources.map((resource: { count: number; value: string }) => {
+          return (
+            <Badge
+              className="flex h-[30px] max-h-[30px] flex-row justify-between space-x-2 text-sm"
+              variant="secondary"
+              key={resource.value}
+            >
+              <span>{resource.value}</span>
+              {props.count && (
+                <div className="flex flex-row items-center justify-center space-x-1">
+                  <Plus
+                    className="h-4 w-4 cursor-pointer p-[1px] hover:text-slate-500"
+                    onClick={() => {
+                      console.log(resource);
+                      setSelectedResources((prev) =>
+                        prev.map((r) =>
+                          r === resource ? { ...r, count: r.count + 1 } : r,
+                        ),
+                      );
+                    }}
+                  />
+                  <div>{resource.count}</div>
+                  <Minus
+                    className="h-4 w-4 cursor-pointer p-[1px] hover:text-slate-500"
+                    onClick={() => {
+                      console.log(resource);
+                      if (resource.count === 1) {
+                        setSelectedResources((prev) =>
+                          prev.filter((r) => r !== resource),
+                        );
+                      } else {
+                        setSelectedResources((prev) =>
+                          prev.map((r) =>
+                            r === resource ? { ...r, count: r.count - 1 } : r,
+                          ),
+                        );
+                      }
+                    }}
+                  />
+                </div>
+              )}
+
+              {!props.count && (
+                <X
+                  className="h-4 w-4 cursor-pointer hover:text-muted-foreground"
+                  onClick={() => {
+                    setSelectedResources((prev) =>
+                      prev.filter((r) => r !== resource),
+                    );
+                  }}
+                />
+              )}
+            </Badge>
+          );
+        })}
+      </Card>
+      <Popover open={open}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 w-[200px] border-dashed"
+            onClick={() => setOpen(!open)}
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Add {props.name}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0" align="start">
+          <Command>
+            <CommandInput placeholder={`Search for ${props.name}`} />
+            <CommandList>
+              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandGroup>
+                {props.resources.map(
+                  (resource: { value: string; count: number }) => {
+                    if (
+                      !selectedResources
+                        .map((r) => r.value)
+                        .includes(resource.value)
+                    ) {
+                      return (
+                        <CommandItem
+                          key={resource.value}
+                          onSelect={() => {
+                            console.log(resource.value);
+                            setOpen(false);
+                            if (
+                              !selectedResources
+                                .map((r) => r.value)
+                                .includes(resource.value)
+                            ) {
+                              setSelectedResources([
+                                ...selectedResources,
+                                resource,
+                              ]);
+                            }
+                          }}
+                        >
+                          <span>{resource.value}</span>
+                        </CommandItem>
+                      );
+                    }
+                  },
+                )}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+};

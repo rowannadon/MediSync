@@ -24,19 +24,25 @@ import {
 } from './components/ui/table';
 import { Input } from './components/ui/input';
 import { ScrollArea } from './components/ui/scroll-area';
+import { DataTableFacetedFilter } from './DataTableFacetedFilter';
+import { DataTableSingleFilter } from './DataTableSingleFilter';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterColumn: string;
   pages: number;
+  uniqueFilterColumns?: { title: string; column: string }[];
+  uniqueFilterColumn?: { title: string; column: string }[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filterColumn,
+  uniqueFilterColumn,
   pages,
+  uniqueFilterColumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -44,6 +50,41 @@ export function DataTable<TData, TValue>({
     pageIndex: 0,
     pageSize: pages,
   });
+
+  const indexes = data.map((value, index) => {
+    return { value: value, index: index };
+  });
+
+  const filterSets = uniqueFilterColumns?.map(
+    (col: { column: string; title: string }) => {
+      const list = Array.from(
+        new Set(
+          data
+            .flatMap((value: any) => value[col.column])
+            .map((value: any) => value.type),
+        ),
+      );
+      return {
+        column: col.column,
+        list: list,
+        title: col.title,
+      };
+    },
+  );
+
+  const filter = uniqueFilterColumn?.map(
+    (col: { column: string; title: string }) => {
+      const list = Array.from(
+        new Set(data.flatMap((value: any) => value[col.column])),
+      );
+      return {
+        column: col.column,
+        list: list,
+        title: col.title,
+      };
+    },
+  );
+
   const table = useReactTable({
     data,
     columns,
@@ -60,19 +101,42 @@ export function DataTable<TData, TValue>({
       pagination,
     },
   });
+
   return (
     <div className="flex flex-grow flex-col p-4">
       <div className="flex items-center justify-between pb-4">
-        <Input
-          placeholder={`Filter ${filterColumn.replaceAll('_', ' ')}s...`}
-          value={
-            (table.getColumn(filterColumn)?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn(filterColumn)?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        <div className="flex flex-row items-end space-x-4">
+          <Input
+            placeholder={`Filter ${filterColumn.replaceAll('_', ' ')}s...`}
+            value={
+              (table.getColumn(filterColumn)?.getFilterValue() as string) ?? ''
+            }
+            onChange={(event) =>
+              table.getColumn(filterColumn)?.setFilterValue(event.target.value)
+            }
+            className="w-[200px] max-w-sm"
+          />
+          {filterSets?.map((filterSet) => {
+            return (
+              <DataTableFacetedFilter
+                key={filterSet.column}
+                column={table.getColumn(filterSet.column)}
+                title={filterSet.title}
+                options={filterSet.list}
+              />
+            );
+          })}
+          {filter?.map((filter) => {
+            return (
+              <DataTableSingleFilter
+                key={filter.column}
+                column={table.getColumn(filter.column)}
+                title={filter.title}
+                options={filter.list}
+              />
+            );
+          })}
+        </div>
         <div className="space-x-2">
           <Button variant="outline" size="icon">
             <Plus className="h-6 w-6" />

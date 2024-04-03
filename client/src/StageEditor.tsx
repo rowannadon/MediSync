@@ -50,7 +50,7 @@ const StageEditor = () => {
         <div className="flex h-screen flex-grow flex-col" ref={drop}>
           <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
             <TooltipProvider>
-              <div className="flex flex-grow flex-row space-x-2 p-4">
+              <div className="flex flex-1 flex-row space-x-2 p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -83,7 +83,7 @@ const StageEditor = () => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex flex-grow flex-row items-center p-1">
+              <div className="flex flex-1 flex-row items-center justify-center p-1">
                 {selectedStage && (
                   <h1 className="border-muted-background rounded-lg px-2 text-lg hover:border-[1px]">
                     {selectedStage.name}
@@ -95,17 +95,7 @@ const StageEditor = () => {
                   </h1>
                 )}
               </div>
-              <div className="flex flex-grow flex-row-reverse space-x-2 space-x-reverse p-4">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Plus className="h-6 w-6" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={5}>
-                    <p>Add Section</p>
-                  </TooltipContent>
-                </Tooltip>
+              <div className="flex flex-1 flex-row-reverse space-x-2 space-x-reverse p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -113,7 +103,7 @@ const StageEditor = () => {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" sideOffset={5}>
-                    <p>Delete Node</p>
+                    <p>Delete Stage</p>
                   </TooltipContent>
                 </Tooltip>
               </div>

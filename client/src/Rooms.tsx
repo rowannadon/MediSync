@@ -19,31 +19,7 @@ import {
 } from 'lucide-react';
 import { DataTable } from './DataTable';
 import { displayedRooms, Equipment, HospitalRoom } from './TempData';
-
-const generateColors = (
-  displayedRooms: HospitalRoom[],
-): Map<string, string> => {
-  const equipment = displayedRooms.flatMap((room) => room.equipment);
-  const colors = new Map();
-  for (var eq of equipment) {
-    if (!colors.get(eq.type)) {
-      colors.set(
-        eq.type,
-        'hsl(' +
-          360 * Math.random() +
-          ',' +
-          (25 + 70 * Math.random()) +
-          '%,' +
-          (90 + 10 * Math.random()) +
-          '%)',
-      );
-    }
-  }
-  console.log(colors);
-  return colors;
-};
-
-const colors = generateColors(displayedRooms);
+import { Badge } from './components/ui/badge';
 
 export const columns: ColumnDef<HospitalRoom>[] = [
   {
@@ -79,26 +55,33 @@ export const columns: ColumnDef<HospitalRoom>[] = [
   {
     accessorKey: 'equipment',
     header: 'Equipment',
+    filterFn: (row, id, value) => {
+      return value.every((v: string) =>
+        (row.getValue(id) as Equipment[])
+          .map((value: Equipment) => value.type)
+          .includes(v),
+      );
+    },
     cell: ({ row }) => {
       return (
-        <div className="flex flex-row flex-wrap">
+        <div className="flex flex-row flex-wrap space-x-2">
           {(row.getValue('equipment') as Equipment[]).map((eq: Equipment) => (
-            <Card
-              className="m-1 flex flex-shrink flex-row justify-center"
-              style={{ backgroundColor: colors.get(eq.type) }}
+            <Badge
+              className="mt-2 flex h-[30px] max-h-[30px] flex-row"
+              variant="secondary"
               key={eq.type}
             >
-              <div className="p-1">
+              <div className="pr-2">
                 <h1>
                   {eq.type.charAt(0).toUpperCase()}
                   {eq.type.slice(1)}
                 </h1>
               </div>
 
-              <div className="border-l-[1px] border-l-[muted] bg-muted p-1">
+              <div className="border-l-[1px] border-l-[muted] pl-2">
                 <h1>{eq.count}</h1>
               </div>
-            </Card>
+            </Badge>
           ))}
         </div>
       );
@@ -211,6 +194,8 @@ const Rooms = () => {
           filterColumn="room_number"
           columns={columns}
           data={displayedRooms}
+          uniqueFilterColumns={[{ column: 'equipment', title: 'Equipment' }]}
+          uniqueFilterColumn={[{ column: 'type', title: 'Type' }]}
         />
       </Card>
     </div>

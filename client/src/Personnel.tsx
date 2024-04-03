@@ -152,6 +152,10 @@ const Personnel = () => {
           filterColumn="name"
           columns={columns}
           data={displayedPeople}
+          uniqueFilterColumn={[
+            { column: 'role', title: 'Role' },
+            { column: 'department', title: 'Department' },
+          ]}
         />
       </Card>
     </div>

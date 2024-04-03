@@ -25,15 +25,17 @@ import {
 import { useEffect, useState } from 'react';
 import { SidebarNav } from './StageEditorSidebarNav';
 import { Textarea } from './components/ui/textarea';
+import { displayedPeople, displayedRooms } from './TempData';
+import { ResourceField } from './StageEditorFormResourceField';
 
 const stageFormSchema = z.object({
   title: z
     .string()
     .min(2, {
-      message: 'Name must be at least 2 characters.',
+      message: 'Title must be at least 2 characters.',
     })
     .max(30, {
-      message: 'Name must not be longer than 30 characters.',
+      message: 'Title must not be longer than 30 characters.',
     }),
   type: z.string({
     required_error: 'Please select a type.',
@@ -41,6 +43,8 @@ const stageFormSchema = z.object({
   desc: z.string({
     required_error: 'Please add a description.',
   }),
+  staff: z.array(z.string()),
+  equipment: z.array(z.string()),
 });
 
 type StageFormValues = z.infer<typeof stageFormSchema>;
@@ -86,21 +90,21 @@ export function StageEditorForm(props: any) {
   }
 
   return (
-    <div>
+    <div className="flex-grow">
       {props.stage && (
-        <div className="flex flex-row space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+        <div className="flex flex-grow flex-row space-x-8">
           <SidebarNav
             items={stagePropertyTypes}
             selected={selectedStagePropertyType}
             setSelected={setSelectedStagePropertyType}
           />
-          <div>
-            {selectedStagePropertyType === 'information' && (
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-8"
-                >
+          <div className="flex flex-grow flex-row p-2">
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex-grow space-y-8"
+              >
+                {selectedStagePropertyType === 'information' && (
                   <FormField
                     control={form.control}
                     name="title"
@@ -118,6 +122,8 @@ export function StageEditorForm(props: any) {
                       </FormItem>
                     )}
                   />
+                )}
+                {selectedStagePropertyType === 'information' && (
                   <FormField
                     control={form.control}
                     name="type"
@@ -147,6 +153,8 @@ export function StageEditorForm(props: any) {
                       </FormItem>
                     )}
                   />
+                )}
+                {selectedStagePropertyType === 'information' && (
                   <FormField
                     control={form.control}
                     name="desc"
@@ -160,11 +168,55 @@ export function StageEditorForm(props: any) {
                       </FormItem>
                     )}
                   />
-
-                  <Button type="submit">Save Changes</Button>
-                </form>
-              </Form>
-            )}
+                )}
+                {selectedStagePropertyType === 'resources' && (
+                  <FormField
+                    control={form.control}
+                    name="staff"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Staff</FormLabel>
+                        <ResourceField
+                          name="Staff"
+                          field={field}
+                          count={false}
+                          resources={displayedPeople.map((p) => ({
+                            value: p.name,
+                            count: 1,
+                          }))}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {selectedStagePropertyType === 'resources' && (
+                  <FormField
+                    control={form.control}
+                    name="equipment"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Equipment</FormLabel>
+                        <ResourceField
+                          name="Equipment"
+                          field={field}
+                          count={true}
+                          resources={Array.from(
+                            new Set(
+                              displayedRooms
+                                .flatMap((r) => r.equipment)
+                                .map((p) => p.type),
+                            ),
+                          ).map((v) => ({ value: v, count: 1 }))}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                <Button type="submit">Save Changes</Button>
+              </form>
+            </Form>
           </div>
         </div>
       )}

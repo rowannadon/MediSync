@@ -10,6 +10,7 @@ import NavMenu from './NavMenu';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
 import ReactFlow, {
+  addEdge,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
@@ -145,6 +146,11 @@ const PathwayEditorInner = () => {
     [nodes],
   );
 
+  const onConnect = useCallback(
+    (params: any) => setEdges((eds: Edge[]) => addEdge(params, eds)),
+    [],
+  );
+
   const onEdgesChange = useCallback(
     (changes: any) => setEdges((eds: Edge[]) => applyEdgeChanges(changes, eds)),
     [],
@@ -221,7 +227,7 @@ const PathwayEditorInner = () => {
         <div className="flex h-screen flex-grow flex-col">
           <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
             <TooltipProvider>
-              <div className="flex flex-grow flex-row space-x-2 p-4">
+              <div className="flex flex-1 flex-row space-x-2 p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -265,12 +271,12 @@ const PathwayEditorInner = () => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex flex-grow flex-row items-center p-4">
+              <div className="flex flex-1 flex-row items-center justify-center p-4">
                 <h1 className="border-muted-background rounded-lg px-2 text-lg hover:border-[1px]">
                   {pathway.title}
                 </h1>
               </div>
-              <div className="flex flex-grow flex-row-reverse space-x-2 space-x-reverse p-4">
+              <div className="flex flex-1 flex-row-reverse space-x-2 space-x-reverse p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="icon">
@@ -300,6 +306,7 @@ const PathwayEditorInner = () => {
               nodes={nodes}
               edges={edges}
               nodeTypes={nodeTypes}
+              onConnect={onConnect}
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               fitView
@@ -309,12 +316,12 @@ const PathwayEditorInner = () => {
             </ReactFlow>
           </div>
         </div>
-        <Card className="mb-2 mr-2 mt-2 flex w-[300px] p-4">
+        {/* <Card className="mb-2 mr-2 mt-2 flex w-[300px] p-4">
           {selectedNode === null && <h1>No node selected...</h1>}
           {selectedNode && (
             <p className="break-all">{JSON.stringify(selectedNode)}</p>
           )}
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

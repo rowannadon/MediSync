@@ -28,7 +28,7 @@ export function SidebarNav({
           className={cn(
             'flex w-full cursor-pointer items-center rounded-lg p-2 pl-4 text-center font-semibold text-muted-foreground',
             selected === item.id
-              ? 'bg-muted'
+              ? 'bg-muted text-foreground'
               : 'hover:bg-muted hover:underline',
             'justify-start',
           )}
