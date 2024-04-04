@@ -67,7 +67,7 @@ export const columns: ColumnDef<HospitalRoom>[] = [
         <div className="flex flex-row flex-wrap space-x-2">
           {(row.getValue('equipment') as Equipment[]).map((eq: Equipment) => (
             <Badge
-              className="mt-2 flex h-[30px] max-h-[30px] flex-row"
+              className="mt-2 flex h-[30px] max-h-[30px] flex-row bg-[#eee] hover:bg-[#ddd]"
               variant="secondary"
               key={eq.type}
             >
@@ -78,7 +78,7 @@ export const columns: ColumnDef<HospitalRoom>[] = [
                 </h1>
               </div>
 
-              <div className="border-l-[1px] border-l-[muted] pl-2">
+              <div className="border-l-[1px] border-l-[#bbb] pl-2">
                 <h1>{eq.count}</h1>
               </div>
             </Badge>

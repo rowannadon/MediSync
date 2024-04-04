@@ -17,29 +17,45 @@ import {
 } from './components/ui/command';
 import { Button } from './components/ui/button';
 
-export const ResourceField = (props: any) => {
-  const [selectedResources, setSelectedResources] = useState<
-    { count: number; value: string }[]
-  >([]);
+interface StageEditorFormResourceFieldProps<T>
+  extends React.HTMLAttributes<HTMLElement> {
+  items: T[];
+  count: boolean;
+  name: string;
+  resources: T[];
+}
+
+export const StageEditorFormResourceField = <
+  T extends { count: number; value: string },
+>(
+  props: StageEditorFormResourceFieldProps<T>,
+) => {
+  const [selectedResources, setSelectedResources] = useState<T[]>(
+    props.items || [],
+  );
   const [open, setOpen] = useState(false);
 
   return (
     <div className="flex flex-grow flex-col space-y-4">
       <Card className="flex min-h-[100px] w-full flex-row flex-wrap space-x-2 p-4">
-        {selectedResources.map((resource: { count: number; value: string }) => {
+        {selectedResources.map((resource: T) => {
+          const { value, count, ...rest } = resource;
+
           return (
             <Badge
-              className="flex h-[30px] max-h-[30px] flex-row justify-between space-x-2 text-sm"
+              className="mb-2 flex h-[30px] max-h-[30px] flex-row justify-between space-x-2 text-sm"
               variant="secondary"
-              key={resource.value}
+              key={value}
             >
               <span>{resource.value}</span>
+              {Object.entries(rest).map(([key, value]) => (
+                <span key={key}>{`${key}: ${value}`}</span>
+              ))}
               {props.count && (
                 <div className="flex flex-row items-center justify-center space-x-1">
                   <Plus
                     className="h-4 w-4 cursor-pointer p-[1px] hover:text-slate-500"
                     onClick={() => {
-                      console.log(resource);
                       setSelectedResources((prev) =>
                         prev.map((r) =>
                           r === resource ? { ...r, count: r.count + 1 } : r,
@@ -47,7 +63,7 @@ export const ResourceField = (props: any) => {
                       );
                     }}
                   />
-                  <div>{resource.count}</div>
+                  <div>{count}</div>
                   <Minus
                     className="h-4 w-4 cursor-pointer p-[1px] hover:text-slate-500"
                     onClick={() => {
@@ -100,37 +116,35 @@ export const ResourceField = (props: any) => {
             <CommandList>
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
-                {props.resources.map(
-                  (resource: { value: string; count: number }) => {
-                    if (
-                      !selectedResources
-                        .map((r) => r.value)
-                        .includes(resource.value)
-                    ) {
-                      return (
-                        <CommandItem
-                          key={resource.value}
-                          onSelect={() => {
-                            console.log(resource.value);
-                            setOpen(false);
-                            if (
-                              !selectedResources
-                                .map((r) => r.value)
-                                .includes(resource.value)
-                            ) {
-                              setSelectedResources([
-                                ...selectedResources,
-                                resource,
-                              ]);
-                            }
-                          }}
-                        >
-                          <span>{resource.value}</span>
-                        </CommandItem>
-                      );
-                    }
-                  },
-                )}
+                {props.resources.map((resource: T) => {
+                  if (
+                    !selectedResources
+                      .map((r) => r.value)
+                      .includes(resource.value)
+                  ) {
+                    return (
+                      <CommandItem
+                        key={resource.value}
+                        onSelect={() => {
+                          console.log(resource.value);
+                          setOpen(false);
+                          if (
+                            !selectedResources
+                              .map((r) => r.value)
+                              .includes(resource.value)
+                          ) {
+                            setSelectedResources([
+                              ...selectedResources,
+                              resource,
+                            ]);
+                          }
+                        }}
+                      >
+                        <span>{resource.value}</span>
+                      </CommandItem>
+                    );
+                  }
+                })}
               </CommandGroup>
             </CommandList>
           </Command>

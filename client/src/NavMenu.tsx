@@ -7,6 +7,7 @@ import {
   CircleX,
   Edit,
   Home,
+  Rocket,
   RouteIcon,
   TestTube,
   User2,
@@ -87,6 +88,16 @@ const NavMenu: React.FC = () => {
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={5}>
                 <p>Pathway Editor</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger>
+                <StyledLink href="/launch-pathway">
+                  <Rocket className="h-7 w-7" />
+                </StyledLink>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={5}>
+                <p>Launch Pathway</p>
               </TooltipContent>
             </Tooltip>
             <Tooltip>

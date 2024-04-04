@@ -312,7 +312,7 @@ export type Stage = {
   name: string;
   desc: string;
   type: StageType;
-  staff_required: StaffType[];
+  required_staff: StaffType[];
   required_room: string;
   required_equipment: Equipment[];
   date: string;
@@ -339,7 +339,7 @@ export const procedures: Procedure[] = [
         name: 'PreOpAssessment',
         desc: 'Pre-operative assessment',
         type: 'pre-operative',
-        staff_required: ['Surgeon', 'Anesthesiologist', 'Nurse'],
+        required_staff: ['Surgeon', 'Anesthesiologist', 'Nurse'],
         required_room: 'Pre-Op Room',
         required_equipment: [],
         date: '2024-03-30',
@@ -352,7 +352,7 @@ export const procedures: Procedure[] = [
         name: 'SurgicalDecision',
         desc: 'Decision point: Choose the type of appendectomy.',
         type: 'peri-operative',
-        staff_required: ['Surgeon', 'Nurse'],
+        required_staff: ['Surgeon', 'Nurse'],
         required_room: 'Operating Room',
         required_equipment: [],
         date: '2024-04-11',
@@ -365,7 +365,7 @@ export const procedures: Procedure[] = [
         name: 'OpenAppendectomy',
         desc: 'Surgical procedure for open appendectomy.',
         type: 'peri-operative',
-        staff_required: ['Surgeon', 'Nurse', 'Surgical Technician'],
+        required_staff: ['Surgeon', 'Nurse', 'Surgical Technician'],
         required_room: 'Operating Room',
         required_equipment: [
           {
@@ -384,7 +384,7 @@ export const procedures: Procedure[] = [
         name: 'OpenAppendectomyTest',
         desc: 'Surgical procedure for open appendectomy.',
         type: 'peri-operative',
-        staff_required: ['Surgeon', 'Nurse', 'Surgical Technician'],
+        required_staff: ['Surgeon', 'Nurse', 'Surgical Technician'],
         required_room: 'Operating Room',
         required_equipment: [
           {
@@ -403,7 +403,7 @@ export const procedures: Procedure[] = [
         name: 'LaparoscopicAppendectomy',
         desc: 'Surgical procedure for laparoscopic appendectomy.',
         type: 'peri-operative',
-        staff_required: ['Surgeon', 'Nurse', 'Surgical Technician'],
+        required_staff: ['Surgeon', 'Nurse', 'Surgical Technician'],
         required_room: 'Operating Room',
         required_equipment: [
           {
@@ -422,7 +422,7 @@ export const procedures: Procedure[] = [
         name: 'PostOpRecovery',
         desc: 'Post-operative recovery and monitoring.',
         type: 'post-operative',
-        staff_required: ['Nurse'],
+        required_staff: ['Nurse'],
         required_room: 'Recovery Room',
         required_equipment: [],
         date: '2024-04-01',
@@ -442,7 +442,7 @@ export const procedures: Procedure[] = [
         name: 'PatientEvaluation',
         desc: 'Patient evaluation and diagnosis.',
         type: 'pre-operative',
-        staff_required: ['Oncologist', 'Radiologist', 'Nurse'],
+        required_staff: ['Oncologist', 'Radiologist', 'Nurse'],
         required_room: 'Consultation Room',
         required_equipment: [],
         date: '2024-03-30',
@@ -454,7 +454,7 @@ export const procedures: Procedure[] = [
         name: 'TreatmentDecision',
         desc: 'Decision point: Choose the treatment option for the patient.',
         type: 'peri-operative',
-        staff_required: ['Oncologist', 'Nurse'],
+        required_staff: ['Oncologist', 'Nurse'],
         required_room: 'Meeting Room',
         required_equipment: [],
         date: '2024-03-30',
@@ -466,7 +466,7 @@ export const procedures: Procedure[] = [
         name: 'Chemotherapy',
         desc: 'Chemotherapy treatment.',
         type: 'peri-operative',
-        staff_required: ['Oncologist', 'Nurse'],
+        required_staff: ['Oncologist', 'Nurse'],
         required_room: 'Treatment Room',
         required_equipment: [
           { type: 'Chemotherapy Drugs', count: 1, desc: 'Chemotherapy drugs' },
@@ -480,7 +480,7 @@ export const procedures: Procedure[] = [
         name: 'RadiationTherapy',
         desc: 'Radiation therapy treatment.',
         type: 'peri-operative',
-        staff_required: ['Radiation Therapist', 'Nurse'],
+        required_staff: ['Radiation Therapist', 'Nurse'],
         required_room: 'Radiation Room',
         required_equipment: [
           { type: 'Radiation Machine', count: 1, desc: 'Linear accelerator' },
@@ -494,7 +494,7 @@ export const procedures: Procedure[] = [
         name: 'Surgery',
         desc: 'Surgical procedure.',
         type: 'peri-operative',
-        staff_required: ['Surgeon', 'Nurse'],
+        required_staff: ['Surgeon', 'Nurse'],
         required_room: 'Operating Room',
         required_equipment: [
           {
@@ -512,7 +512,7 @@ export const procedures: Procedure[] = [
         name: 'PostTreatmentMonitoring',
         desc: 'Post-treatment monitoring and follow-up care.',
         type: 'post-operative',
-        staff_required: ['Oncologist', 'Nurse'],
+        required_staff: ['Oncologist', 'Nurse'],
         required_room: 'Consultation Room',
         required_equipment: [],
         date: '2024-04-01',

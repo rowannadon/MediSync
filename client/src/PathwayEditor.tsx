@@ -17,6 +17,7 @@ import ReactFlow, {
   Controls,
   Edge,
   Node,
+  ReactFlowInstance,
   ReactFlowProvider,
   useStoreApi,
 } from 'reactflow';
@@ -29,9 +30,11 @@ import {
   TooltipTrigger,
 } from './components/ui/tooltip';
 import { StageLibrary } from './StageLibrary';
-import { procedures, Stage } from './TempData';
+import { Procedure, procedures, Stage } from './TempData';
 import { StageNode } from './StageNode';
 import { useDrop } from 'react-dnd';
+import PathwayFlowDisplay from './PathwayFlowDisplay';
+import { PathwayLibrary } from './PathwayLibrary';
 
 function convertToNodesAndEdges(
   linkedList: Stage[],
@@ -109,115 +112,9 @@ function convertToNodesAndEdges(
 }
 
 const PathwayEditorInner = () => {
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-  const [selectedNode, setSelectedNode] = useState<any>(null);
-  const dropRef = useRef<HTMLDivElement>(null);
-  const nodeTypes = useMemo(() => ({ stage: StageNode }), []);
-
-  const pathway = procedures[0];
-
-  useEffect(() => {
-    if (pathway) {
-      const startStage = pathway.stages.find((stage) => stage.start !== null);
-      console.log(startStage);
-      if (startStage) {
-        const convertedNodesAndEdges = convertToNodesAndEdges(
-          pathway.stages,
-          startStage.name,
-        );
-        setNodes(convertedNodesAndEdges.nodes);
-        setEdges(convertedNodesAndEdges.edges);
-        console.log('tests: ', [convertedNodesAndEdges.nodesByDepth]);
-      }
-    }
-  }, [procedures]);
-
-  const onNodesChange = useCallback(
-    (changes: any) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
-      //console.log(changes);
-      changes.forEach((change: any) => {
-        if (change.type === 'select' && change.selected) {
-          setSelectedNode(nodes.find((node) => node.id === change.id));
-        }
-      });
-    },
-    [nodes],
+  const [selectedPathway, setSelectedPathway] = useState<Procedure | null>(
+    procedures[0],
   );
-
-  const onConnect = useCallback(
-    (params: any) => setEdges((eds: Edge[]) => addEdge(params, eds)),
-    [],
-  );
-
-  const onEdgesChange = useCallback(
-    (changes: any) => setEdges((eds: Edge[]) => applyEdgeChanges(changes, eds)),
-    [],
-  );
-
-  const getCorrectDroppedOffsetValue = (
-    initialPosition: any,
-    finalPosition: any,
-  ) => {
-    // get the container (view port) position by react ref...
-    if (!dropRef.current) return { x: 0, y: 0 };
-    const dropTargetPosition = dropRef.current.getBoundingClientRect();
-
-    const { y: finalY, x: finalX } = finalPosition;
-    const { y: initialY, x: initialX } = initialPosition;
-
-    // calculate the correct position removing the viewport position.
-    // finalY > initialY, I'm dragging down, otherwise, dragging up
-    const newYposition =
-      finalY > initialY
-        ? initialY + (finalY - initialY) - dropTargetPosition.top
-        : initialY - (initialY - finalY) - dropTargetPosition.top;
-
-    const newXposition =
-      finalX > initialX
-        ? initialX + (finalX - initialX) - dropTargetPosition.left
-        : initialX - (initialX - finalX) - dropTargetPosition.left;
-
-    return {
-      x: newXposition,
-      y: newYposition,
-    };
-  };
-
-  const store = useStoreApi();
-
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    // The type (or types) to accept - strings or symbols
-    accept: 'stage',
-    // Props to collect
-    drop: (item: any, monitor: any) => {
-      const node = item.props.stage;
-      console.log(item.props.stage.name);
-      const coords = getCorrectDroppedOffsetValue(
-        monitor.getInitialSourceClientOffset(),
-        monitor.getSourceClientOffset(),
-      );
-      const state = store.getState();
-      const zoomMultiplier = 1 / state.transform[2];
-      console.log(state.transform);
-      const newNode: Node = {
-        id: node.name,
-        data: { label: node.name, stage: node },
-        position: {
-          x: (coords.x - state.transform[0]) * zoomMultiplier,
-          y: (coords.y - state.transform[1]) * zoomMultiplier,
-        },
-        type: 'stage',
-      };
-      console.log(newNode);
-      setNodes((prevNodes) => [...prevNodes, newNode]);
-    },
-    collect: (monitor: any) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }));
 
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
@@ -238,27 +135,6 @@ const PathwayEditorInner = () => {
                     <p>New</p>
                   </TooltipContent>
                 </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Save className="h-6 w-6" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={5}>
-                    <p>Save</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <FolderOpen className="h-6 w-6" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={5}>
-                    <p>Open</p>
-                  </TooltipContent>
-                </Tooltip>
 
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -271,10 +147,8 @@ const PathwayEditorInner = () => {
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <div className="flex flex-1 flex-row items-center justify-center p-4">
-                <h1 className="border-muted-background rounded-lg px-2 text-lg hover:border-[1px]">
-                  {pathway.title}
-                </h1>
+              <div className="flex flex-grow flex-row items-center justify-center p-4">
+                <h1 className="  text-lg font-bold">Pathway Template Editor</h1>
               </div>
               <div className="flex flex-1 flex-row-reverse space-x-2 space-x-reverse p-4">
                 <Tooltip>
@@ -300,28 +174,25 @@ const PathwayEditorInner = () => {
               </div>
             </TooltipProvider>
           </Card>
-          <div className="flex flex-grow" ref={dropRef}>
-            <ReactFlow
-              ref={drop}
-              nodes={nodes}
-              edges={edges}
-              nodeTypes={nodeTypes}
-              onConnect={onConnect}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              fitView
-            >
-              <Background className="bg-secondary" />
-              <Controls />
-            </ReactFlow>
-          </div>
-        </div>
-        {/* <Card className="mb-2 mr-2 mt-2 flex w-[300px] p-4">
+          <PathwayFlowDisplay pathway={selectedPathway} control={true} />
+          {/* <Card className="mb-2 mr-2 mt-2 flex w-[300px] p-4">
           {selectedNode === null && <h1>No node selected...</h1>}
           {selectedNode && (
             <p className="break-all">{JSON.stringify(selectedNode)}</p>
           )}
         </Card> */}
+        </div>
+        <PathwayLibrary
+          onPathwayClick={(pathway: Procedure) => {
+            console.log(pathway);
+            if (selectedPathway !== pathway) {
+              setSelectedPathway(pathway);
+            } else {
+              setSelectedPathway(null);
+            }
+          }}
+          selectedPathway={selectedPathway}
+        />
       </div>
     </div>
   );

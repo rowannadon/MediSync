@@ -11,8 +11,6 @@ import { ScrollArea } from './components/ui/scroll-area';
 import { StageDisplay } from './StageDisplay';
 import { Stage, stages } from './TempData';
 
-import { useDrag } from 'react-dnd';
-
 export const StageLibrary = (props: any) => {
   const [filter, setFilter] = useState<string>('');
   const filteredStages = stages.filter((stage: Stage) =>

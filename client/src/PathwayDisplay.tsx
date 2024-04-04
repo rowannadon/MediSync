@@ -1,15 +1,15 @@
 import { Card } from './components/ui/card';
-import { Stage } from './TempData';
+import { Procedure, Stage } from './TempData';
 import { useDrag } from 'react-dnd';
 
-interface StageProps {
-  stage: Stage;
+interface PathwayProps {
+  pathway: Procedure;
   onClick: any;
   selected: boolean;
 }
 
 const Display = (props: {
-  stage: Stage;
+  pathway: Procedure;
   color: string;
   onClick: any;
   selected: boolean;
@@ -34,49 +34,31 @@ const Display = (props: {
       <Card
         ref={drag}
         onClick={props.onClick}
-        key={props.stage.name}
+        key={props.pathway.title}
         className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center border-[2px] border-transparent p-2 hover:brightness-95 hover:filter ${
           props.color
         } ${props.selected ? 'border-[#888]' : ''}`}
       >
-        <h1 className="text-center text-base">{props.stage.name}</h1>
+        <h1 className="text-center text-base">{props.pathway.title}</h1>
         <p className="text-center text-xs text-muted-foreground">
-          {props.stage.desc}
+          {props.pathway.desc}
         </p>
       </Card>
     </div>
   );
 };
 
-export const StageDisplay = ({ stage, onClick, selected }: StageProps) => {
-  if (stage.type === 'post-operative') {
-    return (
-      <Display
-        stage={stage}
-        color="bg-green-200"
-        onClick={onClick}
-        selected={selected}
-      />
-    );
-  } else if (stage.type === 'peri-operative') {
-    return (
-      <Display
-        stage={stage}
-        color="bg-yellow-200"
-        onClick={onClick}
-        selected={selected}
-      />
-    );
-  } else if (stage.type === 'pre-operative') {
-    return (
-      <Display
-        stage={stage}
-        color="bg-red-200"
-        onClick={onClick}
-        selected={selected}
-      />
-    );
-  } else {
-    return null;
-  }
+export const PathwayDisplay = ({
+  pathway,
+  onClick,
+  selected,
+}: PathwayProps) => {
+  return (
+    <Display
+      pathway={pathway}
+      color="bg-violet-200"
+      onClick={onClick}
+      selected={selected}
+    />
+  );
 };

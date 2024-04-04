@@ -8,6 +8,7 @@ import Rooms from './Rooms';
 import StageEditor from './StageEditor';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
+import PathwayLaunchEditor from './PathwayLaunchEditor';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/" component={TestPage}></Route>
           <Route path="/test" component={TestPage}></Route>
           <Route path="/pathway-editor" component={PathwayEditor}></Route>
+          <Route path="/launch-pathway" component={PathwayLaunchEditor}></Route>
           <Route path="/stage-editor" component={StageEditor}></Route>
           <Route path="/calendar" component={Calendar}></Route>
           <Route path="/conflict" component={TestPage}></Route>
