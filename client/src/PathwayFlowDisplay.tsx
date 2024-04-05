@@ -13,7 +13,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Procedure, procedures, Stage } from './TempData';
+import { Procedure, Stage } from './TempData';
 import { StageNode } from './StageNode';
 import { useDrop } from 'react-dnd';
 

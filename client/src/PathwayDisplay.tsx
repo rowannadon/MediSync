@@ -1,5 +1,5 @@
 import { Card } from './components/ui/card';
-import { Procedure, Stage } from './TempData';
+import { Procedure } from './TempData';
 import { useDrag } from 'react-dnd';
 
 interface PathwayProps {

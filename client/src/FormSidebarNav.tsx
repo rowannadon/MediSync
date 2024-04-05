@@ -18,7 +18,10 @@ export function SidebarNav({
 }: SidebarNavProps) {
   return (
     <nav
-      className={cn('flex min-w-[150px] flex-col space-y-2 p-1', className)}
+      className={cn(
+        'flex min-w-[150px] flex-shrink flex-col space-y-2 p-1',
+        className,
+      )}
       {...props}
     >
       {items.map((item) => (
