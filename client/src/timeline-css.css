@@ -30,3 +30,11 @@
   top: 7px;
   width: 40px;
 }
+
+.vis-dot {
+  display: none;
+}
+
+.vis-line {
+  display: none;
+}

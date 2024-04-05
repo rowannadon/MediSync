@@ -16,6 +16,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Procedure, procedures } from './TempData';
 import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
+import { add, parse } from 'date-fns';
 
 const Calendar = () => {
   const timelineRef = useRef<Timeline>(null);
@@ -27,16 +28,11 @@ const Calendar = () => {
   useEffect(() => {
     if (timelineRef.current) {
       console.log(timelineRef.current.timeline);
-      //timelineRef.current.timeline.fit({ animation: true });
     }
   }, [timelineRef]);
 
   useEffect(() => {
     if (procedures && timelineRef.current) {
-      // setCalendarLoading(true);
-      // setTimeout(() => {
-      //   setCalendarLoading(false);
-      // }, 1000);
       displayedPathways.current = procedures.filter(
         (procedure: Procedure) =>
           procedure.patient
@@ -61,16 +57,41 @@ const Calendar = () => {
                 patient: procedure.patient,
               })),
             )
-            .map((stage) => {
-              const start = new Date(stage.date);
-              return {
+            .flatMap((stage) => {
+              var parsedDate = new Date(stage.date);
+              if (stage.time) {
+                const combinedDateTimeString = `${stage.date}T${stage.time}`;
+               parsedDate = parse(combinedDateTimeString, 'yyyy-MM-dd\'T\'HH:mm', new Date());
+              } else {
+                parsedDate = parse(stage.date, 'yyyy-MM-dd', new Date());
+              }
+
+              console.log('parsedDate', parsedDate, stage.date, stage.time, stage.duration);
+
+              const color = stage.type == 'pre-operative' ? '#FECACA' : stage.type == 'peri-operative' ? '#FEF08A' : '#BBF7D0';
+              return [{
                 id: stage.name,
-                start: start,
-                end: start.valueOf() + stage.duration * 60 * 1000,
+                start: parsedDate,
+                title: stage.name,
+                end: add(parsedDate, { minutes: stage.duration }),
                 content: stage.name,
                 group: stage.patient,
-                subGroup: stage.patient,
-              };
+                selectable: false,
+                type: 'box',
+                style: `background-color: ${color}; border: 1px solid #999;`
+              },
+              {
+                id: stage.name + '-background',
+                start: parsedDate,
+                title: stage.name,
+                content: '',
+                end: add(parsedDate, { minutes: stage.duration }),
+                group: stage.patient,
+                selectable: false,
+                type: 'background',
+                style: `background-color: ${color}; border-left: 1px solid red; border-right: 1px solid green;`
+              }
+              ];
             });
 
           const groups2 = displayedPathways.current.map(
@@ -97,13 +118,52 @@ const Calendar = () => {
     [],
   );
 
+  const CalendarGroupTemplate = (props: any) => {
+    return (
+      <div className="flex flex-row items-center justify-center space-x-2 p-1 pr-2">
+        <Button
+          className="h-8 w-8"
+          size="icon"
+          variant="ghost"
+          onClick={() => {
+            if (pinnedPatients.includes(props.group.content)) {
+              setPinnedPatients(
+                pinnedPatients.filter((patient) => patient !== props.group.content),
+              );
+              console.log('unpinned', props.group.content);
+            } else {
+              setPinnedPatients([...pinnedPatients, props.group.content]);
+              console.log('pinned', props.group.content);
+            }
+          }}
+        >
+          {pinnedPatients.includes(props.group.content) ? (
+            <PinOff className="h-5 w-5 text-blue-500" />
+          ) : (
+            <Pin className="h-5 w-5" />
+          )}
+        </Button>
+        <h1>{props.group.content}</h1>
+      </div>
+    )
+  }
+
+  const CalendarItemTemplate = (props: any) => {
+    return (
+      <div className='h-[25px] rounded-full'>
+        <h1>{props.item.content}</h1>
+      </div>
+    )
+  }
+
   const options = {
     width: 'calc(100vw - 100px)',
     height: '100%',
-    rollingMode: {
-      follow: true,
-      offset: 0.3,
-    },
+    groupHeightMode: 'fixed',
+    editable: false,
+    stack: true,
+    margin: 30,
+    align: 'left',
     orientation: 'top',
     groupTemplate: function (
       group: any,
@@ -113,33 +173,18 @@ const Calendar = () => {
         return '';
       }
       const root = createRoot(element as HTMLElement);
-      root.render(
-        <div className="flex min-h-[40px] flex-grow flex-row items-center justify-center space-x-2 pl-1 pr-1">
-          <Button
-            className="h-8 w-8"
-            size="icon"
-            variant="ghost"
-            onClick={() => {
-              if (pinnedPatients.includes(group.content)) {
-                setPinnedPatients(
-                  pinnedPatients.filter((patient) => patient !== group.content),
-                );
-                console.log('unpinned', group.content);
-              } else {
-                setPinnedPatients([...pinnedPatients, group.content]);
-                console.log('pinned', group.content);
-              }
-            }}
-          >
-            {pinnedPatients.includes(group.content) ? (
-              <PinOff className="h-5 w-5 text-blue-500" />
-            ) : (
-              <Pin className="h-5 w-5" />
-            )}
-          </Button>
-          <h1>{group.content}</h1>
-        </div>,
-      );
+      root.render(<CalendarGroupTemplate group={group} />);
+      return '';
+    },
+    template: function (
+      item: any,
+      element: Element,
+    ): HTMLElement | string {
+      if (!item || !item.content) {
+        return '';
+      }
+      const root = createRoot(element as HTMLElement);
+      root.render(<CalendarItemTemplate item={item} />);
       return '';
     },
   };
