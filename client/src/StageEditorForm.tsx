@@ -69,6 +69,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
     desc: props.stage?.desc || '',
     staff: props.stage?.required_staff || [],
     equipment: props.stage?.required_equipment || [],
+    outputs: [{ type: 'defaultOutput', title: 'Default Output' }],
   };
 
   const form = useForm<StageFormValues>({
@@ -90,14 +91,14 @@ export function StageEditorForm(props: StageEditorFormProps) {
         } else if (typeof stage.next === 'string') {
           return [
             {
-              type: 'Scheduled Output',
+              type: 'scheduledOutput',
               title: 'Scheduled Output',
               date: stage.date,
             },
           ];
         } else if (Array.isArray(stage.next)) {
           return stage.next.map((_, index) => ({
-            type: 'Scheduled Output',
+            type: 'scheduledOutput',
             title: `Scheduled Output ${index + 1}`,
             date: stage.date,
           }));
@@ -198,7 +199,6 @@ export function StageEditorForm(props: StageEditorFormProps) {
                       <StageEditorFormResourceField
                         key={JSON.stringify(field.value)}
                         name="Staff"
-                        displayAll={false}
                         count={false}
                         items={field.value.map((v: any) => ({
                           value: v,
@@ -225,7 +225,6 @@ export function StageEditorForm(props: StageEditorFormProps) {
                       <FormLabel>Equipment</FormLabel>
                       <StageEditorFormResourceField
                         key={JSON.stringify(field.value)}
-                        displayAll={false}
                         name="Equipment"
                         count={true}
                         items={field.value.map((v: any) => ({
@@ -255,19 +254,18 @@ export function StageEditorForm(props: StageEditorFormProps) {
                       <StageEditorFormResourceField
                         key={JSON.stringify(field.value)}
                         name="Outputs"
-                        displayAll={true}
                         count={false}
                         items={field.value.map((v: any) => ({
                           value: v.title,
                           count: 1,
+                          type: v.type,
+                          date: v.date,
                         }))}
-                        resources={[
-                          { type: 'Scheduled Output' },
-                          { type: 'Next Available Output' },
-                          { type: 'Delayed Output' },
-                        ].map((v: any) => ({
+                        resources={field.value.map((v: any) => ({
                           value: v.type,
                           count: 1,
+                          type: v.type,
+                          date: v.date,
                         }))}
                       />
                       <FormMessage />
