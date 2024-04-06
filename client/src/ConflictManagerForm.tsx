@@ -24,7 +24,7 @@ import {
 } from './components/ui/select';
 
 type Conflict = {
-  pathway: string
+  pathway: string;
 };
 
 const conflictFormSchema = z.object({
@@ -60,7 +60,6 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
     defaultValues,
   });
 
-
   function onSubmit(data: conflictManagerFormValues) {
     console.log(data);
   }
@@ -74,7 +73,7 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex-grow space-y-8"
             >
-                            {(
+              {
                 <FormField
                   control={form.control}
                   name="pathway"
@@ -82,12 +81,14 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
                     <FormItem className="flex flex-col">
                       <FormLabel>Pathways</FormLabel>
                       <Select value={field.value}>
-                        <SelectTrigger className="w-[180px]">
-                        </SelectTrigger>
+                        <SelectTrigger className="w-[180px]"></SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             {pathways.map((pathway) => (
-                              <SelectItem key={pathway.value} value={pathway.value}>
+                              <SelectItem
+                                key={pathway.value}
+                                value={pathway.value}
+                              >
                                 {pathway.label}
                               </SelectItem>
                             ))}
@@ -102,10 +103,10 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
                     </FormItem>
                   )}
                 />
-              )}
-              {(
+              }
+              {
                 <FormField
-                name = ""
+                  name=""
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>New Time</FormLabel>
@@ -116,7 +117,7 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
                     </FormItem>
                   )}
                 />
-              )}
+              }
               <Button type="submit">Save Changes</Button>
             </form>
           </Form>
