@@ -23,6 +23,7 @@ interface StageEditorFormResourceFieldProps<T>
   count: boolean;
   name: string;
   resources: T[];
+  displayAll: boolean;
 }
 
 export const StageEditorFormResourceField = <
@@ -39,7 +40,7 @@ export const StageEditorFormResourceField = <
     <div className="flex flex-grow flex-col space-y-4">
       <Card className="flex min-h-[100px] w-full flex-row flex-wrap space-x-2 p-4">
         {selectedResources.map((resource: T) => {
-          const { value, count, ...rest } = resource;
+          const { value, count } = resource;
 
           return (
             <Badge
@@ -48,9 +49,6 @@ export const StageEditorFormResourceField = <
               key={value}
             >
               <span>{resource.value}</span>
-              {Object.entries(rest).map(([key, value]) => (
-                <span key={key}>{`${key}: ${value}`}</span>
-              ))}
               {props.count && (
                 <div className="flex flex-row items-center justify-center space-x-1">
                   <Plus
@@ -120,7 +118,8 @@ export const StageEditorFormResourceField = <
                   if (
                     !selectedResources
                       .map((r) => r.value)
-                      .includes(resource.value)
+                      .includes(resource.value) ||
+                    props.displayAll
                   ) {
                     return (
                       <CommandItem
@@ -131,7 +130,8 @@ export const StageEditorFormResourceField = <
                           if (
                             !selectedResources
                               .map((r) => r.value)
-                              .includes(resource.value)
+                              .includes(resource.value) ||
+                            props.displayAll
                           ) {
                             setSelectedResources([
                               ...selectedResources,

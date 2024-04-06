@@ -156,7 +156,8 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
     console.log(data);
   }
 
-  function splitArrayByProperty(arr: any, prop: string) {
+  function splitArrayByProperty<ArrayType>(arr: ArrayType[], prop: string) {
+    if (!arr) return null;
     return arr.reduce((acc: any, obj: any) => {
       const key = obj[prop];
       if (!acc[key]) {
@@ -240,12 +241,11 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                         field.value,
                         'stage',
                       ) as { [stage: string]: [StaffType] };
-                      const keys = Object.keys(staffByStage);
-                      console.log(staffByStage[keys[0]]);
                       return (
                         <FormItem className="flex flex-col">
-                          {keys &&
-                            keys.map((stage: string) => {
+                          {staffByStage &&
+                            Object.keys(staffByStage) &&
+                            Object.keys(staffByStage).map((stage: string) => {
                               return (
                                 <div key={stage}>
                                   <FormLabel>{stage}</FormLabel>
@@ -297,13 +297,11 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                         field.value,
                         'stage',
                       ) as { [stage: string]: [EquipmentType] };
-                      const keys = Object.keys(eqByStage);
-                      console.log(keys);
-                      console.log(eqByStage[keys[0]]);
                       return (
                         <FormItem className="flex flex-col">
-                          {keys &&
-                            keys.map((stage: string) => {
+                          {eqByStage &&
+                            Object.keys(eqByStage) &&
+                            Object.keys(eqByStage).map((stage: string) => {
                               return (
                                 <div key={stage}>
                                   <FormLabel>{stage}</FormLabel>
@@ -347,13 +345,12 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                         field.value,
                         'stage',
                       ) as { [stage: string]: [OutputType] };
-                      const keys = Object.keys(outputsByStage);
-                      console.log(keys);
-                      console.log(outputsByStage[keys[0]]);
+
                       return (
                         <FormItem className="flex flex-col">
-                          {keys &&
-                            keys.map((stage: string) => {
+                          {outputsByStage &&
+                            Object.keys(outputsByStage) &&
+                            Object.keys(outputsByStage).map((stage: string) => {
                               return (
                                 <div key={stage}>
                                   <FormLabel>{stage}</FormLabel>
@@ -365,7 +362,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                                             //console.log(staff)
                                             return (
                                               <TableRow
-                                                key={output.type}
+                                                key={output.title}
                                                 className="flex flex-row justify-between"
                                               >
                                                 <TableCell>
