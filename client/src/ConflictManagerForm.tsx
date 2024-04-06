@@ -22,10 +22,6 @@ import {
   SelectValue,
   SelectGroup,
 } from './components/ui/select';
-import { useEffect } from 'react';
-import { Textarea } from './components/ui/textarea';
-import { displayedPeople, displayedRooms, Stage } from './TempData';
-import { StageEditorFormResourceField } from './StageEditorFormResourceField';
 
 type Conflict = {
   pathway: string

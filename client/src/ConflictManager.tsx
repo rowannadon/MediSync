@@ -1,4 +1,4 @@
-import { FilePlus, Plus, RefreshCcw, Save, Trash } from 'lucide-react';
+import { FilePlus, RefreshCcw, Save, Trash } from 'lucide-react';
 import NavMenu from './NavMenu';
 
 import { Button } from './components/ui/button';
@@ -10,10 +10,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './components/ui/tooltip';
-import { Conflict, stages } from './TempData';
+import { Conflict } from './TempData';
 import { ConflictManagerForm } from './ConflictManagerForm';
-import { useDrop } from 'react-dnd';
-import { cn } from './lib/utils';
 
 const ConflictManager = () => {
   const [conflict, setConflict] = useState<Conflict | null>({pathway: "pathway1", time: ""});
