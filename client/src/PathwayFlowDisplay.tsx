@@ -6,7 +6,6 @@ import ReactFlow, {
   Controls,
   Edge,
   Node,
-  ReactFlowInstance,
   ReactFlowProvider,
   useReactFlow,
   useStoreApi,

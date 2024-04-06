@@ -14,7 +14,10 @@ import { Conflict } from './TempData';
 import { ConflictManagerForm } from './ConflictManagerForm';
 
 const ConflictManager = () => {
-  const [conflict, setConflict] = useState<Conflict | null>({pathway: "pathway1", time: ""});
+  const [conflict, setConflict] = useState<Conflict | null>({
+    pathway: 'pathway1',
+    time: '',
+  });
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -72,14 +75,10 @@ const ConflictManager = () => {
               </div>
             </TooltipProvider>
           </Card>
-          <div
-          >
-            {conflict &&(
+          <div>
+            {conflict && (
               <Card className={'flex flex-grow space-x-4 p-4'}>
-
-                <ConflictManagerForm
-                  conflict= {conflict}
-                />
+                <ConflictManagerForm conflict={conflict} />
               </Card>
             )}
           </div>

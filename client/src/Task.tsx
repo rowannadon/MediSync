@@ -9,15 +9,34 @@ interface TaskProps {
   patient: string; // Patient the task is for
 }
 
-const Task: React.FC<TaskProps> = ({ patient, time, details, materials, location, notes }) => {
+const Task: React.FC<TaskProps> = ({
+  time,
+  details,
+  materials,
+  location,
+  notes,
+  patient,
+}) => {
   return (
     <div>
-      <p><strong>Patient:</strong> {patient}</p>
-      <p><strong>Time:</strong> {time}</p>
-      <p><strong>Details:</strong> {details}</p>
-      <p><strong>Required materials:</strong> {materials}</p>
-      <p><strong>Location:</strong> {location}</p>
-      <p><strong>Notes:</strong> {notes}</p>
+      <p>
+        <strong>Time:</strong> {time}
+      </p>
+      <p>
+        <strong>Details:</strong> {details}
+      </p>
+      <p>
+        <strong>Required materials:</strong> {materials}
+      </p>
+      <p>
+        <strong>Location:</strong> {location}
+      </p>
+      <p>
+        <strong>Notes:</strong> {notes}
+      </p>
+      <p>
+        <strong>Patient:</strong> {patient}
+      </p>
     </div>
   );
 };
