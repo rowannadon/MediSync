@@ -65,8 +65,12 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
     console.log(data);
   }
 
+  function onSubmit2(data: conflictManagerFormValues) {
+    console.log(data);
+  }
+
   return (
-    <div className="flex-grow">
+    <div className="flex-grow ">
       {props.conflict && (
         <div className="flex flex-grow flex-row p-2">
           <Form {...form}>
@@ -74,6 +78,9 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex-grow space-y-8"
             >
+              <h1 className="  text-lg font-bold">Warning!!!</h1>
+              <h2 >There is a time conflict with the pathway you are trying to add and a previous spathway. Fix the issue by changing the time the pathway occurs or manually
+override the conflict</h2>
                             {(
                 <FormField
                   control={form.control}
@@ -110,7 +117,7 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
                     <FormItem>
                       <FormLabel>New Time</FormLabel>
                       <FormControl>
-                        <Input placeholder="Stage title" {...field} />
+                        <Input placeholder="Please enter a new time for the pathway you are moving" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -122,6 +129,30 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
           </Form>
         </div>
       )}
+            <div className="flex flex-grow flex-row p-2">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit2)}
+                  className="flex-grow space-y-8"
+                >
+                {(
+                  <FormField
+                  name = ""
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Reasoning</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Please state your reason for performing an override" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                <Button type="submit">Override Conflict</Button>
+              </form>
+            </Form>
+          </div>
     </div>
   );
 }
