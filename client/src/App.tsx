@@ -10,13 +10,14 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import PathwayLaunchEditor from './PathwayLaunchEditor';
 import ConflictManager from './ConflictManager';
+import HomePage from './HomePage';
 
 const App = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <SocketProvider>
         <div className="flex h-screen w-screen flex-row">
-          <Route path="/" component={TestPage}></Route>
+          <Route path="/" component={HomePage}></Route>
           <Route path="/test" component={TestPage}></Route>
           <Route path="/pathway-editor" component={PathwayEditor}></Route>
           <Route path="/launch-pathway" component={PathwayLaunchEditor}></Route>
