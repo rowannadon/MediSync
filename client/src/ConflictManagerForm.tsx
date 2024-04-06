@@ -24,7 +24,7 @@ import {
 } from './components/ui/select';
 
 type Conflict = {
-  pathway: string
+  pathway: string;
 };
 
 const conflictFormSchema = z.object({
@@ -60,7 +60,6 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
     defaultValues,
   });
 
-
   function onSubmit(data: conflictManagerFormValues) {
     console.log(data);
   }
@@ -81,7 +80,7 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
               <h1 className="  text-lg font-bold">Warning!!!</h1>
               <h2 >There is a time conflict with the pathway you are trying to add and a previous spathway. Fix the issue by changing the time the pathway occurs or manually
 override the conflict</h2>
-                            {(
+              {(
                 <FormField
                   control={form.control}
                   name="pathway"
@@ -89,12 +88,14 @@ override the conflict</h2>
                     <FormItem className="flex flex-col">
                       <FormLabel>Pathways</FormLabel>
                       <Select value={field.value}>
-                        <SelectTrigger className="w-[180px]">
-                        </SelectTrigger>
+                        <SelectTrigger className="w-[180px]"></SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             {pathways.map((pathway) => (
-                              <SelectItem key={pathway.value} value={pathway.value}>
+                              <SelectItem
+                                key={pathway.value}
+                                value={pathway.value}
+                              >
                                 {pathway.label}
                               </SelectItem>
                             ))}
@@ -110,9 +111,9 @@ override the conflict</h2>
                   )}
                 />
               )}
-              {(
+              {
                 <FormField
-                name = ""
+                  name=""
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>New Time</FormLabel>
@@ -123,7 +124,7 @@ override the conflict</h2>
                     </FormItem>
                   )}
                 />
-              )}
+              }
               <Button type="submit">Save Changes</Button>
             </form>
           </Form>
@@ -156,3 +157,4 @@ override the conflict</h2>
     </div>
   );
 }
+

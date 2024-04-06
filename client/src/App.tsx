@@ -11,6 +11,7 @@ import { DndProvider } from 'react-dnd';
 import PathwayLaunchEditor from './PathwayLaunchEditor';
 import ConflictManager from './ConflictManager';
 import HomePage from './HomePage';
+import AccountPage from './AccountPage';
 
 const App = () => {
   return (
@@ -26,7 +27,7 @@ const App = () => {
           <Route path="/conflict" component={ConflictManager}></Route>
           <Route path="/rooms" component={Rooms}></Route>
           <Route path="/personnel" component={Personnel}></Route>
-          <Route path="/account" component={TestPage}></Route>
+          <Route path="/account" component={AccountPage}></Route>
         </div>
       </SocketProvider>
     </DndProvider>
