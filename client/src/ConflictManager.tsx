@@ -23,7 +23,7 @@ const ConflictManager = () => {
       <NavMenu />
       <div className="flex h-screen max-h-screen flex-grow flex-row">
         <div className="flex h-screen flex-grow flex-col">
-          <Card className="space-between ml-2 mr-2 mt-2 flex flex-shrink flex-row">
+          <Card className="space-between mr-2 mt-2 flex flex-shrink flex-row">
             <TooltipProvider>
               <div className="flex flex-1 flex-row space-x-2 p-4">
                 <Tooltip>
@@ -75,9 +75,9 @@ const ConflictManager = () => {
               </div>
             </TooltipProvider>
           </Card>
-          <div>
+          <div className="flex flex-grow">
             {conflict && (
-              <Card className={'m-2 flex flex-grow space-x-4 p-4'}>
+              <Card className={'mb-2 mr-2 mt-2 flex flex-grow space-x-4 p-4'}>
                 <ConflictManagerForm conflict={conflict} />
               </Card>
             )}
