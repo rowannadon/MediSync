@@ -9,6 +9,7 @@ import StageEditor from './StageEditor';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import PathwayLaunchEditor from './PathwayLaunchEditor';
+import ConflictManager from './ConflictManager';
 
 const App = () => {
   return (
@@ -21,7 +22,7 @@ const App = () => {
           <Route path="/launch-pathway" component={PathwayLaunchEditor}></Route>
           <Route path="/stage-editor" component={StageEditor}></Route>
           <Route path="/calendar" component={Calendar}></Route>
-          <Route path="/conflict" component={TestPage}></Route>
+          <Route path="/conflict" component={ConflictManager}></Route>
           <Route path="/rooms" component={Rooms}></Route>
           <Route path="/personnel" component={Personnel}></Route>
           <Route path="/account" component={TestPage}></Route>
