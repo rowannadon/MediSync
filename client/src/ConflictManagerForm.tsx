@@ -78,9 +78,12 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
               className="flex-grow space-y-8"
             >
               <h1 className="  text-lg font-bold">Warning!!!</h1>
-              <h2 >There is a time conflict with the pathway you are trying to add and a previous spathway. Fix the issue by changing the time the pathway occurs or manually
-override the conflict</h2>
-              {(
+              <h2>
+                There is a time conflict with the pathway you are trying to add
+                and a previous spathway. Fix the issue by changing the time the
+                pathway occurs or manually override the conflict
+              </h2>
+              {
                 <FormField
                   control={form.control}
                   name="pathway"
@@ -110,7 +113,7 @@ override the conflict</h2>
                     </FormItem>
                   )}
                 />
-              )}
+              }
               {
                 <FormField
                   name=""
@@ -118,7 +121,10 @@ override the conflict</h2>
                     <FormItem>
                       <FormLabel>New Time</FormLabel>
                       <FormControl>
-                        <Input placeholder="Please enter a new time for the pathway you are moving" {...field} />
+                        <Input
+                          placeholder="Please enter a new time for the pathway you are moving"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -130,31 +136,33 @@ override the conflict</h2>
           </Form>
         </div>
       )}
-            <div className="flex flex-grow flex-row p-2">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit2)}
-                  className="flex-grow space-y-8"
-                >
-                {(
-                  <FormField
-                  name = ""
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Reasoning</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Please state your reason for performing an override" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+      <div className="flex flex-grow flex-row p-2">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit2)}
+            className="flex-grow space-y-8"
+          >
+            {
+              <FormField
+                name=""
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reasoning</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Please state your reason for performing an override"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-                <Button type="submit">Override Conflict</Button>
-              </form>
-            </Form>
-          </div>
+              />
+            }
+            <Button type="submit">Override Conflict</Button>
+          </form>
+        </Form>
+      </div>
     </div>
   );
 }
-
