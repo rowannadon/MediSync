@@ -48,14 +48,15 @@ function convertToNodesAndEdges(
 
     let nextDepth = depth;
     if (Array.isArray(node.next)) {
-      for (const nextNode of node.next) {
+      for (let i = 0; i < node.next.length; i++) {
         edges.push({
-          id: `${node.name}-${nextNode}`,
+          id: `${node.name}-${node.next[i]}`,
           source: node.name,
-          target: nextNode,
+          target: node.next[i],
           type: 'default',
+          sourceHandle: i.toString(),
         });
-        nextDepth = Math.max(nextDepth, traverse(nextNode, depth + 1));
+        nextDepth = Math.max(nextDepth, traverse(node.next[i], depth + 1));
       }
     } else if (node.next) {
       edges.push({
