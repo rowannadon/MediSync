@@ -514,6 +514,6 @@ export const procedures: Procedure[] = [
 export const stages = procedures.flatMap((procedure) => procedure.stages);
 
 export type Conflict = {
-  pathway: string
-  time: string
+  pathway: string;
+  time: string;
 };
