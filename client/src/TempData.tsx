@@ -304,7 +304,8 @@ export type StaffType =
   | 'Surgical Technician'
   | 'Oncologist'
   | 'Radiologist'
-  | 'Radiation Therapist';
+  | 'Radiation Therapist'
+  | 'Physician';
 
 export type StageType = 'pre-operative' | 'peri-operative' | 'post-operative';
 
@@ -336,10 +337,10 @@ export const procedures: Procedure[] = [
     patient: 'Michael Johnson',
     stages: [
       {
-        name: 'PreOpAssessment',
+        name: 'PreOperationAssessment',
         desc: 'Pre-operative assessment',
         type: 'pre-operative',
-        required_staff: ['Surgeon', 'Anesthesiologist', 'Nurse'],
+        required_staff: ['Physician'],
         required_room: 'Pre-Op Room',
         required_equipment: [],
         date: '2024-04-20',
