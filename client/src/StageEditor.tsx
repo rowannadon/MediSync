@@ -15,7 +15,7 @@ import { Stage, stages } from './TempData';
 import { StageEditorForm } from './StageEditorForm';
 import { useDrop } from 'react-dnd';
 import { cn } from './lib/utils';
-import { SidebarNav } from './StageEditorSidebarNav';
+import { SidebarNav } from './FormSidebarNav';
 
 const StageEditor = () => {
   const [selectedStage, setSelectedStage] = useState<Stage | null>(stages[0]);

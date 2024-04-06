@@ -1,4 +1,4 @@
-import { FilePlus, Plus, RefreshCcw, Rocket, Save, Trash } from 'lucide-react';
+import { FilePlus, RefreshCcw, Rocket, Save, Trash } from 'lucide-react';
 import NavMenu from './NavMenu';
 
 import { Button } from './components/ui/button';
@@ -10,14 +10,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from './components/ui/tooltip';
-import { StageLibrary } from './StageLibrary';
 import { Procedure, procedures, Stage } from './TempData';
-import { StageEditorForm } from './StageEditorForm';
 import { useDrop } from 'react-dnd';
 import { cn } from './lib/utils';
-import { SidebarNav } from './StageEditorSidebarNav';
+import { SidebarNav } from './FormSidebarNav';
 import { PathwayLibrary } from './PathwayLibrary';
 import { PathwayLaunchEditorForm } from './PathwayLaunchEditorForm';
+import { ScrollArea } from './components/ui/scroll-area';
 import PathwayFlowDisplay from './PathwayFlowDisplay';
 
 const PathwayLaunchEditor = () => {
@@ -51,7 +50,7 @@ const PathwayLaunchEditor = () => {
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
       <div className="flex h-screen max-h-screen flex-grow flex-row">
-        <div className="flex h-screen flex-grow flex-col" ref={drop}>
+        <div className="flex flex-grow flex-col" ref={drop}>
           <Card className="space-between mr-2 mt-2 flex flex-row">
             <TooltipProvider>
               <div className="flex flex-1 flex-row space-x-2 p-4">
@@ -103,6 +102,10 @@ const PathwayLaunchEditor = () => {
                     <p>Delete Stage</p>
                   </TooltipContent>
                 </Tooltip>
+                <Button variant="default" size="sm" className="flex space-x-2">
+                  <Rocket className="h-6 w-6" />
+                  <div>Launch Pathway</div>
+                </Button>
               </div>
             </TooltipProvider>
           </Card>
@@ -113,18 +116,21 @@ const PathwayLaunchEditor = () => {
             )}
           >
             {selectedPathway && (
-              <Card className={'flex flex-grow space-x-4 p-4'}>
-                <Card className="flex flex-grow">
+              <Card className="flex flex-grow flex-row space-x-4 pl-4">
+                <Card className="mb-4 mt-4 flex w-[300px] min-w-[300px] max-w-[300px]">
                   <PathwayFlowDisplay
                     pathway={selectedPathway}
                     controls={false}
                   />
                 </Card>
-                <SidebarNav
-                  items={stagePropertyTypes}
-                  selected={selectedPathwayPropertyType}
-                  setSelected={setSelectedPathwayPropertyType}
-                />
+                <div className="mt-4">
+                  <SidebarNav
+                    items={stagePropertyTypes}
+                    selected={selectedPathwayPropertyType}
+                    setSelected={setSelectedPathwayPropertyType}
+                  />
+                </div>
+
                 <PathwayLaunchEditorForm
                   pathway={selectedPathway}
                   selectedPathwayPropertyType={selectedPathwayPropertyType}
