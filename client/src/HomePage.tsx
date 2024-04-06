@@ -4,7 +4,7 @@ import MyCarousel from './Carousel';
 const HomePage = () => {
     
     return (
-        <div style={{ display: 'flex'}}>
+        <div className="flex h-screen w-screen flex-row bg-secondary">
             <NavMenu />
             <MyCarousel />
         </div>
