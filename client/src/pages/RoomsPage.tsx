@@ -18,7 +18,7 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 import { DataTable } from '../DataTable';
-import { Equipment, HospitalRoom } from '../TempData';
+import { Equipment, HospitalRoom, Occupancy } from '../TempData';
 import { Badge } from '../components/ui/badge';
 import { useRemoteDataStore } from '@/RemoteDataStore';
 
@@ -89,13 +89,13 @@ export const columns: ColumnDef<HospitalRoom>[] = [
     },
   },
   {
-    accessorKey: 'occupied',
+    accessorKey: 'occupancy',
     sortingFn: (rowA, rowB, direction) => {
-      const bedsA = rowA.getValue('occupancy') as number;
-      const bedsB = rowB.getValue('occupancy') as number;
+      const bedsA = (rowA.getValue('occupancy') as Occupancy).total;
+      const bedsB = (rowB.getValue('occupancy') as Occupancy).total;
 
-      const occupiedA = rowA.getValue('occupied') as number;
-      const occupiedB = rowB.getValue('occupied') as number;
+      const occupiedA = (rowA.getValue('occupancy') as Occupancy).current;
+      const occupiedB = (rowB.getValue('occupancy') as Occupancy).current;
 
       return direction === 'asc'
         ? occupiedA / bedsA - occupiedB / bedsB
@@ -113,26 +113,27 @@ export const columns: ColumnDef<HospitalRoom>[] = [
       );
     },
     cell: ({ row }) => {
-      const occupied = row.getValue('occupied') as string;
-      const occupancy = row.getValue('occupancy') as number;
-      if (row.getValue('occupied') === 0) {
+      const occupancy = row.getValue('occupancy') as Occupancy;
+      if ((row.getValue('occupancy') as Occupancy).current === 0) {
         return (
           <div>
             <div className="flex w-[70px] flex-col items-center space-y-1">
               <Circle className="text-right font-medium text-green-400" />
               <p>
-                {occupied}/{occupancy}
+                {occupancy.current}/{occupancy.total}
               </p>
             </div>
           </div>
         );
-      } else if (row.getValue('occupied') === occupancy) {
+      } else if (
+        (row.getValue('occupancy') as Occupancy).current === occupancy.total
+      ) {
         return (
           <div>
             <div className="flex w-[70px] flex-col items-center space-y-1">
               <CircleX className="text-right font-medium text-destructive" />
               <p>
-                {occupied}/{occupancy}
+                {occupancy.current}/{occupancy.total}
               </p>
             </div>
           </div>
@@ -143,7 +144,7 @@ export const columns: ColumnDef<HospitalRoom>[] = [
             <div className="flex w-[70px] flex-col items-center space-y-1">
               <CircleAlert className="text-right font-medium text-yellow-600" />
               <p>
-                {occupied}/{occupancy}
+                {occupancy.current}/{occupancy.total}
               </p>
             </div>
           </div>

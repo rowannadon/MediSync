@@ -611,12 +611,16 @@ export type Equipment = {
   desc: string;
 };
 
+export type Occupancy = {
+  current: number;
+  total: number;
+};
+
 export type HospitalRoom = {
   room_number: number;
   type: string;
   equipment: Equipment[];
-  occupied: number;
-  occupancy: number;
+  occupancy: Occupancy;
 };
 
 export const displayedRooms: HospitalRoom[] = [
@@ -632,8 +636,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Advanced patient monitoring systems',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 103,
@@ -652,8 +655,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Device for cutting and coagulating tissue',
       },
     ],
-    occupied: 1,
-    occupancy: 1,
+    occupancy: { current: 1, total: 1 },
   },
   {
     room_number: 104,
@@ -676,8 +678,7 @@ export const displayedRooms: HospitalRoom[] = [
       },
       { type: 'suture_kit', count: 4, desc: 'Sterile kits for wound closure' },
     ],
-    occupied: 3,
-    occupancy: 4,
+    occupancy: { current: 3, total: 4 },
   },
   {
     room_number: 105,
@@ -696,8 +697,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Cabinet with age-appropriate toys',
       },
     ],
-    occupied: 5,
-    occupancy: 6,
+    occupancy: { current: 5, total: 6 },
   },
   {
     room_number: 106,
@@ -720,8 +720,7 @@ export const displayedRooms: HospitalRoom[] = [
       },
       { type: 'baby_scale', count: 1, desc: 'Scale for weighing newborns' },
     ],
-    occupied: 3,
-    occupancy: 4,
+    occupancy: { current: 3, total: 4 },
   },
   {
     room_number: 107,
@@ -748,8 +747,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Padded mats for floor-based exercises',
       },
     ],
-    occupied: 4,
-    occupancy: 15,
+    occupancy: { current: 4, total: 15 },
   },
   {
     room_number: 108,
@@ -776,8 +774,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Equipment for radiographic imaging',
       },
     ],
-    occupied: 1,
-    occupancy: 4,
+    occupancy: { current: 1, total: 4 },
   },
   {
     room_number: 109,
@@ -804,8 +801,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Precision scale for weighing samples',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 110,
@@ -832,8 +828,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Unit for storing temperature-sensitive drugs',
       },
     ],
-    occupied: 2,
-    occupancy: 2,
+    occupancy: { current: 2, total: 2 },
   },
   {
     room_number: 111,
@@ -860,8 +855,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Machines for chopping, shredding, and pureeing',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 112,
@@ -888,8 +882,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Specialized tables for cardiac examinations',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 113,
@@ -916,8 +909,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Tools for testing neurological reflexes',
       },
     ],
-    occupied: 1,
-    occupancy: 2,
+    occupancy: { current: 1, total: 2 },
   },
   {
     room_number: 114,
@@ -944,8 +936,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Specialized tables for endoscopic procedures',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 115,
@@ -972,8 +963,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Devices for monitoring patient health during dialysis',
       },
     ],
-    occupied: 5,
-    occupancy: 5,
+    occupancy: { current: 5, total: 5 },
   },
   {
     room_number: 116,
@@ -1000,8 +990,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Devices for controlled delivery of fluids',
       },
     ],
-    occupied: 3,
-    occupancy: 8,
+    occupancy: { current: 3, total: 8 },
   },
   {
     room_number: 117,
@@ -1028,8 +1017,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Padded tables for manual therapy and assessment',
       },
     ],
-    occupied: 4,
-    occupancy: 4,
+    occupancy: { current: 4, total: 4 },
   },
   {
     room_number: 118,
@@ -1056,8 +1044,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Tables for task-oriented rehabilitation',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 119,
@@ -1084,8 +1071,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Surface for visual communication exercises',
       },
     ],
-    occupied: 1,
-    occupancy: 2,
+    occupancy: { current: 1, total: 2 },
   },
   {
     room_number: 120,
@@ -1112,8 +1098,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Mobile storage for palliative medications',
       },
     ],
-    occupied: 1,
-    occupancy: 1,
+    occupancy: { current: 1, total: 1 },
   },
   {
     room_number: 121,
@@ -1136,8 +1121,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Portable imaging device for rapid assessment',
       },
     ],
-    occupied: 1,
-    occupancy: 4,
+    occupancy: { current: 1, total: 4 },
   },
   {
     room_number: 122,
@@ -1164,8 +1148,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Computer system for dose calculation and optimization',
       },
     ],
-    occupied: 1,
-    occupancy: 1,
+    occupancy: { current: 1, total: 1 },
   },
   {
     room_number: 123,
@@ -1192,8 +1175,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Unit for storing temperature-sensitive drugs',
       },
     ],
-    occupied: 4,
-    occupancy: 4,
+    occupancy: { current: 4, total: 4 },
   },
   {
     room_number: 124,
@@ -1220,8 +1202,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Units for providing supplemental oxygen',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 125,
@@ -1248,8 +1229,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Specialized tables for wound assessment and treatment',
       },
     ],
-    occupied: 2,
-    occupancy: 2,
+    occupancy: { current: 2, total: 2 },
   },
   {
     room_number: 126,
@@ -1276,8 +1256,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Cameras and software for monitoring sleep behaviors',
       },
     ],
-    occupied: 1,
-    occupancy: 3,
+    occupancy: { current: 1, total: 3 },
   },
   {
     room_number: 127,
@@ -1304,8 +1283,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Equipment for assessing body fat and muscle mass',
       },
     ],
-    occupied: 1,
-    occupancy: 2,
+    occupancy: { current: 1, total: 2 },
   },
   {
     room_number: 128,
@@ -1332,8 +1310,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Setup for remote and telepsychiatry sessions',
       },
     ],
-    occupied: 2,
-    occupancy: 2,
+    occupancy: { current: 2, total: 2 },
   },
   {
     room_number: 129,
@@ -1360,8 +1337,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Specialized chair for telehealth consultations',
       },
     ],
-    occupied: 1,
-    occupancy: 2,
+    occupancy: { current: 1, total: 2 },
   },
   {
     room_number: 130,
@@ -1388,8 +1364,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Cameras and microphones for remote participation',
       },
     ],
-    occupied: 6,
-    occupancy: 6,
+    occupancy: { current: 6, total: 6 },
   },
   {
     room_number: 131,
@@ -1408,8 +1383,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Devices for controlled delivery of IV medications',
       },
     ],
-    occupied: 3,
-    occupancy: 4,
+    occupancy: { current: 3, total: 4 },
   },
   {
     room_number: 132,
@@ -1428,8 +1402,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Devices for cutting and coagulating tissue',
       },
     ],
-    occupied: 2,
-    occupancy: 2,
+    occupancy: { current: 2, total: 2 },
   },
   {
     room_number: 133,
@@ -1456,8 +1429,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Portable imaging device for rapid assessment',
       },
     ],
-    occupied: 4,
-    occupancy: 4,
+    occupancy: { current: 4, total: 4 },
   },
   {
     room_number: 134,
@@ -1476,8 +1448,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Space with age-appropriate toys and activities',
       },
     ],
-    occupied: 6,
-    occupancy: 8,
+    occupancy: { current: 6, total: 8 },
   },
   {
     room_number: 135,
@@ -1504,8 +1475,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Equipment for continuous monitoring of the fetus',
       },
     ],
-    occupied: 5,
-    occupancy: 5,
+    occupancy: { current: 5, total: 5 },
   },
   {
     room_number: 136,
@@ -1532,8 +1502,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Storage for resistance training equipment',
       },
     ],
-    occupied: 5,
-    occupancy: 6,
+    occupancy: { current: 5, total: 6 },
   },
   {
     room_number: 137,
@@ -1560,8 +1529,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Equipment for radiographic imaging',
       },
     ],
-    occupied: 0,
-    occupancy: 8,
+    occupancy: { current: 0, total: 8 },
   },
   {
     room_number: 138,
@@ -1588,8 +1556,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Device for quantitative analysis of samples',
       },
     ],
-    occupied: 3,
-    occupancy: 4,
+    occupancy: { current: 3, total: 4 },
   },
   {
     room_number: 139,
@@ -1616,8 +1583,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Units for storing temperature-sensitive drugs',
       },
     ],
-    occupied: 3,
-    occupancy: 4,
+    occupancy: { current: 3, total: 4 },
   },
   {
     room_number: 140,
@@ -1644,8 +1610,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'High-efficiency machine for cleaning dishes',
       },
     ],
-    occupied: 0,
-    occupancy: 4,
+    occupancy: { current: 0, total: 4 },
   },
   {
     room_number: 141,
@@ -1672,8 +1637,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Specialized tables for cardiac examinations',
       },
     ],
-    occupied: 3,
-    occupancy: 4,
+    occupancy: { current: 3, total: 4 },
   },
   {
     room_number: 142,
@@ -1700,8 +1664,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Equipment for guiding surgical interventions',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 143,
@@ -1728,8 +1691,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Specialized tables for endoscopic procedures',
       },
     ],
-    occupied: 3,
-    occupancy: 4,
+    occupancy: { current: 3, total: 4 },
   },
   {
     room_number: 144,
@@ -1756,8 +1718,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Devices for monitoring patient health during dialysis',
       },
     ],
-    occupied: 0,
-    occupancy: 8,
+    occupancy: { current: 0, total: 8 },
   },
   {
     room_number: 145,
@@ -1784,8 +1745,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Devices for controlled delivery of fluids',
       },
     ],
-    occupied: 4,
-    occupancy: 4,
+    occupancy: { current: 4, total: 4 },
   },
   {
     room_number: 146,
@@ -1812,8 +1772,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Padded mats for floor-based exercises',
       },
     ],
-    occupied: 6,
-    occupancy: 9,
+    occupancy: { current: 6, total: 9 },
   },
   {
     room_number: 147,
@@ -1840,8 +1799,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Tables for task-oriented rehabilitation',
       },
     ],
-    occupied: 0,
-    occupancy: 4,
+    occupancy: { current: 0, total: 4 },
   },
   {
     room_number: 148,
@@ -1868,8 +1826,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Digital surface for visual communication exercises',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 149,
@@ -1896,8 +1853,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Mobile storage for palliative medications',
       },
     ],
-    occupied: 2,
-    occupancy: 4,
+    occupancy: { current: 2, total: 4 },
   },
   {
     room_number: 150,
@@ -1920,8 +1876,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Imaging device for rapid assessment',
       },
     ],
-    occupied: 0,
-    occupancy: 4,
+    occupancy: { current: 0, total: 4 },
   },
   {
     room_number: 152,
