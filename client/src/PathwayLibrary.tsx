@@ -8,8 +8,9 @@ import {
 import { Card } from './components/ui/card';
 import { Input } from './components/ui/input';
 import { ScrollArea } from './components/ui/scroll-area';
-import { Procedure, procedures } from './TempData';
+import { Procedure } from './TempData';
 import { PathwayDisplay } from './PathwayDisplay';
+import { useRemoteDataStore } from './RemoteDataStore';
 
 interface PathwayLibraryProps {
   onPathwayClick: (pathway: Procedure) => void;
@@ -18,12 +19,13 @@ interface PathwayLibraryProps {
 
 export const PathwayLibrary = (props: PathwayLibraryProps) => {
   const [filter, setFilter] = useState<string>('');
-  const filteredPathways = procedures.filter((procedure: Procedure) =>
+  const pathways = useRemoteDataStore((state) => state.pathways);
+  const filteredPathways = pathways.filter((procedure: Procedure) =>
     procedure.title.toLowerCase().includes(filter.toLowerCase()),
   );
   const [accordionValue, setAccordionValue] = useState<string[]>(['Templates']);
 
-  const pathways = filteredPathways.map((pathway: Procedure) => {
+  const displayedPathways = filteredPathways.map((pathway: Procedure) => {
     return (
       <PathwayDisplay
         key={pathway.title}
@@ -64,7 +66,7 @@ export const PathwayLibrary = (props: PathwayLibraryProps) => {
               Pathway Templates
             </AccordionTrigger>
             <AccordionContent className="space-y-2 p-2">
-              {pathways}
+              {displayedPathways}
             </AccordionContent>
           </AccordionItem>
         </Accordion>

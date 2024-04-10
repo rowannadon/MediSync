@@ -15,13 +15,14 @@ import { Input } from './components/ui/input';
 import { Button } from './components/ui/button';
 import { useEffect } from 'react';
 import { Textarea } from './components/ui/textarea';
-import { displayedPeople, Person, Procedure, Stage, stages } from './TempData';
+import { Person, Procedure, Stage } from './TempData';
 import { Rocket } from 'lucide-react';
 import { PathwayLaunchEditorFormResourceField } from './PathwayLaunchEditorFormResourceField';
 import { Card } from './components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from './components/ui/table';
 import { ScrollArea } from './components/ui/scroll-area';
 import { DateTimePicker } from '@/components/ui/date-time-picker/date-time-picker';
+import { useRemoteDataStore } from './RemoteDataStore';
 
 const pathwayFormSchema = z.object({
   title: z
@@ -114,6 +115,8 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
     patient: props.pathway?.patient || '',
     desc: props.pathway?.desc || '',
   };
+
+  const people = useRemoteDataStore((state) => state.people);
 
   const form = useForm<PathwayFormValues>({
     resolver: zodResolver(pathwayFormSchema),
@@ -266,7 +269,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                                                 <TableCell>
                                                   <PathwayLaunchEditorFormResourceField
                                                     name={staff.staff}
-                                                    types={displayedPeople.map(
+                                                    types={people.map(
                                                       (p: Person) => p.name,
                                                     )}
                                                     options={['Automatic']}
@@ -371,7 +374,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                                                 <TableCell>
                                                   <PathwayLaunchEditorFormResourceField
                                                     name={output.type}
-                                                    types={displayedPeople.map(
+                                                    types={people.map(
                                                       (p: Person) => p.name,
                                                     )}
                                                     options={[

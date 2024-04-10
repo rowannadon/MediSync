@@ -12,7 +12,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Check, ChevronsUpDown, MoreHorizontal, X } from 'lucide-react';
 import { DataTable } from '../DataTable';
-import { displayedPeople, Person } from '../TempData';
+import { Person } from '../TempData';
+import { useRemoteDataStore } from '@/RemoteDataStore';
 
 export const columns: ColumnDef<Person>[] = [
   {
@@ -143,6 +144,8 @@ export const columns: ColumnDef<Person>[] = [
 ];
 
 const Personnel = () => {
+  const people = useRemoteDataStore((state) => state.people);
+
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -151,13 +154,29 @@ const Personnel = () => {
           pages={8}
           filterColumn="name"
           columns={columns}
-          data={displayedPeople}
-          uniqueFilterColumn={[
-            { column: 'role', title: 'Role' },
-            { column: 'department', title: 'Department' },
-          ]}
-          uniqueFilterColumns={[
-            { column: 'location', title: 'Location' },
+          data={people}
+          singleSelectFilterColumns={[
+            {
+              column: 'role',
+              title: 'Role',
+              options: Array.from(
+                new Set(people.map((person) => person.role)),
+              ),
+            },
+            {
+              column: 'department',
+              title: 'Department',
+              options: Array.from(
+                new Set(people.map((person) => person.department)),
+              ),
+            },
+            {
+              column: 'location',
+              title: 'Location',
+              options: Array.from(
+                new Set(people.map((person) => person.location)),
+              ),
+            },
           ]}
         />
       </Card>

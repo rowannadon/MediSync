@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../components/ui/tooltip';
-import { Procedure, procedures, Stage } from '../TempData';
+import { Procedure } from '../TempData';
 import { useDrop } from 'react-dnd';
 import { cn } from '../lib/utils';
 import { SidebarNav } from '../FormSidebarNav';
@@ -18,11 +18,13 @@ import { PathwayLibrary } from '../PathwayLibrary';
 import { PathwayLaunchEditorForm } from '../PathwayLaunchEditorForm';
 import { ScrollArea } from '../components/ui/scroll-area';
 import PathwayFlowDisplay from '../PathwayFlowDisplay';
+import { useLocalDataStore } from '@/LocalDataStore';
 
 const PathwayLaunchEditor = () => {
-  const [selectedPathway, setSelectedPathway] = useState<Procedure | null>(
-    procedures[0],
-  );
+  const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
+  const setSelectedPathway = useLocalDataStore((state) => state.setSelectedPathway);
+  const clearSelectedPathway = useLocalDataStore((state) => state.clearSelectedPathway);
+
   const stagePropertyTypes = [
     { title: 'Information', id: 'information' },
     { title: 'Resources', id: 'resources' },
@@ -144,7 +146,7 @@ const PathwayLaunchEditor = () => {
             if (selectedPathway !== pathway) {
               setSelectedPathway(pathway);
             } else {
-              setSelectedPathway(null);
+              clearSelectedPathway();
             }
           }}
           selectedPathway={selectedPathway}

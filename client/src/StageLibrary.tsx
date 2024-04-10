@@ -9,48 +9,68 @@ import { Card } from './components/ui/card';
 import { Input } from './components/ui/input';
 import { ScrollArea } from './components/ui/scroll-area';
 import { StageDisplay } from './StageDisplay';
-import { Stage, stages } from './TempData';
+import { Stage } from './TempData';
+import { useLocalDataStore } from './LocalDataStore';
+import { useRemoteDataStore } from './RemoteDataStore';
 
-export const StageLibrary = (props: any) => {
+interface StageLibraryProps {
+  selectable: boolean;
+}
+
+export const StageLibrary = ({ selectable }: StageLibraryProps) => {
+  const selectedStage = useLocalDataStore((state) => state.selectedStage);
+  const setSelectedStage = useLocalDataStore((state) => state.setSelectedStage);
+  const clearSelectedStage = useLocalDataStore((state) => state.clearSelectedStage);
+  const stages = useRemoteDataStore((state) => state.stages);
+
   const [filter, setFilter] = useState<string>('');
   const filteredStages = stages.filter((stage: Stage) =>
     stage.name.toLowerCase().includes(filter.toLowerCase()),
   );
-  const [accordionValue, setAccordionValue] = useState<string[]>(['Pre']);
+  const [accordionValue, setAccordionValue] = useState<string[]>([selectedStage ? selectedStage.type : 'pre-operative']);
+
+  const onStageClick = (stage: Stage) => {
+    if (!selectable) return;
+    if (selectedStage !== stage) {
+      setSelectedStage(stage);
+    } else {
+      clearSelectedStage();
+    }
+  };
 
   const preStages = filteredStages
     .filter((stage: Stage) => stage.type === 'pre-operative')
-    .map((stage) => {
+    .map((stage: Stage) => {
       return (
         <StageDisplay
           stage={stage}
           key={stage.name}
-          onClick={() => props.onStageClick(stage)}
-          selected={props.selectedStage === stage}
+          onClick={() => onStageClick(stage)}
+          selected={selectable && selectedStage === stage}
         />
       );
     });
   const periStages = filteredStages
     .filter((stage: Stage) => stage.type === 'peri-operative')
-    .map((stage) => {
+    .map((stage: Stage) => {
       return (
         <StageDisplay
           stage={stage}
           key={stage.name}
-          onClick={() => props.onStageClick(stage)}
-          selected={props.selectedStage === stage}
+          onClick={() => onStageClick(stage)}
+          selected={selectable && selectedStage === stage}
         />
       );
     });
   const postStages = filteredStages
     .filter((stage: Stage) => stage.type === 'post-operative')
-    .map((stage) => {
+    .map((stage: Stage) => {
       return (
         <StageDisplay
           stage={stage}
           key={stage.name}
-          onClick={() => props.onStageClick(stage)}
-          selected={props.selectedStage === stage}
+          onClick={() => onStageClick(stage)}
+          selected={selectable && selectedStage === stage}
         />
       );
     });
@@ -67,7 +87,7 @@ export const StageLibrary = (props: any) => {
             if (event.target.value === '') {
               setAccordionValue([]);
             } else {
-              setAccordionValue(['Pre', 'Peri', 'Post']); // Open all accordion items when filtering
+              setAccordionValue(['pre-operative', 'peri-operative', 'post-operative']); // Open all accordion items when filtering
             }
           }}
         />
@@ -80,7 +100,7 @@ export const StageLibrary = (props: any) => {
           value={accordionValue}
           onValueChange={setAccordionValue}
         >
-          <AccordionItem value="Pre">
+          <AccordionItem value="pre-operative">
             <AccordionTrigger className="p-2">
               Pre-Operative Stages
             </AccordionTrigger>
@@ -88,7 +108,7 @@ export const StageLibrary = (props: any) => {
               {preStages}
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="Peri">
+          <AccordionItem value="peri-operative">
             <AccordionTrigger className="p-2">
               Peri-Operative Stages
             </AccordionTrigger>
@@ -96,7 +116,7 @@ export const StageLibrary = (props: any) => {
               {periStages}
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="Post">
+          <AccordionItem value="post-operative">
             <AccordionTrigger className="p-2">
               Post-Operative Stages
             </AccordionTrigger>

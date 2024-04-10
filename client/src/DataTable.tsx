@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Button } from './components/ui/button';
-import { Plus, RefreshCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, RefreshCcw } from 'lucide-react';
 import { Card } from './components/ui/card';
 import {
   Table,
@@ -27,22 +27,28 @@ import { ScrollArea } from './components/ui/scroll-area';
 import { DataTableFacetedFilter } from './DataTableFacetedFilter';
 import { DataTableSingleFilter } from './DataTableSingleFilter';
 
+interface FilterColumn {
+  title: string;
+  column: string;
+  options: string[];
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterColumn: string;
   pages: number;
-  uniqueFilterColumns?: { title: string; column: string }[];
-  uniqueFilterColumn?: { title: string; column: string }[];
+  multiSelectFilterColumns?: FilterColumn[];
+  singleSelectFilterColumns?: FilterColumn[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filterColumn,
-  uniqueFilterColumn,
+  singleSelectFilterColumns,
   pages,
-  uniqueFilterColumns,
+  multiSelectFilterColumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -50,40 +56,6 @@ export function DataTable<TData, TValue>({
     pageIndex: 0,
     pageSize: pages,
   });
-
-  const indexes = data.map((value, index) => {
-    return { value: value, index: index };
-  });
-
-  const filterSets = uniqueFilterColumns?.map(
-    (col: { column: string; title: string }) => {
-      const list = Array.from(
-        new Set(
-          data
-            .flatMap((value: any) => value[col.column])
-            .map((value: any) => value),
-        ),
-      );
-      return {
-        column: col.column,
-        list: list,
-        title: col.title,
-      };
-    },
-  );
-
-  const filter = uniqueFilterColumn?.map(
-    (col: { column: string; title: string }) => {
-      const list = Array.from(
-        new Set(data.flatMap((value: any) => value[col.column])),
-      );
-      return {
-        column: col.column,
-        list: list,
-        title: col.title,
-      };
-    },
-  );
 
   const table = useReactTable({
     data,
@@ -116,23 +88,23 @@ export function DataTable<TData, TValue>({
             }
             className="w-[200px] max-w-sm"
           />
-          {filterSets?.map((filterSet) => {
+          {multiSelectFilterColumns?.map((filter) => {
             return (
               <DataTableFacetedFilter
-                key={filterSet.column}
-                column={table.getColumn(filterSet.column)}
-                title={filterSet.title}
-                options={filterSet.list}
+                key={filter.column}
+                column={table.getColumn(filter.column)}
+                title={filter.title}
+                options={filter.options}
               />
             );
           })}
-          {filter?.map((filter) => {
+          {singleSelectFilterColumns?.map((filter) => {
             return (
               <DataTableSingleFilter
                 key={filter.column}
                 column={table.getColumn(filter.column)}
                 title={filter.title}
-                options={filter.list}
+                options={filter.options}
               />
             );
           })}
@@ -140,9 +112,6 @@ export function DataTable<TData, TValue>({
         <div className="space-x-2">
           <Button variant="outline" size="icon">
             <Plus className="h-6 w-6" />
-          </Button>
-          <Button variant="outline" size="icon">
-            <RefreshCcw className="h-6 w-6" />
           </Button>
         </div>
       </div>
@@ -206,9 +175,10 @@ export function DataTable<TData, TValue>({
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
+          <ChevronLeft className="mr-2 h-4 w-4" />
           Previous
         </Button>
-        <span>
+        <span className="min-w-[100px] text-center">
           Page {pagination.pageIndex + 1} of {table.getPageCount()}
         </span>
         <Button
@@ -218,6 +188,7 @@ export function DataTable<TData, TValue>({
           disabled={!table.getCanNextPage()}
         >
           Next
+          <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </div>

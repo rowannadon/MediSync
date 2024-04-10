@@ -10,7 +10,7 @@ export function StageNode(props: any) {
       return [];
     } else if (typeof stage.next === 'string') {
       return [
-        <Handle id={stage.name} type="source" position={Position.Bottom} />,
+        <Handle key={1} id={stage.name} type="source" position={Position.Bottom} />,
       ];
     } else if (Array.isArray(stage.next)) {
       const length = stage.next.length;
@@ -21,6 +21,7 @@ export function StageNode(props: any) {
         const left = index * spaceBetween;
         return (
           <Handle
+            key={index}
             style={{ left: left + padding }}
             id={index.toString()}
             type="source"

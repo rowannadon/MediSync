@@ -18,8 +18,9 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 import { DataTable } from '../DataTable';
-import { displayedRooms, Equipment, HospitalRoom } from '../TempData';
+import { Equipment, HospitalRoom } from '../TempData';
 import { Badge } from '../components/ui/badge';
+import { useRemoteDataStore } from '@/RemoteDataStore';
 
 export const columns: ColumnDef<HospitalRoom>[] = [
   {
@@ -74,7 +75,7 @@ export const columns: ColumnDef<HospitalRoom>[] = [
               <div className="pr-2">
                 <h1>
                   {eq.type.charAt(0).toUpperCase()}
-                  {eq.type.slice(1)}
+                  {eq.type.slice(1).replaceAll('_', ' ')}
                 </h1>
               </div>
 
@@ -90,12 +91,8 @@ export const columns: ColumnDef<HospitalRoom>[] = [
   {
     accessorKey: 'occupied',
     sortingFn: (rowA, rowB, direction) => {
-      const bedsA = (rowA.getValue('equipment') as Equipment[]).find(
-        (eq: Equipment) => eq.type === 'bed',
-      )?.count as number;
-      const bedsB = (rowB.getValue('equipment') as Equipment[]).find(
-        (eq: Equipment) => eq.type === 'bed',
-      )?.count as number;
+      const bedsA = rowA.getValue('occupancy') as number;
+      const bedsB = rowB.getValue('occupancy') as number;
 
       const occupiedA = rowA.getValue('occupied') as number;
       const occupiedB = rowB.getValue('occupied') as number;
@@ -117,27 +114,25 @@ export const columns: ColumnDef<HospitalRoom>[] = [
     },
     cell: ({ row }) => {
       const occupied = row.getValue('occupied') as string;
-      const beds = (row.getValue('equipment') as Equipment[]).find(
-        (eq: Equipment) => eq.type === 'bed',
-      )?.count;
+      const occupancy = row.getValue('occupancy') as number;
       if (row.getValue('occupied') === 0) {
         return (
           <div>
             <div className="flex w-[70px] flex-col items-center space-y-1">
               <Circle className="text-right font-medium text-green-400" />
               <p>
-                {occupied}/{beds}
+                {occupied}/{occupancy}
               </p>
             </div>
           </div>
         );
-      } else if (row.getValue('occupied') === beds) {
+      } else if (row.getValue('occupied') === occupancy) {
         return (
           <div>
             <div className="flex w-[70px] flex-col items-center space-y-1">
               <CircleX className="text-right font-medium text-destructive" />
               <p>
-                {occupied}/{beds}
+                {occupied}/{occupancy}
               </p>
             </div>
           </div>
@@ -148,7 +143,7 @@ export const columns: ColumnDef<HospitalRoom>[] = [
             <div className="flex w-[70px] flex-col items-center space-y-1">
               <CircleAlert className="text-right font-medium text-yellow-600" />
               <p>
-                {occupied}/{beds}
+                {occupied}/{occupancy}
               </p>
             </div>
           </div>
@@ -185,17 +180,39 @@ export const columns: ColumnDef<HospitalRoom>[] = [
 ];
 
 const Rooms = () => {
+  const rooms = useRemoteDataStore((state) => state.rooms);
+
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
       <Card className="mb-2 mr-2 mt-2 flex flex-grow">
         <DataTable
-          pages={6}
+          pages={10}
           filterColumn="room_number"
           columns={columns}
-          data={displayedRooms}
-          uniqueFilterColumns={[{ column: 'equipment', title: 'Equipment' }]}
-          uniqueFilterColumn={[{ column: 'type', title: 'Type' }]}
+          data={rooms}
+          multiSelectFilterColumns={[
+            {
+              column: 'equipment',
+              title: 'Equipment',
+              options: Array.from(
+                new Set(
+                  rooms.flatMap((room) =>
+                    room.equipment.map((eq) => eq.type),
+                  ),
+                ),
+              ),
+            },
+          ]}
+          singleSelectFilterColumns={[
+            {
+              column: 'type',
+              title: 'Type',
+              options: Array.from(
+                new Set(rooms.map((room) => room.type)),
+              ),
+            },
+          ]}
         />
       </Card>
     </div>

@@ -9,7 +9,7 @@ import Task from './TaskDisplay';
 import { Card } from './components/ui/card';
 import { Checkbox } from './components/ui/checkbox';
 
-const MyCarousel = () => {
+const TasksDisplay = () => {
   const tasks = [
     {
       time: '2:00 PM',
@@ -83,4 +83,4 @@ const MyCarousel = () => {
   );
 };
 
-export default MyCarousel;
+export default TasksDisplay;

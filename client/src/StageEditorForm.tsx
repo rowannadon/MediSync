@@ -24,8 +24,9 @@ import {
 } from './components/ui/select';
 import { useEffect } from 'react';
 import { Textarea } from './components/ui/textarea';
-import { displayedPeople, displayedRooms, Stage } from './TempData';
+import { Stage } from './TempData';
 import { StageEditorFormResourceField } from './StageEditorFormResourceField';
+import { useRemoteDataStore } from './RemoteDataStore';
 
 const stageFormSchema = z.object({
   title: z
@@ -62,6 +63,9 @@ export function StageEditorForm(props: StageEditorFormProps) {
     { label: 'Peri-Operative', value: 'peri-operative' },
     { label: 'Post-Operative', value: 'post-operative' },
   ];
+
+  const people = useRemoteDataStore((state) => state.people);
+  const rooms = useRemoteDataStore((state) => state.rooms);
 
   const defaultValues: Partial<StageFormValues> = {
     title: props.stage?.name || '',
@@ -206,7 +210,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
                           count: 1,
                         }))}
                         resources={Array.from(
-                          new Set(displayedPeople.map((p) => p.role)),
+                          new Set(people.map((p) => p.role)),
                         ).map((p) => ({
                           value: p,
                           count: 1,
@@ -235,7 +239,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
                         }))}
                         resources={Array.from(
                           new Set(
-                            displayedRooms
+                            rooms
                               .flatMap((r) => r.equipment)
                               .map((p) => p.type),
                           ),

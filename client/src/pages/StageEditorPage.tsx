@@ -11,14 +11,18 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 import { StageLibrary } from '../StageLibrary';
-import { Stage, stages } from '../TempData';
+import { Stage } from '../TempData';
 import { StageEditorForm } from '../StageEditorForm';
 import { useDrop } from 'react-dnd';
 import { cn } from '../lib/utils';
 import { SidebarNav } from '../FormSidebarNav';
+import { useLocalDataStore } from '@/LocalDataStore';
 
 const StageEditor = () => {
-  const [selectedStage, setSelectedStage] = useState<Stage | null>(stages[0]);
+  const selectedStage = useLocalDataStore((state) => state.selectedStage);
+  const setSelectedStage = useLocalDataStore((state) => state.setSelectedStage);
+  const clearSelectedStage = useLocalDataStore((state) => state.clearSelectedStage);
+
   const stagePropertyTypes = [
     { title: 'Information', id: 'information' },
     { title: 'Resources', id: 'resources' },
@@ -46,16 +50,7 @@ const StageEditor = () => {
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
       <div className="flex h-screen max-h-screen flex-grow flex-row">
-        <StageLibrary
-          onStageClick={(stage: Stage) => {
-            if (selectedStage !== stage) {
-              setSelectedStage(stage);
-            } else {
-              setSelectedStage(null);
-            }
-          }}
-          selectedStage={selectedStage}
-        />
+        <StageLibrary selectable={true} />
         <div className="flex h-screen flex-grow flex-col" ref={drop}>
           <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
             <TooltipProvider>

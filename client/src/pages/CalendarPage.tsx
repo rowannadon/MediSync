@@ -13,10 +13,11 @@ import { Pin, PinOff, Plus, Trash } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Procedure, procedures } from '../TempData';
+import { Procedure } from '../TempData';
 import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
 import { add, parse } from 'date-fns';
+import { useRemoteDataStore } from '@/RemoteDataStore';
 
 const Calendar = () => {
   const timelineRef = useRef<Timeline>(null);
@@ -25,6 +26,8 @@ const Calendar = () => {
   const [calendarLoading, setCalendarLoading] = useState<boolean>(false);
   const [pinnedPatients, setPinnedPatients] = useState<string[]>([]);
 
+  const pathways = useRemoteDataStore((state) => state.pathways);
+
   useEffect(() => {
     if (timelineRef.current) {
       console.log(timelineRef.current.timeline);
@@ -32,8 +35,8 @@ const Calendar = () => {
   }, [timelineRef]);
 
   useEffect(() => {
-    if (procedures && timelineRef.current) {
-      displayedPathways.current = procedures.filter(
+    if (pathways && timelineRef.current) {
+      displayedPathways.current = pathways.filter(
         (procedure: Procedure) =>
           procedure.patient
             .toLowerCase()
@@ -44,7 +47,7 @@ const Calendar = () => {
       console.log('updated displayedPathways', displayedPathways.current);
       deboucedSetPatientFilter();
     }
-  }, [procedures, patientFilter, pinnedPatients]);
+  }, [pathways, patientFilter, pinnedPatients]);
 
   const deboucedSetPatientFilter = useCallback(
     debounce(

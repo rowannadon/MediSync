@@ -11,20 +11,21 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 import { StageLibrary } from '../StageLibrary';
-import { Procedure, procedures } from '../TempData';
+import { Procedure } from '../TempData';
 import PathwayFlowDisplay from '../PathwayFlowDisplay';
 import { PathwayLibrary } from '../PathwayLibrary';
+import { useLocalDataStore } from '@/LocalDataStore';
 
 const PathwayEditor = () => {
-  const [selectedPathway, setSelectedPathway] = useState<Procedure | null>(
-    procedures[0],
-  );
+  const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
+  const setSelectedPathway = useLocalDataStore((state) => state.setSelectedPathway);
+  const clearSelectedPathway = useLocalDataStore((state) => state.clearSelectedPathway);
 
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
       <div className="flex h-screen max-h-screen flex-grow flex-row">
-        <StageLibrary onStageClick={() => null} selected="" />
+        <StageLibrary selectable={false} />
         <div className="flex h-screen flex-grow flex-col">
           <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
             <TooltipProvider>
@@ -86,7 +87,7 @@ const PathwayEditor = () => {
             if (selectedPathway !== pathway) {
               setSelectedPathway(pathway);
             } else {
-              setSelectedPathway(null);
+              clearSelectedPathway();
             }
           }}
           selectedPathway={selectedPathway}
