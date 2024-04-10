@@ -22,8 +22,12 @@ import { useLocalDataStore } from '@/LocalDataStore';
 
 const PathwayLaunchEditor = () => {
   const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
-  const setSelectedPathway = useLocalDataStore((state) => state.setSelectedPathway);
-  const clearSelectedPathway = useLocalDataStore((state) => state.clearSelectedPathway);
+  const setSelectedPathway = useLocalDataStore(
+    (state) => state.setSelectedPathway,
+  );
+  const clearSelectedPathway = useLocalDataStore(
+    (state) => state.clearSelectedPathway,
+  );
 
   const stagePropertyTypes = [
     { title: 'Information', id: 'information' },

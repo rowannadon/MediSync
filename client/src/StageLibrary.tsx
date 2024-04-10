@@ -20,14 +20,18 @@ interface StageLibraryProps {
 export const StageLibrary = ({ selectable }: StageLibraryProps) => {
   const selectedStage = useLocalDataStore((state) => state.selectedStage);
   const setSelectedStage = useLocalDataStore((state) => state.setSelectedStage);
-  const clearSelectedStage = useLocalDataStore((state) => state.clearSelectedStage);
+  const clearSelectedStage = useLocalDataStore(
+    (state) => state.clearSelectedStage,
+  );
   const stages = useRemoteDataStore((state) => state.stages);
 
   const [filter, setFilter] = useState<string>('');
   const filteredStages = stages.filter((stage: Stage) =>
     stage.name.toLowerCase().includes(filter.toLowerCase()),
   );
-  const [accordionValue, setAccordionValue] = useState<string[]>([selectedStage ? selectedStage.type : 'pre-operative']);
+  const [accordionValue, setAccordionValue] = useState<string[]>([
+    selectedStage ? selectedStage.type : 'pre-operative',
+  ]);
 
   const onStageClick = (stage: Stage) => {
     if (!selectable) return;
@@ -87,7 +91,11 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
             if (event.target.value === '') {
               setAccordionValue([]);
             } else {
-              setAccordionValue(['pre-operative', 'peri-operative', 'post-operative']); // Open all accordion items when filtering
+              setAccordionValue([
+                'pre-operative',
+                'peri-operative',
+                'post-operative',
+              ]); // Open all accordion items when filtering
             }
           }}
         />

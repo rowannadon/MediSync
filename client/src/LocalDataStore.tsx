@@ -1,5 +1,5 @@
-import { create } from 'zustand'
-import { Procedure, procedures, Stage, stages } from './TempData'
+import { create } from 'zustand';
+import { Procedure, procedures, Stage, stages } from './TempData';
 
 export interface LocalDataStore {
   selectedStage: Stage | null;
@@ -17,6 +17,7 @@ export const useLocalDataStore = create<LocalDataStore>((set) => ({
   clearSelectedStage: () => set(() => ({ selectedStage: null })),
 
   selectedPathway: procedures[0],
-  setSelectedPathway: (pathway: Procedure) => set(() => ({ selectedPathway: pathway })),
-  clearSelectedPathway: () => set(() => ({ selectedPathway: null }))
-}))
+  setSelectedPathway: (pathway: Procedure) =>
+    set(() => ({ selectedPathway: pathway })),
+  clearSelectedPathway: () => set(() => ({ selectedPathway: null })),
+}));

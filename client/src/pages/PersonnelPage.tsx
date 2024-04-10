@@ -159,9 +159,7 @@ const Personnel = () => {
             {
               column: 'role',
               title: 'Role',
-              options: Array.from(
-                new Set(people.map((person) => person.role)),
-              ),
+              options: Array.from(new Set(people.map((person) => person.role))),
             },
             {
               column: 'department',

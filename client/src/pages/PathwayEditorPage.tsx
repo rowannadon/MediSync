@@ -18,8 +18,12 @@ import { useLocalDataStore } from '@/LocalDataStore';
 
 const PathwayEditor = () => {
   const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
-  const setSelectedPathway = useLocalDataStore((state) => state.setSelectedPathway);
-  const clearSelectedPathway = useLocalDataStore((state) => state.clearSelectedPathway);
+  const setSelectedPathway = useLocalDataStore(
+    (state) => state.setSelectedPathway,
+  );
+  const clearSelectedPathway = useLocalDataStore(
+    (state) => state.clearSelectedPathway,
+  );
 
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">

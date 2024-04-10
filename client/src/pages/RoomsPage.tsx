@@ -197,9 +197,7 @@ const Rooms = () => {
               title: 'Equipment',
               options: Array.from(
                 new Set(
-                  rooms.flatMap((room) =>
-                    room.equipment.map((eq) => eq.type),
-                  ),
+                  rooms.flatMap((room) => room.equipment.map((eq) => eq.type)),
                 ),
               ),
             },
@@ -208,9 +206,7 @@ const Rooms = () => {
             {
               column: 'type',
               title: 'Type',
-              options: Array.from(
-                new Set(rooms.map((room) => room.type)),
-              ),
+              options: Array.from(new Set(rooms.map((room) => room.type))),
             },
           ]}
         />

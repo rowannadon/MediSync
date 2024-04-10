@@ -21,7 +21,9 @@ import { useLocalDataStore } from '@/LocalDataStore';
 const StageEditor = () => {
   const selectedStage = useLocalDataStore((state) => state.selectedStage);
   const setSelectedStage = useLocalDataStore((state) => state.setSelectedStage);
-  const clearSelectedStage = useLocalDataStore((state) => state.clearSelectedStage);
+  const clearSelectedStage = useLocalDataStore(
+    (state) => state.clearSelectedStage,
+  );
 
   const stagePropertyTypes = [
     { title: 'Information', id: 'information' },
