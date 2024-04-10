@@ -61,7 +61,7 @@ export function DataTable<TData, TValue>({
         new Set(
           data
             .flatMap((value: any) => value[col.column])
-            .map((value: any) => value.type),
+            .map((value: any) => value),
         ),
       );
       return {

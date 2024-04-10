@@ -1,5 +1,5 @@
-import NavMenu from './NavMenu';
-import { Card } from './components/ui/card';
+import NavMenu from '../NavMenu';
+import { Card } from '../components/ui/card';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,8 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Check, ChevronsUpDown, MoreHorizontal, X } from 'lucide-react';
-import { DataTable } from './DataTable';
-import { displayedPeople, Person } from './TempData';
+import { DataTable } from '../DataTable';
+import { displayedPeople, Person } from '../TempData';
 
 export const columns: ColumnDef<Person>[] = [
   {
@@ -155,6 +155,9 @@ const Personnel = () => {
           uniqueFilterColumn={[
             { column: 'role', title: 'Role' },
             { column: 'department', title: 'Department' },
+          ]}
+          uniqueFilterColumns={[
+            { column: 'location', title: 'Location' },
           ]}
         />
       </Card>

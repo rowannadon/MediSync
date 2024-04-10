@@ -1,19 +1,19 @@
-import NavMenu from './NavMenu';
-import { Card } from './components/ui/card';
+import NavMenu from '../NavMenu';
+import { Card } from '../components/ui/card';
 import Timeline from 'react-vis-timeline';
-import './timeline-css.css';
+import '../timeline-css.css';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from './components/ui/tooltip';
-import { Button } from './components/ui/button';
+} from '../components/ui/tooltip';
+import { Button } from '../components/ui/button';
 import { Pin, PinOff, Plus, Trash } from 'lucide-react';
-import { Input } from './components/ui/input';
+import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Procedure, procedures } from './TempData';
+import { Procedure, procedures } from '../TempData';
 import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
 import { add, parse } from 'date-fns';

@@ -1,7 +1,7 @@
-import NavMenu from './NavMenu';
-import MyCarousel from './Carousel';
+import NavMenu from '../NavMenu';
+import MyCarousel from '../TasksDisplay';
 
-const HomePage = () => {
+const TaskPage = () => {
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -10,4 +10,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default TaskPage;

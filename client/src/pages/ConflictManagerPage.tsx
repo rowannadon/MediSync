@@ -1,17 +1,17 @@
 import { FilePlus, RefreshCcw, Save, Trash } from 'lucide-react';
-import NavMenu from './NavMenu';
+import NavMenu from '../NavMenu';
 
-import { Button } from './components/ui/button';
-import { Card } from './components/ui/card';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
 import { useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from './components/ui/tooltip';
-import { Conflict } from './TempData';
-import { ConflictManagerForm } from './ConflictManagerForm';
+} from '../components/ui/tooltip';
+import { Conflict } from '../TempData';
+import { ConflictManagerForm } from '../ConflictManagerForm';
 
 const ConflictManager = () => {
   const [conflict, setConflict] = useState<Conflict | null>({

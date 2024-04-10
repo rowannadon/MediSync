@@ -1,23 +1,23 @@
 import { FilePlus, RefreshCcw, Rocket, Save, Trash } from 'lucide-react';
-import NavMenu from './NavMenu';
+import NavMenu from '../NavMenu';
 
-import { Button } from './components/ui/button';
-import { Card } from './components/ui/card';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
 import { useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from './components/ui/tooltip';
-import { Procedure, procedures, Stage } from './TempData';
+} from '../components/ui/tooltip';
+import { Procedure, procedures, Stage } from '../TempData';
 import { useDrop } from 'react-dnd';
-import { cn } from './lib/utils';
-import { SidebarNav } from './FormSidebarNav';
-import { PathwayLibrary } from './PathwayLibrary';
-import { PathwayLaunchEditorForm } from './PathwayLaunchEditorForm';
-import { ScrollArea } from './components/ui/scroll-area';
-import PathwayFlowDisplay from './PathwayFlowDisplay';
+import { cn } from '../lib/utils';
+import { SidebarNav } from '../FormSidebarNav';
+import { PathwayLibrary } from '../PathwayLibrary';
+import { PathwayLaunchEditorForm } from '../PathwayLaunchEditorForm';
+import { ScrollArea } from '../components/ui/scroll-area';
+import PathwayFlowDisplay from '../PathwayFlowDisplay';
 
 const PathwayLaunchEditor = () => {
   const [selectedPathway, setSelectedPathway] = useState<Procedure | null>(

@@ -1,5 +1,5 @@
-import NavMenu from './NavMenu';
-import { Card } from './components/ui/card';
+import NavMenu from '../NavMenu';
+import { Card } from '../components/ui/card';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,9 +17,9 @@ import {
   CircleX,
   MoreHorizontal,
 } from 'lucide-react';
-import { DataTable } from './DataTable';
-import { displayedRooms, Equipment, HospitalRoom } from './TempData';
-import { Badge } from './components/ui/badge';
+import { DataTable } from '../DataTable';
+import { displayedRooms, Equipment, HospitalRoom } from '../TempData';
+import { Badge } from '../components/ui/badge';
 
 export const columns: ColumnDef<HospitalRoom>[] = [
   {

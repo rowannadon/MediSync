@@ -1,21 +1,21 @@
 import { FilePlus, Plus, RefreshCcw, Save, Trash } from 'lucide-react';
-import NavMenu from './NavMenu';
+import NavMenu from '../NavMenu';
 
-import { Button } from './components/ui/button';
-import { Card } from './components/ui/card';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
 import { useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from './components/ui/tooltip';
-import { StageLibrary } from './StageLibrary';
-import { Stage, stages } from './TempData';
-import { StageEditorForm } from './StageEditorForm';
+} from '../components/ui/tooltip';
+import { StageLibrary } from '../StageLibrary';
+import { Stage, stages } from '../TempData';
+import { StageEditorForm } from '../StageEditorForm';
 import { useDrop } from 'react-dnd';
-import { cn } from './lib/utils';
-import { SidebarNav } from './FormSidebarNav';
+import { cn } from '../lib/utils';
+import { SidebarNav } from '../FormSidebarNav';
 
 const StageEditor = () => {
   const [selectedStage, setSelectedStage] = useState<Stage | null>(stages[0]);

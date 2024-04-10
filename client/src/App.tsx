@@ -1,24 +1,24 @@
 import { Route } from 'wouter';
 import TestPage from './TestPage';
-import PathwayEditor from './PathwayEditor';
+import PathwayEditor from './pages/PathwayEditorPage';
 import { SocketProvider } from './SocketContext';
-import Calendar from './Calendar';
-import Personnel from './Personnel';
-import Rooms from './Rooms';
-import StageEditor from './StageEditor';
+import Calendar from './pages/CalendarPage';
+import Personnel from './pages/PersonnelPage';
+import Rooms from './pages/RoomsPage';
+import StageEditor from './pages/StageEditorPage';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
-import PathwayLaunchEditor from './PathwayLaunchEditor';
-import ConflictManager from './ConflictManager';
-import HomePage from './HomePage';
-import AccountPage from './AccountPage';
+import PathwayLaunchEditor from './pages/PathwayLaunchEditorPage';
+import ConflictManager from './pages/ConflictManagerPage';
+import TaskPage from './pages/TaskPage';
+import AccountPage from './pages/AccountPage';
 
 const App = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <SocketProvider>
         <div className="flex h-screen w-screen flex-row">
-          <Route path="/" component={HomePage}></Route>
+          <Route path="/" component={TaskPage}></Route>
           <Route path="/test" component={TestPage}></Route>
           <Route path="/pathway-editor" component={PathwayEditor}></Route>
           <Route path="/launch-pathway" component={PathwayLaunchEditor}></Route>

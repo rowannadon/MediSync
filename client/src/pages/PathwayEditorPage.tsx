@@ -1,7 +1,7 @@
 import { FilePlus, Plus, RefreshCcw, Trash } from 'lucide-react';
-import NavMenu from './NavMenu';
-import { Button } from './components/ui/button';
-import { Card } from './components/ui/card';
+import NavMenu from '../NavMenu';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
 import 'reactflow/dist/style.css';
 import { useState } from 'react';
 import {
@@ -9,11 +9,11 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from './components/ui/tooltip';
-import { StageLibrary } from './StageLibrary';
-import { Procedure, procedures } from './TempData';
-import PathwayFlowDisplay from './PathwayFlowDisplay';
-import { PathwayLibrary } from './PathwayLibrary';
+} from '../components/ui/tooltip';
+import { StageLibrary } from '../StageLibrary';
+import { Procedure, procedures } from '../TempData';
+import PathwayFlowDisplay from '../PathwayFlowDisplay';
+import { PathwayLibrary } from '../PathwayLibrary';
 
 const PathwayEditor = () => {
   const [selectedPathway, setSelectedPathway] = useState<Procedure | null>(

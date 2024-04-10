@@ -5,7 +5,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import Task from './Task';
+import Task from './TaskDisplay';
 import { Card } from './components/ui/card';
 import { Checkbox } from './components/ui/checkbox';
 
