@@ -1899,8 +1899,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Imaging device for rapid assessment',
       },
     ],
-    occupied: 0,
-    occupancy: 4,
+    occupancy:  { current: 0, total: 4 }
   },
   {
     room_number: 152,
@@ -1923,8 +1922,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Imaging device for rapid assessment',
       },
     ],
-    occupied: 4,
-    occupancy: 4,
+    occupancy: { current: 4, total: 4 }
   },
   {
     room_number: 200,
@@ -1950,8 +1948,7 @@ export const displayedRooms: HospitalRoom[] = [
         desc: 'Imaging device for rapid assessment',
       },
     ],
-    occupied: 0,
-    occupancy: 4,
+    occupancy:  { current: 0, total: 4 }
   },
 ];
 
