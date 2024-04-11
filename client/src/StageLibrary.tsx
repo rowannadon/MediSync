@@ -9,7 +9,7 @@ import { Card } from './components/ui/card';
 import { Input } from './components/ui/input';
 import { ScrollArea } from './components/ui/scroll-area';
 import { StageDisplay } from './StageDisplay';
-import { Stage } from './TempData';
+import { StageTemplate, StageType, stageTypes } from './TempData';
 import { useLocalDataStore } from './LocalDataStore';
 import { useRemoteDataStore } from './RemoteDataStore';
 
@@ -26,14 +26,14 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
   const stages = useRemoteDataStore((state) => state.stages);
 
   const [filter, setFilter] = useState<string>('');
-  const filteredStages = stages.filter((stage: Stage) =>
+  const filteredStages = stages.filter((stage: StageTemplate) =>
     stage.name.toLowerCase().includes(filter.toLowerCase()),
   );
   const [accordionValue, setAccordionValue] = useState<string[]>([
-    selectedStage ? selectedStage.type : 'pre-operative',
+    selectedStage ? selectedStage.type : stageTypes[0],
   ]);
 
-  const onStageClick = (stage: Stage) => {
+  const onStageClick = (stage: StageTemplate) => {
     if (!selectable) return;
     if (selectedStage !== stage) {
       setSelectedStage(stage);
@@ -42,42 +42,29 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
     }
   };
 
-  const preStages = filteredStages
-    .filter((stage: Stage) => stage.type === 'pre-operative')
-    .map((stage: Stage) => {
-      return (
-        <StageDisplay
-          stage={stage}
-          key={stage.name}
-          onClick={() => onStageClick(stage)}
-          selected={selectable && selectedStage === stage}
-        />
-      );
-    });
-  const periStages = filteredStages
-    .filter((stage: Stage) => stage.type === 'peri-operative')
-    .map((stage: Stage) => {
-      return (
-        <StageDisplay
-          stage={stage}
-          key={stage.name}
-          onClick={() => onStageClick(stage)}
-          selected={selectable && selectedStage === stage}
-        />
-      );
-    });
-  const postStages = filteredStages
-    .filter((stage: Stage) => stage.type === 'post-operative')
-    .map((stage: Stage) => {
-      return (
-        <StageDisplay
-          stage={stage}
-          key={stage.name}
-          onClick={() => onStageClick(stage)}
-          selected={selectable && selectedStage === stage}
-        />
-      );
-    });
+  const sections = stageTypes.map((type: StageType) => {
+    return (
+      <AccordionItem key={type} value={type}>
+        <AccordionTrigger className="p-2">{`${type
+          .charAt(0)
+          .toUpperCase()}${type.slice(1)}`}</AccordionTrigger>
+        <AccordionContent className="space-y-2 p-2">
+          {filteredStages
+            .filter((stage: StageTemplate) => stage.type === type)
+            .map((stage: StageTemplate) => {
+              return (
+                <StageDisplay
+                  stage={stage}
+                  key={stage.name}
+                  onClick={() => onStageClick(stage)}
+                  selected={selectable && selectedStage === stage}
+                />
+              );
+            })}
+        </AccordionContent>
+      </AccordionItem>
+    );
+  });
 
   return (
     <Card className="mb-2 mt-2 flex w-[300px] min-w-[300px] max-w-[300px] flex-col">
@@ -91,11 +78,7 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
             if (event.target.value === '') {
               setAccordionValue([]);
             } else {
-              setAccordionValue([
-                'pre-operative',
-                'peri-operative',
-                'post-operative',
-              ]); // Open all accordion items when filtering
+              setAccordionValue(Array.from(stageTypes)); // Open all accordion items when filtering
             }
           }}
         />
@@ -108,30 +91,7 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
           value={accordionValue}
           onValueChange={setAccordionValue}
         >
-          <AccordionItem value="pre-operative">
-            <AccordionTrigger className="p-2">
-              Pre-Operative Stages
-            </AccordionTrigger>
-            <AccordionContent className="space-y-2 p-2">
-              {preStages}
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="peri-operative">
-            <AccordionTrigger className="p-2">
-              Peri-Operative Stages
-            </AccordionTrigger>
-            <AccordionContent className="space-y-2 p-2">
-              {periStages}
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="post-operative">
-            <AccordionTrigger className="p-2">
-              Post-Operative Stages
-            </AccordionTrigger>
-            <AccordionContent className="space-y-2 p-2">
-              {postStages}
-            </AccordionContent>
-          </AccordionItem>
+          {sections}
         </Accordion>
       </ScrollArea>
     </Card>

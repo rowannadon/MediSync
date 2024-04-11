@@ -15,7 +15,7 @@ import { Input } from './components/ui/input';
 import { Button } from './components/ui/button';
 import { useEffect } from 'react';
 import { Textarea } from './components/ui/textarea';
-import { Person, Procedure, Stage } from './TempData';
+import { outputTypes, Person, PathwayTemplate, PathwayStage } from './TempData';
 import { Rocket } from 'lucide-react';
 import { PathwayLaunchEditorFormResourceField } from './PathwayLaunchEditorFormResourceField';
 import { Card } from './components/ui/card';
@@ -77,46 +77,28 @@ interface OutputType {
   stage: string;
 }
 
-export const mapStageToOutputs = (stage: Stage | null) => {
-  if (!stage || stage.next === null) {
-    return [];
-  } else if (typeof stage.next === 'string') {
-    return [
-      {
-        type: 'scheduledOutput',
-        title: 'Scheduled Output',
-        date: stage.date,
-        stage: stage.name,
-      },
-    ];
-  } else if (Array.isArray(stage.next)) {
-    return stage.next.map((_, index) => ({
-      type: 'scheduledOutput',
-      title: `Scheduled Output ${index + 1}`,
-      date: stage.date,
-      stage: stage.name,
-    }));
-  } else {
-    return [];
-  }
-};
-
 type PathwayFormValues = z.infer<typeof pathwayFormSchema>;
 
 interface PathwayLaunchEditorFormProps
   extends React.HTMLAttributes<HTMLElement> {
-  pathway: Procedure | null;
+  pathway: PathwayTemplate | null;
   selectedPathwayPropertyType: string;
 }
 
-export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
+export function PathwayLaunchEditorForm({
+  pathway,
+  selectedPathwayPropertyType,
+}: PathwayLaunchEditorFormProps) {
   const defaultValues: Partial<PathwayFormValues> = {
-    title: props.pathway?.title || '',
-    patient: props.pathway?.patient || '',
-    desc: props.pathway?.desc || '',
+    title: pathway?.title || '',
+    patient: '',
+    desc: pathway?.desc || '',
   };
 
   const people = useRemoteDataStore((state) => state.people);
+  const getStageTemplate = useRemoteDataStore(
+    (state) => state.getStageTemplate,
+  );
 
   const form = useForm<PathwayFormValues>({
     resolver: zodResolver(pathwayFormSchema),
@@ -124,36 +106,48 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
   });
 
   useEffect(() => {
-    if (props.pathway) {
-      form.setValue('title', props.pathway?.title);
-      form.setValue('patient', props.pathway?.patient);
-      form.setValue('desc', props.pathway?.desc);
+    if (pathway) {
+      form.setValue('title', pathway?.title);
+      form.setValue('desc', pathway?.desc);
       form.setValue(
         'staff',
-        props.pathway?.stages.flatMap((stage) =>
-          stage.required_staff.map((staff) => ({
+        pathway?.stages.flatMap((stage) => {
+          const template = getStageTemplate(stage.template);
+          if (!template) return [];
+          return template.required_staff.map((staff) => ({
             staff: staff,
-            stage: stage.name,
-          })),
-        ),
+            stage: template.name,
+          }));
+        }),
       );
       form.setValue(
         'equipment',
-        props.pathway?.stages.flatMap((stage) =>
-          stage.required_equipment.map((eq) => ({
+        pathway?.stages.flatMap((stage) => {
+          const template = getStageTemplate(stage.template);
+          if (!template) return [];
+          return template.required_equipment.map((eq) => ({
             type: eq.type,
             count: eq.count,
             desc: eq.desc,
-            stage: stage.name,
-          })),
-        ),
+            stage: template.name,
+          }));
+        }),
       );
       form.setValue(
         'outputs',
-        props.pathway?.stages.flatMap((stage) => mapStageToOutputs(stage)),
+        pathway?.stages.flatMap((stage) => {
+          const template = getStageTemplate(stage.template);
+          if (!template) return [];
+          return template.outputs.map((output) => ({
+            type: output,
+            title: output,
+            date: '',
+            stage: template.name,
+          }));
+        }),
       );
     }
-  }, [props.pathway, form]);
+  }, [pathway, form]);
 
   function onSubmit(data: PathwayFormValues) {
     console.log(data);
@@ -173,7 +167,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
 
   return (
     <div className="flex flex-grow flex-col">
-      {props.pathway && (
+      {pathway && (
         <div className="flex flex-grow flex-row">
           <ScrollArea
             className="flex-grow pr-8"
@@ -182,9 +176,9 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="mb-4 mt-4 flex-grow space-y-8"
+                className="m-1 mb-4 mt-4 flex-grow space-y-8"
               >
-                {props.selectedPathwayPropertyType === 'information' && (
+                {selectedPathwayPropertyType === 'information' && (
                   <FormField
                     control={form.control}
                     name="title"
@@ -203,7 +197,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                     )}
                   />
                 )}
-                {props.selectedPathwayPropertyType === 'information' && (
+                {selectedPathwayPropertyType === 'information' && (
                   <FormField
                     control={form.control}
                     name="desc"
@@ -220,7 +214,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                     )}
                   />
                 )}
-                {props.selectedPathwayPropertyType === 'information' && (
+                {selectedPathwayPropertyType === 'information' && (
                   <FormField
                     control={form.control}
                     name="patient"
@@ -235,7 +229,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                     )}
                   />
                 )}
-                {props.selectedPathwayPropertyType === 'resources' && (
+                {selectedPathwayPropertyType === 'resources' && (
                   <FormField
                     control={form.control}
                     name="staff"
@@ -269,8 +263,12 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                                                 <TableCell>
                                                   <PathwayLaunchEditorFormResourceField
                                                     name={staff.staff}
-                                                    types={people.map(
-                                                      (p: Person) => p.name,
+                                                    types={Array.from(
+                                                      new Set(
+                                                        people.map(
+                                                          (p: Person) => p.name,
+                                                        ),
+                                                      ),
                                                     )}
                                                     options={['Automatic']}
                                                   />
@@ -291,7 +289,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                     }}
                   />
                 )}
-                {props.selectedPathwayPropertyType === 'resources' && (
+                {selectedPathwayPropertyType === 'resources' && (
                   <FormField
                     control={form.control}
                     name="equipment"
@@ -306,7 +304,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                             Object.keys(eqByStage) &&
                             Object.keys(eqByStage).map((stage: string) => {
                               return (
-                                <div key={stage}>
+                                <div key={`eq-${stage}`}>
                                   <FormLabel>{stage}</FormLabel>
                                   <Card>
                                     <Table>
@@ -316,7 +314,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                                             //console.log(staff)
                                             return (
                                               <TableRow
-                                                key={eq.type}
+                                                key={`${eq.type}-${eq.stage}`}
                                                 className="flex flex-row justify-between"
                                               >
                                                 <TableCell>{eq.type}</TableCell>
@@ -339,7 +337,7 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                     }}
                   />
                 )}
-                {props.selectedPathwayPropertyType === 'schedule' && (
+                {selectedPathwayPropertyType === 'schedule' && (
                   <FormField
                     control={form.control}
                     name="outputs"
@@ -361,11 +359,11 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                                     <Table>
                                       <TableBody>
                                         {outputsByStage[stage].map(
-                                          (output: OutputType) => {
+                                          (output: OutputType, i: number) => {
                                             //console.log(staff)
                                             return (
                                               <TableRow
-                                                key={output.title}
+                                                key={`${output.title}-${stage}-${i}`}
                                                 className="flex flex-row justify-between"
                                               >
                                                 <TableCell>
@@ -374,14 +372,16 @@ export function PathwayLaunchEditorForm(props: PathwayLaunchEditorFormProps) {
                                                 <TableCell>
                                                   <PathwayLaunchEditorFormResourceField
                                                     name={output.type}
-                                                    types={people.map(
-                                                      (p: Person) => p.name,
+                                                    types={Array.from(
+                                                      new Set(
+                                                        people.map(
+                                                          (p: Person) => p.name,
+                                                        ),
+                                                      ),
                                                     )}
-                                                    options={[
-                                                      'Scheduled',
-                                                      'Next Available',
-                                                      'Delay',
-                                                    ]}
+                                                    options={Array.from(
+                                                      outputTypes,
+                                                    )}
                                                   />
                                                 </TableCell>
                                                 <TableCell>

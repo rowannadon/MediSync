@@ -1,22 +1,22 @@
 import { Card } from './components/ui/card';
-import { Procedure } from './TempData';
+import { PathwayTemplate } from './TempData';
 import { useDrag } from 'react-dnd';
 
 interface PathwayProps {
-  pathway: Procedure;
+  pathway: PathwayTemplate;
   onClick: any;
   selected: boolean;
 }
 
 const Display = (props: {
-  pathway: Procedure;
+  pathway: PathwayTemplate;
   color: string;
   onClick: any;
   selected: boolean;
 }) => {
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     // "type" is required. It is used by the "accept" specification of drop targets.
-    type: 'stage',
+    type: 'pathway',
     item: { props },
     // The collect function utilizes a "monitor" instance (see the Overview for what this is)
     // to pull important pieces of state from the DnD system.

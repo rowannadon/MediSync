@@ -24,6 +24,7 @@ interface StageEditorFormResourceFieldProps<T>
   name: string;
   resources: T[];
   displayAll: boolean;
+  displayIndex: boolean;
 }
 
 export const StageEditorFormResourceField = <
@@ -39,16 +40,21 @@ export const StageEditorFormResourceField = <
   return (
     <div className="flex flex-grow flex-col space-y-4">
       <Card className="flex min-h-[100px] w-full flex-row flex-wrap space-x-2 p-4">
-        {selectedResources.map((resource: T) => {
+        {selectedResources.map((resource: T, index: number) => {
           const { value, count } = resource;
 
           return (
             <Badge
               className="mb-2 flex h-[30px] max-h-[30px] flex-row justify-between space-x-2 text-sm"
               variant="secondary"
-              key={value}
+              key={value + index}
             >
-              <span>{resource.value}</span>
+              <span>
+                {value}{' '}
+                {props.displayIndex && selectedResources.length > 1
+                  ? index + 1
+                  : ''}
+              </span>
               {props.count && (
                 <div className="flex flex-row items-center justify-center space-x-1">
                   <Plus

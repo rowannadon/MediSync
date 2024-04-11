@@ -8,24 +8,24 @@ import {
 import { Card } from './components/ui/card';
 import { Input } from './components/ui/input';
 import { ScrollArea } from './components/ui/scroll-area';
-import { Procedure } from './TempData';
+import { PathwayTemplate } from './TempData';
 import { PathwayDisplay } from './PathwayDisplay';
 import { useRemoteDataStore } from './RemoteDataStore';
 
 interface PathwayLibraryProps {
-  onPathwayClick: (pathway: Procedure) => void;
-  selectedPathway: Procedure | null;
+  onPathwayClick: (pathway: PathwayTemplate) => void;
+  selectedPathway: PathwayTemplate | null;
 }
 
 export const PathwayLibrary = (props: PathwayLibraryProps) => {
   const [filter, setFilter] = useState<string>('');
   const pathways = useRemoteDataStore((state) => state.pathways);
-  const filteredPathways = pathways.filter((procedure: Procedure) =>
+  const filteredPathways = pathways.filter((procedure: PathwayTemplate) =>
     procedure.title.toLowerCase().includes(filter.toLowerCase()),
   );
   const [accordionValue, setAccordionValue] = useState<string[]>(['Templates']);
 
-  const displayedPathways = filteredPathways.map((pathway: Procedure) => {
+  const displayedPathways = filteredPathways.map((pathway: PathwayTemplate) => {
     return (
       <PathwayDisplay
         key={pathway.title}

@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Button } from './components/ui/button';
-import { ChevronLeft, ChevronRight, Plus, RefreshCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Card } from './components/ui/card';
 import {
   Table,

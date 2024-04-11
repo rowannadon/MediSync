@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../components/ui/tooltip';
-import { Procedure } from '../TempData';
+import { PathwayTemplate } from '../TempData';
 import { useDrop } from 'react-dnd';
 import { cn } from '../lib/utils';
 import { SidebarNav } from '../FormSidebarNav';
@@ -146,7 +146,7 @@ const PathwayLaunchEditor = () => {
           </div>
         </div>
         <PathwayLibrary
-          onPathwayClick={(pathway: Procedure) => {
+          onPathwayClick={(pathway: PathwayTemplate) => {
             if (selectedPathway !== pathway) {
               setSelectedPathway(pathway);
             } else {

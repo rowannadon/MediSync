@@ -13,7 +13,7 @@ import { Pin, PinOff, Plus, Trash } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Procedure } from '../TempData';
+import { RunningPathway } from '../TempData';
 import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
 import { add, parse } from 'date-fns';
@@ -22,11 +22,14 @@ import { useRemoteDataStore } from '@/RemoteDataStore';
 const Calendar = () => {
   const timelineRef = useRef<Timeline>(null);
   const [patientFilter, setPatientFilter] = useState<string>('');
-  const displayedPathways = useRef<Procedure[]>([]);
+  const displayedPathways = useRef<RunningPathway[]>([]);
   const [calendarLoading, setCalendarLoading] = useState<boolean>(false);
   const [pinnedPatients, setPinnedPatients] = useState<string[]>([]);
 
-  const pathways = useRemoteDataStore((state) => state.pathways);
+  const pathways = useRemoteDataStore((state) => state.runningPathways);
+  const getStageTemplate = useRemoteDataStore(
+    (state) => state.getStageTemplate,
+  );
 
   useEffect(() => {
     if (timelineRef.current) {
@@ -37,7 +40,7 @@ const Calendar = () => {
   useEffect(() => {
     if (pathways && timelineRef.current) {
       displayedPathways.current = pathways.filter(
-        (procedure: Procedure) =>
+        (procedure: RunningPathway) =>
           procedure.patient
             .toLowerCase()
             .includes(patientFilter.toLowerCase()) ||
@@ -54,57 +57,40 @@ const Calendar = () => {
       () => {
         if (timelineRef.current && displayedPathways.current) {
           const items2 = displayedPathways.current
-            .flatMap((procedure: Procedure) =>
+            .flatMap((procedure: RunningPathway) =>
               procedure.stages.map((stage) => ({
                 ...stage,
                 patient: procedure.patient,
               })),
             )
             .flatMap((stage) => {
-              let parsedDate = new Date(stage.date);
-              if (stage.time) {
-                const combinedDateTimeString = `${stage.date}T${stage.time}`;
-                parsedDate = parse(
-                  combinedDateTimeString,
-                  "yyyy-MM-dd'T'HH:mm",
-                  new Date(),
-                );
-              } else {
-                parsedDate = parse(stage.date, 'yyyy-MM-dd', new Date());
-              }
-
-              console.log(
-                'parsedDate',
-                parsedDate,
-                stage.date,
-                stage.time,
-                stage.duration,
-              );
-
+              console.log('stage', stage);
+              const template = getStageTemplate(stage.template);
+              console.log('template', template);
               const color =
-                stage.type == 'pre-operative'
+                template?.type == 'pre-operative'
                   ? '#FECACA'
-                  : stage.type == 'peri-operative'
+                  : template?.type == 'peri-operative'
                   ? '#FEF08A'
                   : '#BBF7D0';
               return [
                 {
-                  id: stage.name,
-                  start: parsedDate,
-                  title: stage.name,
-                  end: add(parsedDate, { minutes: stage.duration }),
-                  content: stage.name,
+                  id: stage.id,
+                  start: stage.date,
+                  title: template?.name ? template.name : 'No Name',
+                  end: add(stage.date, { minutes: template?.durationEstimate }),
+                  content: template?.name ? template.name : 'No Name',
                   group: stage.patient,
                   selectable: false,
                   type: 'box',
                   style: `background-color: ${color}; border: 1px solid #999;`,
                 },
                 {
-                  id: stage.name + '-background',
-                  start: parsedDate,
-                  title: stage.name,
+                  id: stage.id + '-background',
+                  start: stage.date,
+                  title: '',
+                  end: add(stage.date, { minutes: template?.durationEstimate }),
                   content: '',
-                  end: add(parsedDate, { minutes: stage.duration }),
                   group: stage.patient,
                   selectable: false,
                   type: 'background',
@@ -114,7 +100,7 @@ const Calendar = () => {
             });
 
           const groups2 = displayedPathways.current.map(
-            (procedure: Procedure) => {
+            (procedure: RunningPathway) => {
               return {
                 id: procedure.patient,
                 content: procedure.patient,

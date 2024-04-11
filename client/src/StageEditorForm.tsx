@@ -24,7 +24,7 @@ import {
 } from './components/ui/select';
 import { useEffect } from 'react';
 import { Textarea } from './components/ui/textarea';
-import { Stage } from './TempData';
+import { outputTypes, StageTemplate, stageTypes } from './TempData';
 import { StageEditorFormResourceField } from './StageEditorFormResourceField';
 import { useRemoteDataStore } from './RemoteDataStore';
 
@@ -47,33 +47,27 @@ const stageFormSchema = z.object({
   equipment: z.array(
     z.object({ type: z.string(), count: z.number(), desc: z.string() }),
   ),
-  outputs: z.array(z.object({ type: z.string(), title: z.string() })),
+  outputs: z.array(z.string()),
 });
 
 type StageFormValues = z.infer<typeof stageFormSchema>;
 
 interface StageEditorFormProps extends React.HTMLAttributes<HTMLElement> {
-  stage: Stage | null;
+  stage: StageTemplate | null;
   selectedStagePropertyType: string;
 }
 
 export function StageEditorForm(props: StageEditorFormProps) {
-  const stageTypes = [
-    { label: 'Pre-Operative', value: 'pre-operative' },
-    { label: 'Peri-Operative', value: 'peri-operative' },
-    { label: 'Post-Operative', value: 'post-operative' },
-  ];
-
   const people = useRemoteDataStore((state) => state.people);
   const rooms = useRemoteDataStore((state) => state.rooms);
 
-  const defaultValues: Partial<StageFormValues> = {
-    title: props.stage?.name || '',
-    type: props.stage?.type || '',
-    desc: props.stage?.desc || '',
-    staff: props.stage?.required_staff || [],
-    equipment: props.stage?.required_equipment || [],
-    outputs: [{ type: 'defaultOutput', title: 'Default Output' }],
+  const defaultValues: StageFormValues = {
+    title: '',
+    type: '',
+    desc: '',
+    staff: [],
+    equipment: [],
+    outputs: [],
   };
 
   const form = useForm<StageFormValues>({
@@ -88,30 +82,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
       form.setValue('desc', props.stage?.desc);
       form.setValue('staff', props.stage?.required_staff);
       form.setValue('equipment', props.stage?.required_equipment);
-
-      const mapStageToOutputs = (stage: Stage | null) => {
-        if (!stage || stage.next === null) {
-          return [];
-        } else if (typeof stage.next === 'string') {
-          return [
-            {
-              type: 'Scheduled Output',
-              title: 'Scheduled Output',
-              date: stage.date,
-            },
-          ];
-        } else if (Array.isArray(stage.next)) {
-          return stage.next.map((_, index) => ({
-            type: 'Scheduled Output',
-            title: `Scheduled Output ${index + 1}`,
-            date: stage.date,
-          }));
-        } else {
-          return [];
-        }
-      };
-
-      form.setValue('outputs', mapStageToOutputs(props.stage));
+      form.setValue('outputs', props.stage?.outputs || []);
     }
   }, [props.stage, form]);
 
@@ -120,7 +91,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
   }
 
   return (
-    <div className="flex-grow">
+    <div className="flex-grow pl-1 pr-1">
       {props.stage && (
         <div className="flex flex-grow flex-row p-2">
           <Form {...form}>
@@ -162,8 +133,8 @@ export function StageEditorForm(props: StageEditorFormProps) {
                           <SelectGroup>
                             <SelectLabel>Category</SelectLabel>
                             {stageTypes.map((type) => (
-                              <SelectItem key={type.value} value={type.value}>
-                                {type.label}
+                              <SelectItem key={type} value={type}>
+                                {type}
                               </SelectItem>
                             ))}
                           </SelectGroup>
@@ -204,6 +175,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
                         key={JSON.stringify(field.value)}
                         name="Staff"
                         displayAll={false}
+                        displayIndex={false}
                         count={false}
                         items={field.value.map((v: any) => ({
                           value: v,
@@ -231,6 +203,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
                       <StageEditorFormResourceField
                         key={JSON.stringify(field.value)}
                         displayAll={false}
+                        displayIndex={false}
                         name="Equipment"
                         count={true}
                         items={field.value.map((v: any) => ({
@@ -256,23 +229,20 @@ export function StageEditorForm(props: StageEditorFormProps) {
                   name="outputs"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Equipment</FormLabel>
+                      <FormLabel>Outputs</FormLabel>
                       <StageEditorFormResourceField
                         key={JSON.stringify(field.value)}
                         name="Outputs"
                         displayAll={true}
+                        displayIndex={true}
                         count={false}
-                        items={field.value.map((v: any) => ({
-                          value: v.title,
+                        items={field.value.map((v: string) => ({
+                          value: v,
                           count: 1,
-                          type: v.type,
-                          date: v.date,
                         }))}
-                        resources={field.value.map((v: any) => ({
-                          value: v.type,
+                        resources={outputTypes.map((v) => ({
+                          value: v,
                           count: 1,
-                          type: v.type,
-                          date: v.date,
                         }))}
                       />
                       <FormMessage />

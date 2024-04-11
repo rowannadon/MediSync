@@ -4,22 +4,30 @@ import {
   displayedRooms,
   HospitalRoom,
   Person,
-  Procedure,
+  PathwayTemplate,
   procedures,
-  Stage,
-  stages,
+  StageTemplate,
+  stageTemplates,
+  runningPathways,
+  RunningPathway,
 } from './TempData';
 
 export interface RemoteDataStore {
-  pathways: Procedure[];
+  pathways: PathwayTemplate[];
   people: Person[];
-  stages: Stage[];
+  stages: StageTemplate[];
   rooms: HospitalRoom[];
+  runningPathways: RunningPathway[];
+  getStageTemplate: (id: string) => StageTemplate | undefined;
 }
 
 export const useRemoteDataStore = create<RemoteDataStore>((_) => ({
   pathways: procedures,
   people: displayedPeople,
-  stages: stages,
+  stages: stageTemplates,
   rooms: displayedRooms,
+  runningPathways: runningPathways,
+  getStageTemplate: (id: string) => {
+    return stageTemplates.find((template) => template.id === id);
+  },
 }));

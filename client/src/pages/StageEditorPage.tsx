@@ -11,7 +11,6 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 import { StageLibrary } from '../StageLibrary';
-import { Stage } from '../TempData';
 import { StageEditorForm } from '../StageEditorForm';
 import { useDrop } from 'react-dnd';
 import { cn } from '../lib/utils';

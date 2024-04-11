@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 import { StageLibrary } from '../StageLibrary';
-import { Procedure } from '../TempData';
+import { PathwayTemplate } from '../TempData';
 import PathwayFlowDisplay from '../PathwayFlowDisplay';
 import { PathwayLibrary } from '../PathwayLibrary';
 import { useLocalDataStore } from '@/LocalDataStore';
@@ -86,7 +86,7 @@ const PathwayEditor = () => {
           <PathwayFlowDisplay pathway={selectedPathway} control={true} />
         </div>
         <PathwayLibrary
-          onPathwayClick={(pathway: Procedure) => {
+          onPathwayClick={(pathway: PathwayTemplate) => {
             console.log(pathway);
             if (selectedPathway !== pathway) {
               setSelectedPathway(pathway);

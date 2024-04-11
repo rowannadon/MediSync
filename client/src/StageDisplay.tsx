@@ -1,15 +1,15 @@
 import { Card } from './components/ui/card';
-import { Stage } from './TempData';
+import { StageTemplate } from './TempData';
 import { useDrag } from 'react-dnd';
 
 interface StageProps {
-  stage: Stage;
+  stage: StageTemplate;
   onClick: any;
   selected: boolean;
 }
 
 const Display = (props: {
-  stage: Stage;
+  stage: StageTemplate;
   color: string;
   onClick: any;
   selected: boolean;
@@ -49,6 +49,9 @@ const Display = (props: {
 };
 
 export const StageDisplay = ({ stage, onClick, selected }: StageProps) => {
+  if (!stage) {
+    return null;
+  }
   if (stage.type === 'post-operative') {
     return (
       <Display
