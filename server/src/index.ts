@@ -7,9 +7,12 @@ import mongoose from 'mongoose';
 import { databaseTest } from './models/databaseTest';
 import { v4 as uuid } from 'uuid';
 
+
 const httpPort = 3001;
 
 const socketIOPort = 3002;
+
+// const bcrypt = require('bcrypt');
 
 export const io = new Server(socketIOPort);
 export const app = express();
@@ -93,6 +96,17 @@ app.get('/health', (req: any, res: any) => {
 const server = app.listen(httpPort, () => {
   console.log(`Server listening on ${httpPort}`);
 });
+
+// app.post('/users', async (req, res) => {
+//   try {
+//     const salt = await bcrypt.genSalt();
+//     const hashedPassword = await bcrypt.hash(req.body.password, 10);
+//     const user = { name: req.body.name, password: hashedPassword };
+    
+//   } catch {
+//     res.status(500).send();
+//   }
+// });
 
 // clean up on exit
 process.on('exit', () => {

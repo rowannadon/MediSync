@@ -42,7 +42,7 @@ const NavMenu: React.FC = () => {
           <div className="flex flex-col items-center space-y-4 pt-3">
             <Tooltip>
               <TooltipTrigger>
-                <StyledLink href="/">
+                <StyledLink href="/tasks">
                   <Home className="h-7 w-7" />
                 </StyledLink>
               </TooltipTrigger>
@@ -130,6 +130,7 @@ const NavMenu: React.FC = () => {
                 <p>Test</p>
               </TooltipContent>
             </Tooltip>
+            <Tooltip></Tooltip>
           </div>
           <div className="flex flex-col items-center space-y-4 pb-3">
             <Tooltip>

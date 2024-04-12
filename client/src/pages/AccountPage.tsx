@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
 } from '../components/ui/popover';
 import { Card } from '../components/ui/card';
+import { Redirect, Link } from 'wouter';
 
 const AccountPage = () => {
   // Replace these values with the actual user's information
@@ -27,7 +28,9 @@ const AccountPage = () => {
       <Card className="mb-2 mr-2 mt-2 flex flex-grow">
         <div>
           <p className="pl-12 pt-7 text-xl">
-            <strong>User Information</strong>
+            <strong>
+              User Information
+            </strong>
           </p>
           <UserInfo
             name={user.name}
@@ -37,10 +40,15 @@ const AccountPage = () => {
             department={user.department}
             isAdmin={user.isAdmin}
           />
+          <Button className="rounded border-2 border-gray-400 ml-10 p-[5px]">
+              <Link href="/login"> Log In (test) </Link>
+          </Button>
         </div>
         <div className="flex flex-col space-y-4 pl-5 pt-7">
           <p className="text-xl">
-            <strong>Schedule</strong>
+            <strong>
+              Schedule
+            </strong>
           </p>
           <Popover>
             <PopoverTrigger asChild>

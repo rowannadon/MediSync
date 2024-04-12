@@ -12,13 +12,16 @@ import PathwayLaunchEditor from './pages/PathwayLaunchEditorPage';
 import ConflictManager from './pages/ConflictManagerPage';
 import TaskPage from './pages/TaskPage';
 import AccountPage from './pages/AccountPage';
+import LoginPage from './pages/LoginPage';
 
 const App = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <SocketProvider>
         <div className="flex h-screen w-screen flex-row">
-          <Route path="/" component={TaskPage}></Route>
+          <Route path="/" component={LoginPage}></Route>
+          <Route path="/tasks" component={TaskPage}></Route>
+          <Route path="/login" component={LoginPage}></Route>
           <Route path="/test" component={TestPage}></Route>
           <Route path="/pathway-editor" component={PathwayEditor}></Route>
           <Route path="/launch-pathway" component={PathwayLaunchEditor}></Route>

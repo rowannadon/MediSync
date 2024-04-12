@@ -53,7 +53,7 @@ const TasksDisplay = () => {
           <CarouselContent className="flex flex-1">
             {tasks.map((task, index) => (
               <CarouselItem key={index} className="flex flex-grow ">
-                <Card className="flex flex-grow flex-row items-center justify-start bg-red-200 p-8">
+                <Card className="flex flex-grow flex-row items-center justify-start bg-gray-200 p-8">
                   <Task
                     patient={task.patient}
                     time={task.time}
