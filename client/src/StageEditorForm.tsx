@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { date, z } from 'zod';
-
+import { z } from 'zod';
+import { isEqual, isMatch } from 'lodash';
 import {
   Form,
   FormControl,
@@ -22,14 +22,25 @@ import {
   SelectValue,
   SelectGroup,
 } from './components/ui/select';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Textarea } from './components/ui/textarea';
-import { outputTypes, StageTemplate, stageTypes } from './TempData';
+import {
+  OutputType,
+  outputTypes,
+  StageTemplate,
+  StageType,
+  stageTypes,
+} from './TempData';
 import { StageEditorFormResourceField } from './StageEditorFormResourceField';
 import { useRemoteDataStore } from './RemoteDataStore';
+import { Separator } from './components/ui/separator';
+import { CircleAlert } from 'lucide-react';
+import { ScrollArea } from './components/ui/scroll-area';
+import { useLocalDataStore } from './LocalDataStore';
+import { is } from 'date-fns/locale';
 
 const stageFormSchema = z.object({
-  title: z
+  name: z
     .string()
     .min(2, {
       message: 'Title must be at least 2 characters.',
@@ -43,6 +54,8 @@ const stageFormSchema = z.object({
   desc: z.string({
     required_error: 'Please add a description.',
   }),
+  room: z.string(),
+  durationEstimate: z.number(),
   staff: z.array(z.string()),
   equipment: z.array(
     z.object({ type: z.string(), count: z.number(), desc: z.string() }),
@@ -53,21 +66,32 @@ const stageFormSchema = z.object({
 type StageFormValues = z.infer<typeof stageFormSchema>;
 
 interface StageEditorFormProps extends React.HTMLAttributes<HTMLElement> {
-  stage: StageTemplate | null;
+  stage: StageTemplate;
   selectedStagePropertyType: string;
 }
 
-export function StageEditorForm(props: StageEditorFormProps) {
+export function StageEditorForm({
+  stage,
+  selectedStagePropertyType,
+}: StageEditorFormProps) {
   const people = useRemoteDataStore((state) => state.people);
   const rooms = useRemoteDataStore((state) => state.rooms);
+  const hasChanges = useLocalDataStore((state) => state.hasChanges);
+  const setHasChanges = useLocalDataStore((state) => state.setHasChanges);
+  const updateStageTemplate = useRemoteDataStore(
+    (state) => state.updateStageTemplate,
+  );
+  const setSelectedStage = useLocalDataStore((state) => state.setSelectedStage);
 
   const defaultValues: StageFormValues = {
-    title: '',
-    type: '',
-    desc: '',
-    staff: [],
-    equipment: [],
-    outputs: [],
+    name: stage.name,
+    type: stage.type,
+    desc: stage.desc,
+    room: stage.required_room,
+    durationEstimate: stage.durationEstimate,
+    staff: stage.required_staff,
+    equipment: stage.required_equipment,
+    outputs: stage.outputs,
   };
 
   const form = useForm<StageFormValues>({
@@ -76,33 +100,75 @@ export function StageEditorForm(props: StageEditorFormProps) {
   });
 
   useEffect(() => {
-    if (props.stage) {
-      form.setValue('title', props.stage?.name);
-      form.setValue('type', props.stage?.type);
-      form.setValue('desc', props.stage?.desc);
-      form.setValue('staff', props.stage?.required_staff);
-      form.setValue('equipment', props.stage?.required_equipment);
-      form.setValue('outputs', props.stage?.outputs || []);
+    if (stage && form) {
+      setHasChanges(false);
+      form.setValue('name', stage.name);
+      form.setValue('type', stage.type);
+      form.setValue('desc', stage.desc);
+      form.setValue('staff', stage.required_staff);
+      form.setValue('equipment', stage.required_equipment);
+      form.setValue('room', stage.required_room);
+      form.setValue('durationEstimate', stage.durationEstimate);
+      form.setValue('outputs', stage.outputs || []);
     }
-  }, [props.stage, form]);
+  }, [stage]);
 
   function onSubmit(data: StageFormValues) {
     console.log(data);
+    const newStageTemplate: StageTemplate = {
+      ...stage,
+      name: data.name,
+      type: data.type as StageType,
+      desc: data.desc,
+      required_staff: data.staff,
+      required_equipment: data.equipment,
+      required_room: data.room,
+      durationEstimate: data.durationEstimate,
+      outputs: data.outputs as OutputType[],
+    };
+    updateStageTemplate(newStageTemplate);
+    setSelectedStage(newStageTemplate);
   }
 
+  const computeChangedState = () => {
+    const formValues = form.getValues();
+    const newStageTemplate: StageTemplate = {
+      ...stage,
+      name: formValues.name,
+      type: formValues.type as StageType,
+      desc: formValues.desc,
+      required_staff: formValues.staff,
+      required_equipment: formValues.equipment,
+      required_room: formValues.room,
+      durationEstimate: formValues.durationEstimate,
+      outputs: formValues.outputs as OutputType[],
+    };
+
+    const changed = !isEqual(newStageTemplate, stage);
+    console.log('changed', changed);
+    setHasChanges(changed);
+  };
+
   return (
-    <div className="flex-grow pl-1 pr-1">
-      {props.stage && (
-        <div className="flex flex-grow flex-row p-2">
+    <div className="relative flex flex-grow pb-4 pt-4">
+      {hasChanges && (
+        <div className="absolute right-4 top-4 flex flex-row items-center rounded-lg bg-red-400 p-2 text-sm text-white">
+          <CircleAlert className="mr-2" />
+          Not Saved
+        </div>
+      )}
+      {stage && (
+        <div className="flex flex-grow flex-row overflow-auto pb-4 pl-1 pr-4 pt-4">
           <Form {...form}>
             <form
+              onChange={computeChangedState}
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex-grow space-y-8"
             >
-              {props.selectedStagePropertyType === 'information' && (
+              {selectedStagePropertyType === 'information' && (
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Title</FormLabel>
@@ -118,14 +184,17 @@ export function StageEditorForm(props: StageEditorFormProps) {
                   )}
                 />
               )}
-              {props.selectedStagePropertyType === 'information' && (
+              {selectedStagePropertyType === 'information' && (
                 <FormField
                   control={form.control}
                   name="type"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Stage Category</FormLabel>
-                      <Select value={field.value}>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <SelectTrigger className="w-[180px]">
                           <SelectValue placeholder="Select a stage type" />
                         </SelectTrigger>
@@ -149,7 +218,69 @@ export function StageEditorForm(props: StageEditorFormProps) {
                   )}
                 />
               )}
-              {props.selectedStagePropertyType === 'information' && (
+              {selectedStagePropertyType === 'information' && (
+                <FormField
+                  control={form.control}
+                  name="room"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Required Room</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Room</SelectLabel>
+                            <SelectItem value="none">None</SelectItem>
+                            <Separator className="mb-2 mt-2" />
+                            {Array.from(new Set(rooms.map((r) => r.type))).map(
+                              (room) => (
+                                <SelectItem key={room} value={room}>
+                                  {room}
+                                </SelectItem>
+                              ),
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+
+                      <FormDescription>Choose a type of room.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {selectedStagePropertyType === 'information' && (
+                <FormField
+                  control={form.control}
+                  name="durationEstimate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estimated Duration (minutes)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Estimated duration"
+                          {...field}
+                          onChange={(e) => {
+                            const numberValue = Number(e.target.value);
+                            field.onChange(numberValue);
+                          }}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Estimate the duration of the stage for the purpose of
+                        scheduling.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {selectedStagePropertyType === 'information' && (
                 <FormField
                   control={form.control}
                   name="desc"
@@ -164,7 +295,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
                   )}
                 />
               )}
-              {props.selectedStagePropertyType === 'resources' && (
+              {selectedStagePropertyType === 'resources' && (
                 <FormField
                   control={form.control}
                   name="staff"
@@ -172,6 +303,10 @@ export function StageEditorForm(props: StageEditorFormProps) {
                     <FormItem className="flex flex-col">
                       <FormLabel>Staff</FormLabel>
                       <StageEditorFormResourceField
+                        onChangeResources={(n) => {
+                          field.onChange(n.map((n) => n.value));
+                          computeChangedState();
+                        }}
                         key={JSON.stringify(field.value)}
                         name="Staff"
                         displayAll={false}
@@ -193,7 +328,7 @@ export function StageEditorForm(props: StageEditorFormProps) {
                   )}
                 />
               )}
-              {props.selectedStagePropertyType === 'resources' && (
+              {selectedStagePropertyType === 'resources' && (
                 <FormField
                   control={form.control}
                   name="equipment"
@@ -201,6 +336,18 @@ export function StageEditorForm(props: StageEditorFormProps) {
                     <FormItem className="flex flex-col">
                       <FormLabel>Equipment</FormLabel>
                       <StageEditorFormResourceField
+                        onChangeResources={(n) => {
+                          field.onChange(
+                            n.map((n) => {
+                              return {
+                                type: n.value,
+                                count: n.count,
+                                desc: n.desc,
+                              };
+                            }),
+                          );
+                          computeChangedState();
+                        }}
                         key={JSON.stringify(field.value)}
                         displayAll={false}
                         displayIndex={false}
@@ -209,21 +356,26 @@ export function StageEditorForm(props: StageEditorFormProps) {
                         items={field.value.map((v: any) => ({
                           value: v.type,
                           count: v.count,
+                          desc: v.desc,
                         }))}
                         resources={Array.from(
                           new Set(
                             rooms
                               .flatMap((r) => r.equipment)
-                              .map((p) => p.type),
+                              .map((e) => ({
+                                value: e.type,
+                                count: e.count,
+                                desc: e.desc,
+                              })),
                           ),
-                        ).map((v) => ({ value: v, count: 1 }))}
+                        )}
                       />
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               )}
-              {props.selectedStagePropertyType === 'outputs' && (
+              {selectedStagePropertyType === 'outputs' && (
                 <FormField
                   control={form.control}
                   name="outputs"
@@ -231,6 +383,10 @@ export function StageEditorForm(props: StageEditorFormProps) {
                     <FormItem className="flex flex-col">
                       <FormLabel>Outputs</FormLabel>
                       <StageEditorFormResourceField
+                        onChangeResources={(n) => {
+                          field.onChange(n.map((n) => n.value));
+                          computeChangedState();
+                        }}
                         key={JSON.stringify(field.value)}
                         name="Outputs"
                         displayAll={true}

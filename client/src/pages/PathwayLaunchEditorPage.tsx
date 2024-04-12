@@ -129,7 +129,7 @@ const PathwayLaunchEditor = () => {
                     controls={false}
                   />
                 </Card>
-                <div className="mt-4">
+                <div>
                   <SidebarNav
                     items={stagePropertyTypes}
                     selected={selectedPathwayPropertyType}

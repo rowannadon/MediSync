@@ -16,6 +16,7 @@ import { useDrop } from 'react-dnd';
 import { cn } from '../lib/utils';
 import { SidebarNav } from '../FormSidebarNav';
 import { useLocalDataStore } from '@/LocalDataStore';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 const StageEditor = () => {
   const selectedStage = useLocalDataStore((state) => state.selectedStage);
@@ -23,6 +24,8 @@ const StageEditor = () => {
   const clearSelectedStage = useLocalDataStore(
     (state) => state.clearSelectedStage,
   );
+  const hasChanges = useLocalDataStore((state) => state.hasChanges);
+  const setHasChanges = useLocalDataStore((state) => state.setHasChanges);
 
   const stagePropertyTypes = [
     { title: 'Information', id: 'information' },
@@ -39,6 +42,10 @@ const StageEditor = () => {
     // Props to collect
     drop: (item: any) => {
       const stage = item.props.stage;
+      if (hasChanges) {
+        if (!confirm('You have unsaved changes. Discard changes?')) return;
+        setHasChanges(false);
+      }
       setSelectedStage(stage);
     },
     collect: (monitor: any) => ({
@@ -107,12 +114,12 @@ const StageEditor = () => {
           </Card>
           <div
             className={cn(
-              'm-2 flex flex-grow rounded-lg',
+              'm-2 flex flex-grow overflow-auto rounded-lg',
               isOver ? 'bg-red-100' : '',
             )}
           >
             {selectedStage && (
-              <Card className={'flex flex-grow space-x-4 p-4'}>
+              <Card className={'flex flex-grow space-x-4 overflow-auto'}>
                 <SidebarNav
                   items={stagePropertyTypes}
                   selected={selectedStagePropertyType}

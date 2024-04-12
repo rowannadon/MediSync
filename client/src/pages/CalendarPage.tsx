@@ -13,7 +13,7 @@ import { Pin, PinOff, Plus, Trash } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { RunningPathway } from '../TempData';
+import { nodeColors, RunningPathway } from '../TempData';
 import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
 import { add, parse } from 'date-fns';
@@ -68,11 +68,7 @@ const Calendar = () => {
               const template = getStageTemplate(stage.template);
               console.log('template', template);
               const color =
-                template?.type == 'pre-operative'
-                  ? '#FECACA'
-                  : template?.type == 'peri-operative'
-                  ? '#FEF08A'
-                  : '#BBF7D0';
+                nodeColors[template?.type ? template.type : 'default'];
               return [
                 {
                   id: stage.id,
@@ -83,7 +79,7 @@ const Calendar = () => {
                   group: stage.patient,
                   selectable: false,
                   type: 'box',
-                  style: `background-color: ${color}; border: 1px solid #999;`,
+                  style: `background-color: ${color}; border: 1px solid #999`,
                 },
                 {
                   id: stage.id + '-background',
@@ -94,7 +90,7 @@ const Calendar = () => {
                   group: stage.patient,
                   selectable: false,
                   type: 'background',
-                  style: `background-color: ${color}; border-left: 1px solid red; border-right: 1px solid green;`,
+                  style: `background-color: ${color}; opacity: 0.8; border-left: 2px solid #777; border-right: 2px solid #777;`,
                 },
               ];
             });

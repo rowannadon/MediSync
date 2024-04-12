@@ -24,6 +24,8 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
     (state) => state.clearSelectedStage,
   );
   const stages = useRemoteDataStore((state) => state.stages);
+  const hasChanges = useLocalDataStore((state) => state.hasChanges);
+  const setHasChanges = useLocalDataStore((state) => state.setHasChanges);
 
   const [filter, setFilter] = useState<string>('');
   const filteredStages = stages.filter((stage: StageTemplate) =>
@@ -35,6 +37,10 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
 
   const onStageClick = (stage: StageTemplate) => {
     if (!selectable) return;
+    if (hasChanges) {
+      if (!confirm('You have unsaved changes. Discard changes?')) return;
+      setHasChanges(false);
+    }
     if (selectedStage !== stage) {
       setSelectedStage(stage);
     } else {

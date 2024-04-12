@@ -1,5 +1,5 @@
 import { Card } from './components/ui/card';
-import { PathwayTemplate } from './TempData';
+import { nodeColors, PathwayTemplate } from './TempData';
 import { useDrag } from 'react-dnd';
 
 interface PathwayProps {
@@ -10,7 +10,6 @@ interface PathwayProps {
 
 const Display = (props: {
   pathway: PathwayTemplate;
-  color: string;
   onClick: any;
   selected: boolean;
 }) => {
@@ -35,9 +34,11 @@ const Display = (props: {
         ref={drag}
         onClick={props.onClick}
         key={props.pathway.title}
-        className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center border-[2px] border-transparent p-2 hover:brightness-95 hover:filter ${
-          props.color
-        } ${props.selected ? 'border-[#888]' : ''}`}
+        style={{
+          backgroundColor: nodeColors['pathway'],
+        }}
+        className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center border-[2px] border-transparent p-2 hover:brightness-95 hover:filter
+         ${props.selected ? 'border-[#888]' : ''}`}
       >
         <h1 className="text-center text-base">{props.pathway.title}</h1>
         <p className="text-center text-xs text-muted-foreground">
@@ -53,12 +54,5 @@ export const PathwayDisplay = ({
   onClick,
   selected,
 }: PathwayProps) => {
-  return (
-    <Display
-      pathway={pathway}
-      color="bg-violet-200"
-      onClick={onClick}
-      selected={selected}
-    />
-  );
+  return <Display pathway={pathway} onClick={onClick} selected={selected} />;
 };
