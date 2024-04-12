@@ -149,6 +149,10 @@ export function StageEditorForm({
     setHasChanges(changed);
   };
 
+  useEffect(() => {
+    computeChangedState();
+  }, [form.watch()]);
+
   return (
     <div className="relative flex flex-grow pb-4 pt-4">
       {hasChanges && (
@@ -161,7 +165,6 @@ export function StageEditorForm({
         <div className="flex flex-grow flex-row overflow-auto pb-4 pl-1 pr-4 pt-4">
           <Form {...form}>
             <form
-              onChange={computeChangedState}
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex-grow space-y-8"
             >
@@ -305,7 +308,6 @@ export function StageEditorForm({
                       <StageEditorFormResourceField
                         onChangeResources={(n) => {
                           field.onChange(n.map((n) => n.value));
-                          computeChangedState();
                         }}
                         key={JSON.stringify(field.value)}
                         name="Staff"
@@ -346,7 +348,6 @@ export function StageEditorForm({
                               };
                             }),
                           );
-                          computeChangedState();
                         }}
                         key={JSON.stringify(field.value)}
                         displayAll={false}
@@ -358,17 +359,31 @@ export function StageEditorForm({
                           count: v.count,
                           desc: v.desc,
                         }))}
-                        resources={Array.from(
-                          new Set(
-                            rooms
-                              .flatMap((r) => r.equipment)
-                              .map((e) => ({
-                                value: e.type,
-                                count: e.count,
-                                desc: e.desc,
-                              })),
-                          ),
-                        )}
+                        resources={rooms
+                          .flatMap((r) => r.equipment)
+                          .reduce(
+                            (
+                              acc: {
+                                value: string;
+                                count: number;
+                                desc: string;
+                              }[],
+                              e,
+                            ) => {
+                              const foundIndex = acc.findIndex(
+                                (a) => a.value === e.type,
+                              );
+                              if (foundIndex === -1) {
+                                acc.push({
+                                  value: e.type,
+                                  count: 1,
+                                  desc: e.desc,
+                                });
+                              }
+                              return acc;
+                            },
+                            [],
+                          )}
                       />
                       <FormMessage />
                     </FormItem>
@@ -385,7 +400,6 @@ export function StageEditorForm({
                       <StageEditorFormResourceField
                         onChangeResources={(n) => {
                           field.onChange(n.map((n) => n.value));
-                          computeChangedState();
                         }}
                         key={JSON.stringify(field.value)}
                         name="Outputs"

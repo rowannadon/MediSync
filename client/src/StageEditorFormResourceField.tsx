@@ -40,7 +40,7 @@ export const StageEditorFormResourceField = <
 
   useEffect(() => {
     props.onChangeResources(selectedResources);
-  }, [selectedResources, props]);
+  }, [selectedResources]);
 
   return (
     <div className="flex flex-grow flex-col space-y-4">
