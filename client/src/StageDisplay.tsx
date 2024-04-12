@@ -1,5 +1,5 @@
 import { Card } from './components/ui/card';
-import { StageTemplate } from './TempData';
+import { nodeColors, StageTemplate } from './TempData';
 import { useDrag } from 'react-dnd';
 
 interface StageProps {
@@ -10,7 +10,6 @@ interface StageProps {
 
 const Display = (props: {
   stage: StageTemplate;
-  color: string;
   onClick: any;
   selected: boolean;
 }) => {
@@ -35,9 +34,12 @@ const Display = (props: {
         ref={drag}
         onClick={props.onClick}
         key={props.stage.name}
-        className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center border-[2px] border-transparent p-2 hover:brightness-95 hover:filter ${
-          props.color
-        } ${props.selected ? 'border-[#888]' : ''}`}
+        style={{
+          backgroundColor: nodeColors[props.stage.type],
+        }}
+        className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center border-[2px] border-transparent p-2 hover:brightness-95 hover:filter
+          ${nodeColors[props.stage.type]}
+        ${props.selected ? 'border-[#888]' : ''}`}
       >
         <h1 className="text-center text-base">{props.stage.name}</h1>
         <p className="text-center text-xs text-muted-foreground">
@@ -52,34 +54,5 @@ export const StageDisplay = ({ stage, onClick, selected }: StageProps) => {
   if (!stage) {
     return null;
   }
-  if (stage.type === 'post-operative') {
-    return (
-      <Display
-        stage={stage}
-        color="bg-green-200"
-        onClick={onClick}
-        selected={selected}
-      />
-    );
-  } else if (stage.type === 'peri-operative') {
-    return (
-      <Display
-        stage={stage}
-        color="bg-yellow-200"
-        onClick={onClick}
-        selected={selected}
-      />
-    );
-  } else if (stage.type === 'pre-operative') {
-    return (
-      <Display
-        stage={stage}
-        color="bg-red-200"
-        onClick={onClick}
-        selected={selected}
-      />
-    );
-  } else {
-    return null;
-  }
+  return <Display stage={stage} onClick={onClick} selected={selected} />;
 };

@@ -31,7 +31,7 @@ export function DataTableSingleFilter<TData, TValue>({
   options,
 }: DataTableSingleFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues();
-  var selectedValue = column?.getFilterValue() as string;
+  let selectedValue = column?.getFilterValue() as string;
 
   return (
     <Popover>

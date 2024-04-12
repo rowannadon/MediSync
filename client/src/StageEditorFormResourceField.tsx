@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card } from './components/ui/card';
 import { Badge } from './components/ui/badge';
 import { Minus, Plus, PlusCircle, X } from 'lucide-react';
@@ -25,6 +25,7 @@ interface StageEditorFormResourceFieldProps<T>
   resources: T[];
   displayAll: boolean;
   displayIndex: boolean;
+  onChangeResources: (items: T[]) => void;
 }
 
 export const StageEditorFormResourceField = <
@@ -36,6 +37,10 @@ export const StageEditorFormResourceField = <
     props.items || [],
   );
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    props.onChangeResources(selectedResources);
+  }, [selectedResources]);
 
   return (
     <div className="flex flex-grow flex-col space-y-4">
