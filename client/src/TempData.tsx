@@ -585,7 +585,7 @@ export const displayedPeople = [
   },
   {
     id: 1414,
-    name: 'Benjamin Scott',
+    name: 'Pat Scott',
     role: 'Medical Librarian',
     department: 'Library',
     phone: '555-888-4444',
@@ -624,6 +624,12 @@ export type HospitalRoom = {
 };
 
 export const displayedRooms: HospitalRoom[] = [
+  {
+    room_number: 223,
+    type: 'X-Ray Room',
+    equipment: [{ type: 'x-ray machine', count: 2, desc: 'X-ray Machine' }],
+    occupancy: { current: 0, total: 2 },
+  },
   {
     room_number: 102,
     type: 'Intensive Care Unit',
@@ -2027,6 +2033,7 @@ export interface PathwayTemplate {
 export interface RunningPathway extends PathwayTemplate {
   patient: string;
   startDate: Date;
+  notes: string;
   stages: RunningStage[];
 }
 
@@ -2189,7 +2196,7 @@ export const stageTemplates: StageTemplate[] = [
     id: '1e914995-58e4-4ad0-b20c-1ffdd4ebfba5',
     name: 'Mammogram',
     desc: 'X-Ray of Breast Area',
-    type: 'peri-operative',
+    type: 'diagnostic',
     required_staff: ['Interventional Radiologist', 'Nurse'],
     required_room: 'X-Ray Room',
     required_equipment: [],
@@ -2260,7 +2267,7 @@ export const stageTemplates: StageTemplate[] = [
     id: '085dbd09-31e9-481e-9ebc-18b7490fac02',
     name: 'Angiogram',
     desc: 'X-Ray using contrast dye.',
-    type: 'pre-operative',
+    type: 'diagnostic',
     required_staff: ['Interventional Radiologist', 'Nurse'],
     required_room: 'Cath Lab',
     required_equipment: [
@@ -2559,6 +2566,7 @@ export const runningPathways: RunningPathway[] = [
     title: 'Appendectomy',
     desc: 'Surgical removal of the appendix.',
     patient: 'John Smith',
+    notes: 'Patient has a history of appendicitis.',
     startDate: new Date('2024-04-01T08:00:00'),
     stages: [
       {

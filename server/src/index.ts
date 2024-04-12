@@ -7,7 +7,6 @@ import mongoose from 'mongoose';
 import { databaseTest } from './models/databaseTest';
 import { v4 as uuid } from 'uuid';
 
-
 const httpPort = 3001;
 
 const socketIOPort = 3002;
@@ -102,7 +101,7 @@ const server = app.listen(httpPort, () => {
 //     const salt = await bcrypt.genSalt();
 //     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 //     const user = { name: req.body.name, password: hashedPassword };
-    
+
 //   } catch {
 //     res.status(500).send();
 //   }

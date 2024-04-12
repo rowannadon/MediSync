@@ -108,10 +108,6 @@ const PathwayLaunchEditor = () => {
                     <p>Delete Stage</p>
                   </TooltipContent>
                 </Tooltip>
-                <Button variant="default" size="sm" className="flex space-x-2">
-                  <Rocket className="h-6 w-6" />
-                  <div>Launch Pathway</div>
-                </Button>
               </div>
             </TooltipProvider>
           </Card>

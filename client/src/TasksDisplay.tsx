@@ -38,7 +38,7 @@ const TasksDisplay = () => {
   ];
 
   return (
-    <Card className="m-2 flex flex-grow flex-col items-center justify-center p-4">
+    <Card className="mb-2 mr-2 mt-2 flex flex-grow flex-col items-center justify-center p-4">
       <p className="mb-4 text-4xl">
         <strong>Tasks</strong>
       </p>
@@ -50,7 +50,7 @@ const TasksDisplay = () => {
           }}
           className="flex flex-grow flex-col items-center justify-center"
         >
-          <CarouselContent className="flex flex-1">
+          <CarouselContent className="flex max-w-[400px] flex-1">
             {tasks.map((task, index) => (
               <CarouselItem key={index} className="flex flex-grow ">
                 <Card className="flex flex-grow flex-row items-center justify-start bg-gray-200 p-8">

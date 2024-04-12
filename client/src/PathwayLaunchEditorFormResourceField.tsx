@@ -20,6 +20,7 @@ interface PathwayLaunchEditorFormResourceFieldProps
   name: string;
   types: string[];
   options: string[];
+  onFieldChange: (value: string) => void;
 }
 
 export const PathwayLaunchEditorFormResourceField = (
@@ -50,6 +51,7 @@ export const PathwayLaunchEditorFormResourceField = (
                         console.log(option);
                         setOpen(false);
                         setSelectedType(option);
+                        props.onFieldChange(option);
                       }}
                     >
                       <span>{option}</span>

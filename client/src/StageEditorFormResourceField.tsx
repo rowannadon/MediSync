@@ -16,6 +16,7 @@ import {
   CommandList,
 } from './components/ui/command';
 import { Button } from './components/ui/button';
+import { ResourceSelector } from './ResourceSelector';
 
 interface StageEditorFormResourceFieldProps<T>
   extends React.HTMLAttributes<HTMLElement> {
@@ -36,7 +37,6 @@ export const StageEditorFormResourceField = <
   const [selectedResources, setSelectedResources] = useState<T[]>(
     props.items || [],
   );
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     props.onChangeResources(selectedResources);
@@ -107,60 +107,20 @@ export const StageEditorFormResourceField = <
           );
         })}
       </Card>
-      <Popover open={open}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 w-[200px] border-dashed"
-            onClick={() => setOpen(!open)}
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add {props.name}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0" align="start">
-          <Command>
-            <CommandInput placeholder={`Search for ${props.name}`} />
-            <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
-              <CommandGroup>
-                {props.resources.map((resource: T) => {
-                  if (
-                    !selectedResources
-                      .map((r) => r.value)
-                      .includes(resource.value) ||
-                    props.displayAll
-                  ) {
-                    return (
-                      <CommandItem
-                        key={resource.value}
-                        onSelect={() => {
-                          console.log(resource.value);
-                          setOpen(false);
-                          if (
-                            !selectedResources
-                              .map((r) => r.value)
-                              .includes(resource.value) ||
-                            props.displayAll
-                          ) {
-                            setSelectedResources([
-                              ...selectedResources,
-                              resource,
-                            ]);
-                          }
-                        }}
-                      >
-                        <span>{resource.value}</span>
-                      </CommandItem>
-                    );
-                  }
-                })}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+      <ResourceSelector
+        displayAll={props.displayAll}
+        resources={props.resources}
+        onSelectResource={(resource: T): void => {
+          if (
+            !selectedResources.map((r) => r.value).includes(resource.value) ||
+            props.displayAll
+          ) {
+            setSelectedResources([...selectedResources, resource]);
+          }
+        }}
+        selectedResources={selectedResources}
+        name={props.name}
+      />
     </div>
   );
 };

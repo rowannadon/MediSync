@@ -4,42 +4,46 @@ import { z } from 'zod';
 
 import {
   Form,
-  FormControl,
   FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from './components/ui/form';
-import { Input } from './components/ui/input';
 import { Button } from './components/ui/button';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Textarea } from './components/ui/textarea';
-import { outputTypes, Person, PathwayTemplate, PathwayStage } from './TempData';
-import { Rocket } from 'lucide-react';
+import { outputTypes, Person, PathwayTemplate } from './TempData';
+import { ChevronDown, Rocket } from 'lucide-react';
 import { PathwayLaunchEditorFormResourceField } from './PathwayLaunchEditorFormResourceField';
 import { Card } from './components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from './components/ui/table';
 import { ScrollArea } from './components/ui/scroll-area';
 import { DateTimePicker } from '@/components/ui/date-time-picker/date-time-picker';
 import { useRemoteDataStore } from './RemoteDataStore';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from './components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from './components/ui/command';
 
 const pathwayFormSchema = z.object({
-  title: z
-    .string()
-    .min(2, {
-      message: 'Title must be at least 2 characters.',
-    })
-    .max(30, {
-      message: 'Title must not be longer than 30 characters.',
-    }),
   patient: z.string({
     required_error: 'Please select a patient.',
   }),
-  desc: z.string({
-    required_error: 'Please add a description.',
-  }),
-  staff: z.array(z.object({ staff: z.string(), stage: z.string() })),
+  notes: z.string(),
+  startDate: z.string(),
+  staff: z.array(
+    z.object({ staff: z.string(), stage: z.string(), selected: z.string() }),
+  ),
   equipment: z.array(
     z.object({
       type: z.string(),
@@ -90,9 +94,9 @@ export function PathwayLaunchEditorForm({
   selectedPathwayPropertyType,
 }: PathwayLaunchEditorFormProps) {
   const defaultValues: Partial<PathwayFormValues> = {
-    title: pathway?.title || '',
     patient: '',
-    desc: pathway?.desc || '',
+    notes: '',
+    startDate: '',
   };
 
   const people = useRemoteDataStore((state) => state.people);
@@ -107,8 +111,6 @@ export function PathwayLaunchEditorForm({
 
   useEffect(() => {
     if (pathway) {
-      form.setValue('title', pathway?.title);
-      form.setValue('desc', pathway?.desc);
       form.setValue(
         'staff',
         pathway?.stages.flatMap((stage) => {
@@ -117,6 +119,7 @@ export function PathwayLaunchEditorForm({
           return template.required_staff.map((staff) => ({
             staff: staff,
             stage: template.name,
+            selected: 'Automatic',
           }));
         }),
       );
@@ -181,49 +184,95 @@ export function PathwayLaunchEditorForm({
                 {selectedPathwayPropertyType === 'information' && (
                   <FormField
                     control={form.control}
-                    name="title"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Stage title" {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          This is the title of the stage that will be displayed
-                          for the running pathway.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-                {selectedPathwayPropertyType === 'information' && (
-                  <FormField
-                    control={form.control}
-                    name="desc"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Description</FormLabel>
-                        <Textarea placeholder="" {...field} />
-
-                        <FormDescription>
-                          Add a description of the procedure to be performed.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-                {selectedPathwayPropertyType === 'information' && (
-                  <FormField
-                    control={form.control}
                     name="patient"
+                    render={({ field }) => {
+                      const [open, setOpen] = useState(false);
+                      return (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Patient</FormLabel>
+                          <Popover open={open}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-[200px] border-dashed"
+                                onClick={() => setOpen(!open)}
+                              >
+                                <div className="flex flex-grow flex-row justify-between">
+                                  <ChevronDown className="mr-2 h-4 w-4" />
+                                  <div className="flex-grow text-center">
+                                    {field.value}
+                                  </div>
+                                </div>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-[200px] p-0"
+                              align="start"
+                            >
+                              <Command>
+                                <CommandInput
+                                  placeholder={`Search for ${name}`}
+                                />
+                                <CommandList>
+                                  <CommandEmpty>No results found.</CommandEmpty>
+                                  <CommandGroup>
+                                    {people.map((person) => {
+                                      return (
+                                        <CommandItem
+                                          key={person.name}
+                                          onSelect={() => {
+                                            setOpen(false);
+                                            field.onChange(person.name);
+                                          }}
+                                        >
+                                          <span>{person.name}</span>
+                                        </CommandItem>
+                                      );
+                                    })}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                          <FormDescription>Add a patient.</FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                )}
+                {selectedPathwayPropertyType === 'information' && (
+                  <FormField
+                    control={form.control}
+                    name="notes"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Patient</FormLabel>
-                        <Input placeholder="" {...field} />
+                        <FormLabel>Notes</FormLabel>
+                        <Textarea {...field} />
 
-                        <FormDescription>Add a patient.</FormDescription>
+                        <FormDescription>
+                          Notes about the patient.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {selectedPathwayPropertyType === 'information' && (
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Start Date</FormLabel>
+                        <DateTimePicker
+                          granularity={'hour'}
+                          aria-label="Launch Date and Time"
+                          onChange={(date) => field.onChange(date.toString())}
+                        />
+
+                        <FormDescription>Start date.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -263,6 +312,9 @@ export function PathwayLaunchEditorForm({
                                                 <TableCell>
                                                   <PathwayLaunchEditorFormResourceField
                                                     name={staff.staff}
+                                                    onFieldChange={
+                                                      field.onChange
+                                                    }
                                                     types={Array.from(
                                                       new Set(
                                                         people.map(
@@ -371,6 +423,9 @@ export function PathwayLaunchEditorForm({
                                                 </TableCell>
                                                 <TableCell>
                                                   <PathwayLaunchEditorFormResourceField
+                                                    onFieldChange={
+                                                      field.onChange
+                                                    }
                                                     name={output.type}
                                                     types={Array.from(
                                                       new Set(
@@ -406,6 +461,10 @@ export function PathwayLaunchEditorForm({
                     }}
                   />
                 )}
+                <Button variant="default" size="sm" className="flex space-x-2">
+                  <Rocket className="h-6 w-6" />
+                  <div>Launch Pathway</div>
+                </Button>
               </form>
             </Form>
           </ScrollArea>
