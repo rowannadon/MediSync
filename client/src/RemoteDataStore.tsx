@@ -1,18 +1,14 @@
 import { create } from 'zustand';
 import {
-  displayedPeople,
-  displayedRooms,
   HospitalRoom,
   Person,
   PathwayTemplate,
-  procedures,
   StageTemplate,
-  stageTemplates,
-  runningPathways,
   RunningPathway,
   PathwayStage,
-} from './TempData';
-import io from 'socket.io-client';
+} from './DataTypes';
+import { subscribeWithSelector } from 'zustand/middleware'
+import axios from 'axios';
 
 export interface RemoteDataStore {
   pathways: PathwayTemplate[];
@@ -51,30 +47,42 @@ export interface RemoteDataStore {
   updatePathwayTemplate: (pathway: PathwayTemplate) => void;
   updatePerson: (person: Person) => void;
   updateRoom: (room: HospitalRoom) => void;
+  setPathwayTemplates: (pathways: PathwayTemplate[]) => void;
+  setPeople: (people: Person[]) => void;
+  setStageTemplates: (stages: StageTemplate[]) => void;
+  setRooms: (rooms: HospitalRoom[]) => void;
+  setRunningPathways: (runningPathways: RunningPathway[]) => void;
 }
 
-const websocketURL = `ws://${window.location.hostname}:${window.location.port}`;
 
-const socket = io(websocketURL);
-
-export const useRemoteDataStore = create<RemoteDataStore>((set, get) => ({
-  pathways: procedures,
-  people: displayedPeople,
-  stages: stageTemplates,
-  rooms: displayedRooms,
-  runningPathways: runningPathways,
+export const useRemoteDataStore = create(subscribeWithSelector<RemoteDataStore>((set, get) => ({
+  pathways: [],
+  people: [],
+  stages: [],
+  rooms: [],
+  runningPathways: [],
   getStageTemplate: (id: string) => {
     return get().stages.find((template) => template.id === id);
   },
-  addPathwayTemplate: (pathway: PathwayTemplate) => {
-    set((state: RemoteDataStore) => ({
-      pathways: [...state.pathways, pathway],
-    }));
+  addPathwayTemplate: async (pathway: PathwayTemplate) => {
+    const res = await axios.post('/api/pathwayTemplates', pathway)
+    if (res.status !== 200) {
+      console.error('Failed to add pathway template')
+    } else {
+      set((state: RemoteDataStore) => ({
+        pathways: [...state.pathways, pathway],
+      }));
+    }
   },
-  removePathwayTemplate: (pathwayId: string) => {
-    set((state) => ({
-      pathways: state.pathways.filter((template) => template.id !== pathwayId),
-    }));
+  removePathwayTemplate: async (pathwayId: string) => {
+    const res = await axios.delete('/api/pathwayTemplates/' + pathwayId)
+    if (res.status !== 200) {
+      console.error('Failed to add pathway template')
+    } else {
+      set((state) => ({
+        pathways: state.pathways.filter((template) => template.id !== pathwayId),
+      }));
+    }
   },
   addStageTemplate: (stage: StageTemplate) => {
     set((state) => ({
@@ -187,7 +195,6 @@ export const useRemoteDataStore = create<RemoteDataStore>((set, get) => ({
   },
   updatePathwayTemplate: (pathway: PathwayTemplate) => {
     const index = get().pathways.findIndex((p) => p.id === pathway.id);
-    console.log('updating pathway', pathway, index);
     if (index !== -1) {
       get().pathways[index] = pathway;
       set((state) => ({
@@ -215,4 +222,29 @@ export const useRemoteDataStore = create<RemoteDataStore>((set, get) => ({
       }));
     }
   },
-}));
+  setPathwayTemplates: (pathways: PathwayTemplate[]) => {
+    set(() => ({
+      pathways,
+    }));
+  },
+  setPeople: (people: Person[]) => {
+    set(() => ({
+      people,
+    }));
+  },
+  setStageTemplates: (stages: StageTemplate[]) => {
+    set(() => ({
+      stages,
+    }));
+  },
+  setRooms: (rooms: HospitalRoom[]) => {
+    set(() => ({
+      rooms,
+    }));
+  },
+  setRunningPathways: (runningPathways: RunningPathway[]) => {
+    set(() => ({
+      runningPathways,
+    }));
+  },
+})));

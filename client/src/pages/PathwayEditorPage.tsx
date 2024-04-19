@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 import { StageLibrary } from '../StageLibrary';
-import { PathwayTemplate } from '../TempData';
+import { PathwayTemplate } from '../DataTypes';
 import PathwayFlowDisplay from '../PathwayFlowDisplay';
 import { PathwayLibrary } from '../PathwayLibrary';
 import { useLocalDataStore } from '@/LocalDataStore';

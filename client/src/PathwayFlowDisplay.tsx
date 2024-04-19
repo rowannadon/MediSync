@@ -13,7 +13,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PathwayStage, PathwayTemplate } from './TempData';
+import { PathwayStage, PathwayTemplate } from './DataTypes';
 import { StageNode } from './StageNode';
 import { useDrop } from 'react-dnd';
 import { v4 as uuid } from 'uuid';

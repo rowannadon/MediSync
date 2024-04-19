@@ -13,7 +13,7 @@ import {
 import { Button } from './components/ui/button';
 import { useEffect, useState } from 'react';
 import { Textarea } from './components/ui/textarea';
-import { outputTypes, Person, PathwayTemplate } from './TempData';
+import { outputTypes, Person, PathwayTemplate } from './DataTypes';
 import { ChevronDown, Rocket } from 'lucide-react';
 import { PathwayLaunchEditorFormResourceField } from './PathwayLaunchEditorFormResourceField';
 import { Card } from './components/ui/card';

@@ -16,7 +16,7 @@ import { useDrop } from 'react-dnd';
 import { cn } from '../lib/utils';
 import { SidebarNav } from '../FormSidebarNav';
 import { useLocalDataStore } from '@/LocalDataStore';
-import { StageTemplate } from '@/TempData';
+import { StageTemplate } from '@/DataTypes';
 import { v4 as uuid } from 'uuid';
 import { useRemoteDataStore } from '@/RemoteDataStore';
 

@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../components/ui/tooltip';
-import { Conflict } from '../TempData';
+import { Conflict } from '../DataTypes';
 import { ConflictManagerForm } from '../ConflictManagerForm';
 
 const ConflictManager = () => {

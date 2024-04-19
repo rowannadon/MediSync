@@ -9,7 +9,7 @@ import { Card } from './components/ui/card';
 import { Input } from './components/ui/input';
 import { ScrollArea } from './components/ui/scroll-area';
 import { StageDisplay } from './StageDisplay';
-import { StageTemplate, StageType, stageTypes } from './TempData';
+import { StageTemplate, StageType, stageTypes } from './DataTypes';
 import { useLocalDataStore } from './LocalDataStore';
 import { useRemoteDataStore } from './RemoteDataStore';
 

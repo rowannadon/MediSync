@@ -1,5 +1,5 @@
 import { Card } from './components/ui/card';
-import { nodeColors, StageTemplate } from './TempData';
+import { nodeColors, StageTemplate } from './DataTypes';
 import { useDrag } from 'react-dnd';
 
 interface StageProps {

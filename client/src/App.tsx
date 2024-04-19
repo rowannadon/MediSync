@@ -12,23 +12,26 @@ import ConflictManager from './pages/ConflictManagerPage';
 import TaskPage from './pages/TaskPage';
 import AccountPage from './pages/AccountPage';
 import LoginPage from './pages/LoginPage';
+import { SocketProvider } from './SocketProvider';
 
 const App = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex h-screen w-screen flex-row">
-        <Route path="/" component={LoginPage}></Route>
-        <Route path="/tasks" component={TaskPage}></Route>
-        <Route path="/login" component={LoginPage}></Route>
-        <Route path="/test" component={TestPage}></Route>
-        <Route path="/pathway-editor" component={PathwayEditor}></Route>
-        <Route path="/launch-pathway" component={PathwayLaunchEditor}></Route>
-        <Route path="/stage-editor" component={StageEditor}></Route>
-        <Route path="/calendar" component={Calendar}></Route>
-        <Route path="/conflict" component={ConflictManager}></Route>
-        <Route path="/rooms" component={Rooms}></Route>
-        <Route path="/personnel" component={Personnel}></Route>
-        <Route path="/account" component={AccountPage}></Route>
+        <SocketProvider>
+          <Route path="/" component={LoginPage}></Route>
+          <Route path="/tasks" component={TaskPage}></Route>
+          <Route path="/login" component={LoginPage}></Route>
+          <Route path="/test" component={TestPage}></Route>
+          <Route path="/pathway-editor" component={PathwayEditor}></Route>
+          <Route path="/launch-pathway" component={PathwayLaunchEditor}></Route>
+          <Route path="/stage-editor" component={StageEditor}></Route>
+          <Route path="/calendar" component={Calendar}></Route>
+          <Route path="/conflict" component={ConflictManager}></Route>
+          <Route path="/rooms" component={Rooms}></Route>
+          <Route path="/personnel" component={Personnel}></Route>
+          <Route path="/account" component={AccountPage}></Route>
+        </SocketProvider>
       </div>
     </DndProvider>
   );

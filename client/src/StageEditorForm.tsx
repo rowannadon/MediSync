@@ -30,7 +30,7 @@ import {
   StageTemplate,
   StageType,
   stageTypes,
-} from './TempData';
+} from './DataTypes';
 import { StageEditorFormResourceField } from './StageEditorFormResourceField';
 import { useRemoteDataStore } from './RemoteDataStore';
 import { Separator } from './components/ui/separator';

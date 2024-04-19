@@ -13,7 +13,7 @@ import { Pin, PinOff, Plus, Trash } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { nodeColors, RunningPathway } from '../TempData';
+import { nodeColors, RunningPathway } from '../DataTypes';
 import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
 import { add, parse } from 'date-fns';

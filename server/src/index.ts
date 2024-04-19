@@ -1,10 +1,18 @@
-import { MongooseError } from 'mongoose';
+
+// server/src/index.js
+
+import { Connection, MongooseError } from 'mongoose';
 import express from 'express';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import { databaseTest } from './models/databaseTest';
 import { v4 as uuid } from 'uuid';
 import { UserModel } from './models/User';
+import { procedures, stageTemplates, runningPathways, displayedPeople, displayedRooms} from './initialData'
+import PathwayTemplate from './models/pathwayTemplate';
+import RunningPathway from './models/runningPathway';
+import StageTemplate from './models/stageTemplate';
+import {loadDb} from './loadDb';
 
 const httpPort = 3001;
 
@@ -78,6 +86,7 @@ try {
           }
         })
 
+      //loadDb(connection.db);
     })
     .catch((err: MongooseError) => {
       console.log(err);
@@ -86,34 +95,47 @@ try {
   console.log(err);
 }
 
+
 io.on('connection', (socket: any) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
     console.log('a user disconnected');
   });
-  socket.on('testSocketIo', (msg: any) => {
-    console.log(msg);
-    io.emit('test', 'This is a response from the server!');
+
+  socket.on('addPathwayTemplate', (pathwayTemplate: any) => {
+    console.log('adding pathway template', pathwayTemplate);
+    io.emit('addPathwayTemplate', pathwayTemplate);
   });
+
+  console.log('sending initial data');
+  socket.emit('pathwayTemplates', procedures);
+  socket.emit('people', displayedPeople);
+  socket.emit('rooms', displayedRooms);
+  socket.emit('stageTemplates', stageTemplates);
+  socket.emit('runningPathways', runningPathways);
 });
 
-// check if a guess is valid
-app.get('/test', (req: any, res: any) => {
-  console.log('test');
-  return res.json({ test: 'This is a response from the server!' });
+// add pathway template
+app.post('/pathwayTemplates', async (req: any, res: any) => {
+  console.log(req.body);
+  const pathwayTemplate = new PathwayTemplate({
+    ...req.body,
+    id: uuid(),
+  });
+  await pathwayTemplate.save();
+  return res.json();
 });
 
-app.post('/time', (req: any, res: any) => {
-  console.log('saving time', req.body);
-  databaseTest.create({ msg: req.body.time, id: uuid() });
-  return res.json({ time: req.body.time });
+app.delete('/pathwayTemplates/:id', async (req: any, res: any) => {
+  const id = req.params.id;
+  await PathwayTemplate.deleteOne({
+    id,
+  });
+  return res.json(id);
 });
 
-app.get('/time', async (req: any, res: any) => {
-  const times = await databaseTest.find({});
-
-  console.log(times);
-  return res.json({ time: times });
+app.get('/test', async (req: any, res: any) => {
+  return res.json({ status: 'healthy' });
 });
 
 app.get('/health', (req: any, res: any) => {

@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../components/ui/tooltip';
-import { PathwayTemplate } from '../TempData';
+import { PathwayTemplate } from '../DataTypes';
 import { useDrop } from 'react-dnd';
 import { cn } from '../lib/utils';
 import { SidebarNav } from '../FormSidebarNav';

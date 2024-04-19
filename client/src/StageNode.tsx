@@ -1,6 +1,6 @@
 import { Handle, Position } from 'reactflow';
 import { StageDisplay } from './StageDisplay';
-import { PathwayStage, StageType } from './TempData';
+import { PathwayStage, StageType } from './DataTypes';
 import { useRemoteDataStore } from './RemoteDataStore';
 
 export function StageNode(props: any) {

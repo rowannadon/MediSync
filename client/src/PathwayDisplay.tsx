@@ -1,5 +1,5 @@
 import { Card } from './components/ui/card';
-import { nodeColors, PathwayTemplate } from './TempData';
+import { nodeColors, PathwayTemplate } from './DataTypes';
 import { useDrag } from 'react-dnd';
 
 interface PathwayProps {

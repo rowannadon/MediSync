@@ -18,7 +18,7 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 import { DataTable } from '../DataTable';
-import { Equipment, HospitalRoom, Occupancy } from '../TempData';
+import { Equipment, HospitalRoom, Occupancy } from '../DataTypes';
 import { Badge } from '../components/ui/badge';
 import { useRemoteDataStore } from '@/RemoteDataStore';
 

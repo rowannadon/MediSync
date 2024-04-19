@@ -1,10 +1,8 @@
 import { create } from 'zustand';
 import {
   PathwayTemplate,
-  procedures,
   StageTemplate,
-  stageTemplates,
-} from './TempData';
+} from './DataTypes';
 
 export interface LocalDataStore {
   selectedStage: StageTemplate | null;
@@ -21,7 +19,7 @@ export interface LocalDataStore {
 }
 
 export const useLocalDataStore = create<LocalDataStore>((set) => ({
-  selectedStage: stageTemplates[0],
+  selectedStage: null,
   setSelectedStage: (stage: StageTemplate | null) =>
     set(() => ({ selectedStage: stage })),
   clearSelectedStage: () => set(() => ({ selectedStage: null })),
@@ -32,7 +30,7 @@ export const useLocalDataStore = create<LocalDataStore>((set) => ({
   setHasPathwayChanges: (hasStageChanges: boolean) =>
     set(() => ({ hasStageChanges })),
 
-  selectedPathway: procedures[0],
+  selectedPathway: null,
   setSelectedPathway: (pathway: PathwayTemplate) =>
     set(() => ({ selectedPathway: pathway })),
   clearSelectedPathway: () => set(() => ({ selectedPathway: null })),
