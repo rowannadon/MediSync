@@ -9,6 +9,9 @@ import RunningPathway from './models/runningPathway';
 import StageTemplate from './models/stageTemplate';
 import { loadDb } from './loadDb';
 import { Request, Response, NextFunction } from 'express';
+import Person from './models/person';
+import HospitalRoom from './models/hospitalRoom';
+
 
 require('dotenv').config({ path: __dirname + '/../../.env' });
 
