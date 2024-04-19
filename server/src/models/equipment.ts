@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const equipmentSchema = new mongoose.Schema({
+export const equipmentSchema = new mongoose.Schema({
   type: String,
   count: Number,
   desc: String,

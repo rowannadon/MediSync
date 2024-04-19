@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import equipmentSchema from './equipment';
-import { outputTypes } from '../../../client/src/DataTypes';
+import { equipmentSchema } from './equipment';
+import { outputTypes } from '../DataTypes';
 
 const stageTemplateSchema = new mongoose.Schema({
   id: String,
@@ -9,10 +9,8 @@ const stageTemplateSchema = new mongoose.Schema({
   type: String,
   required_staff: [String],
   required_room: String,
-  required_equipment: [
-    { type: mongoose.Schema.Types.ObjectId, ref: 'Equipment' },
-  ],
-  outputs: { type: String, enum: outputTypes },
+  required_equipment: [{ type: equipmentSchema.obj }],
+  outputs: { type: [String], enum: outputTypes },
   durationEstimate: Number,
 });
 

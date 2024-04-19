@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
+import { pathwayStageSchema } from './pathwayStage';
 
 export const pathwayTemplateSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   title: String,
   desc: String,
-  stages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PathwayStage' }],
+  stages: [pathwayStageSchema.obj],
 });
 
 const PathwayTemplate = mongoose.model(

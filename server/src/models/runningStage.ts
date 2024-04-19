@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { pathwayStageSchema } from './pathwayStage';
 
-const runningStageSchema = new mongoose.Schema({
+export const runningStageSchema = new mongoose.Schema({
   ...pathwayStageSchema.obj,
   assigned_staff: [String],
   assigned_room: String,

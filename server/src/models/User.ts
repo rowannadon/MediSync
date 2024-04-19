@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Person } from '../../../client/src/TempData';
+import { Person } from '../DataTypes';
 
 export interface User extends Person {
   username: string;

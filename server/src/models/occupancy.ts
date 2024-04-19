@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const occupancySchema = new mongoose.Schema({
+export const occupancySchema = new mongoose.Schema({
   current: Number,
   total: Number,
 });

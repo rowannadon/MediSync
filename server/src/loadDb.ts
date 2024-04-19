@@ -11,10 +11,10 @@ import HospitalRoom from './models/hospitalRoom';
 import Person from './models/person';
 import { v4 as uuid } from 'uuid';
 
-export const loadDb = async (db: Connection) => {
-  console.log('db', db);
+export const loadDb = async (connection: Connection) => {
+  console.log('db', connection);
   console.log('Clearing database');
-  await db.dropDatabase();
+  await connection.db.dropDatabase();
   await PathwayTemplate.insertMany(procedures);
   await StageTemplate.insertMany(stageTemplates);
   await RunningPathway.insertMany(runningPathways);
