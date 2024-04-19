@@ -100,7 +100,6 @@ try {
   console.log(err);
 }
 
-
 io.on('connection', (socket: any) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
@@ -113,7 +112,6 @@ io.on('connection', (socket: any) => {
   socket.emit('rooms', displayedRooms);
   socket.emit('stageTemplates', stageTemplates);
   socket.emit('runningPathways', runningPathways);
-
 });
 
 // add pathway template
