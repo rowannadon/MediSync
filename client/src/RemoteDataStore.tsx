@@ -7,7 +7,7 @@ import {
   RunningPathway,
   PathwayStage,
 } from './DataTypes';
-import { subscribeWithSelector } from 'zustand/middleware'
+import { subscribeWithSelector } from 'zustand/middleware';
 import axios from 'axios';
 
 export interface RemoteDataStore {
@@ -54,197 +54,200 @@ export interface RemoteDataStore {
   setRunningPathways: (runningPathways: RunningPathway[]) => void;
 }
 
-
-export const useRemoteDataStore = create(subscribeWithSelector<RemoteDataStore>((set, get) => ({
-  pathways: [],
-  people: [],
-  stages: [],
-  rooms: [],
-  runningPathways: [],
-  getStageTemplate: (id: string) => {
-    return get().stages.find((template) => template.id === id);
-  },
-  addPathwayTemplate: async (pathway: PathwayTemplate) => {
-    const res = await axios.post('/api/pathwayTemplates', pathway)
-    if (res.status !== 200) {
-      console.error('Failed to add pathway template')
-    } else {
-      set((state: RemoteDataStore) => ({
-        pathways: [...state.pathways, pathway],
-      }));
-    }
-  },
-  removePathwayTemplate: async (pathwayId: string) => {
-    const res = await axios.delete('/api/pathwayTemplates/' + pathwayId)
-    if (res.status !== 200) {
-      console.error('Failed to add pathway template')
-    } else {
+export const useRemoteDataStore = create(
+  subscribeWithSelector<RemoteDataStore>((set, get) => ({
+    pathways: [],
+    people: [],
+    stages: [],
+    rooms: [],
+    runningPathways: [],
+    getStageTemplate: (id: string) => {
+      return get().stages.find((template) => template.id === id);
+    },
+    addPathwayTemplate: async (pathway: PathwayTemplate) => {
+      const res = await axios.post('/api/pathwayTemplates', pathway);
+      if (res.status !== 200) {
+        console.error('Failed to add pathway template');
+      } else {
+        set((state: RemoteDataStore) => ({
+          pathways: [...state.pathways, pathway],
+        }));
+      }
+    },
+    removePathwayTemplate: async (pathwayId: string) => {
+      const res = await axios.delete('/api/pathwayTemplates/' + pathwayId);
+      if (res.status !== 200) {
+        console.error('Failed to add pathway template');
+      } else {
+        set((state) => ({
+          pathways: state.pathways.filter(
+            (template) => template.id !== pathwayId,
+          ),
+        }));
+      }
+    },
+    addStageTemplate: (stage: StageTemplate) => {
       set((state) => ({
-        pathways: state.pathways.filter((template) => template.id !== pathwayId),
+        stages: [...state.stages, stage],
       }));
-    }
-  },
-  addStageTemplate: (stage: StageTemplate) => {
-    set((state) => ({
-      stages: [...state.stages, stage],
-    }));
-  },
-  removeStageTemplate: (stageId: string) => {
-    set((state) => ({
-      stages: state.stages.filter((template) => template.id !== stageId),
-    }));
-  },
-  addPerson: (person: Person) => {
-    set((state) => ({
-      people: [...state.people, person],
-    }));
-  },
-  addRoom: (room: HospitalRoom) => {
-    set((state) => ({
-      rooms: [...state.rooms, room],
-    }));
-  },
-  addRunningPathway: (runningPathway: RunningPathway) => {
-    set((state) => ({
-      runningPathways: [...state.runningPathways, runningPathway],
-    }));
-  },
-  addStageToPathwayTemplate: (
-    pathwayTemplateId: string,
-    stage: PathwayStage,
-  ) => {
-    const pathwayTemplate = get().pathways.find(
-      (pathway) => pathway.id === pathwayTemplateId,
-    );
-    if (pathwayTemplate) {
-      pathwayTemplate.stages.push(stage);
+    },
+    removeStageTemplate: (stageId: string) => {
       set((state) => ({
-        pathways: [...state.pathways],
+        stages: state.stages.filter((template) => template.id !== stageId),
       }));
-    }
-  },
-  removeStageFromPathwayTemplate: (
-    pathwayTemplateId: string,
-    stageId: string,
-  ) => {
-    const pathwayTemplate = get().pathways.find(
-      (pathway) => pathway.id === pathwayTemplateId,
-    );
-    if (pathwayTemplate) {
-      pathwayTemplate.stages = pathwayTemplate.stages.filter(
-        (stage) => stage.id !== stageId,
+    },
+    addPerson: (person: Person) => {
+      set((state) => ({
+        people: [...state.people, person],
+      }));
+    },
+    addRoom: (room: HospitalRoom) => {
+      set((state) => ({
+        rooms: [...state.rooms, room],
+      }));
+    },
+    addRunningPathway: (runningPathway: RunningPathway) => {
+      set((state) => ({
+        runningPathways: [...state.runningPathways, runningPathway],
+      }));
+    },
+    addStageToPathwayTemplate: (
+      pathwayTemplateId: string,
+      stage: PathwayStage,
+    ) => {
+      const pathwayTemplate = get().pathways.find(
+        (pathway) => pathway.id === pathwayTemplateId,
       );
-      set((state) => ({
-        pathways: [...state.pathways],
-      }));
-    }
-  },
-  addNextToPathwayStage: (
-    pathwayTemplateId: string,
-    stageId: string,
-    nextId: string,
-    outputType: string,
-  ) => {
-    const pathwayTemplate = get().pathways.find(
-      (pathway) => pathway.id === pathwayTemplateId,
-    );
-    if (pathwayTemplate) {
-      const stage: PathwayStage | undefined = pathwayTemplate.stages.find(
-        (stage) => stage.id === stageId,
-      );
-      if (stage) {
-        stage.next.push({ [outputType]: nextId });
+      if (pathwayTemplate) {
+        pathwayTemplate.stages.push(stage);
         set((state) => ({
           pathways: [...state.pathways],
         }));
       }
-    }
-  },
-  removeNextFromPathwayStage: (
-    pathwayTemplateId: string,
-    stageId: string,
-    nextId: string,
-  ) => {
-    const pathwayTemplate = get().pathways.find(
-      (pathway) => pathway.id === pathwayTemplateId,
-    );
-    if (pathwayTemplate) {
-      const stage: PathwayStage | undefined = pathwayTemplate.stages.find(
-        (stage) => stage.id === stageId,
+    },
+    removeStageFromPathwayTemplate: (
+      pathwayTemplateId: string,
+      stageId: string,
+    ) => {
+      const pathwayTemplate = get().pathways.find(
+        (pathway) => pathway.id === pathwayTemplateId,
       );
-      if (stage) {
-        stage.next = stage.next.filter(
-          (next) => Object.values(next)[0] !== nextId,
+      if (pathwayTemplate) {
+        pathwayTemplate.stages = pathwayTemplate.stages.filter(
+          (stage) => stage.id !== stageId,
         );
         set((state) => ({
           pathways: [...state.pathways],
         }));
       }
-    }
-  },
-  updateStageTemplate: (stage: StageTemplate) => {
-    const index = get().stages.findIndex(
-      (template) => template.id === stage.id,
-    );
-    if (index !== -1) {
-      get().stages[index] = stage;
-      set((state) => ({
-        stages: [...state.stages],
+    },
+    addNextToPathwayStage: (
+      pathwayTemplateId: string,
+      stageId: string,
+      nextId: string,
+      outputType: string,
+    ) => {
+      const pathwayTemplate = get().pathways.find(
+        (pathway) => pathway.id === pathwayTemplateId,
+      );
+      if (pathwayTemplate) {
+        const stage: PathwayStage | undefined = pathwayTemplate.stages.find(
+          (stage) => stage.id === stageId,
+        );
+        if (stage) {
+          stage.next.push({ [outputType]: nextId });
+          set((state) => ({
+            pathways: [...state.pathways],
+          }));
+        }
+      }
+    },
+    removeNextFromPathwayStage: (
+      pathwayTemplateId: string,
+      stageId: string,
+      nextId: string,
+    ) => {
+      const pathwayTemplate = get().pathways.find(
+        (pathway) => pathway.id === pathwayTemplateId,
+      );
+      if (pathwayTemplate) {
+        const stage: PathwayStage | undefined = pathwayTemplate.stages.find(
+          (stage) => stage.id === stageId,
+        );
+        if (stage) {
+          stage.next = stage.next.filter(
+            (next) => Object.values(next)[0] !== nextId,
+          );
+          set((state) => ({
+            pathways: [...state.pathways],
+          }));
+        }
+      }
+    },
+    updateStageTemplate: (stage: StageTemplate) => {
+      const index = get().stages.findIndex(
+        (template) => template.id === stage.id,
+      );
+      if (index !== -1) {
+        get().stages[index] = stage;
+        set((state) => ({
+          stages: [...state.stages],
+        }));
+      }
+    },
+    updatePathwayTemplate: (pathway: PathwayTemplate) => {
+      const index = get().pathways.findIndex((p) => p.id === pathway.id);
+      if (index !== -1) {
+        get().pathways[index] = pathway;
+        set((state) => ({
+          pathways: [...state.pathways],
+        }));
+      }
+    },
+    updatePerson: (person: Person) => {
+      const index = get().people.findIndex((p) => p.id === person.id);
+      if (index !== -1) {
+        get().people[index] = person;
+        set((state) => ({
+          people: [...state.people],
+        }));
+      }
+    },
+    updateRoom: (room: HospitalRoom) => {
+      const index = get().rooms.findIndex(
+        (r) => r.room_number === room.room_number,
+      );
+      if (index !== -1) {
+        get().rooms[index] = room;
+        set((state) => ({
+          rooms: [...state.rooms],
+        }));
+      }
+    },
+    setPathwayTemplates: (pathways: PathwayTemplate[]) => {
+      set(() => ({
+        pathways,
       }));
-    }
-  },
-  updatePathwayTemplate: (pathway: PathwayTemplate) => {
-    const index = get().pathways.findIndex((p) => p.id === pathway.id);
-    if (index !== -1) {
-      get().pathways[index] = pathway;
-      set((state) => ({
-        pathways: [...state.pathways],
+    },
+    setPeople: (people: Person[]) => {
+      set(() => ({
+        people,
       }));
-    }
-  },
-  updatePerson: (person: Person) => {
-    const index = get().people.findIndex((p) => p.id === person.id);
-    if (index !== -1) {
-      get().people[index] = person;
-      set((state) => ({
-        people: [...state.people],
+    },
+    setStageTemplates: (stages: StageTemplate[]) => {
+      set(() => ({
+        stages,
       }));
-    }
-  },
-  updateRoom: (room: HospitalRoom) => {
-    const index = get().rooms.findIndex(
-      (r) => r.room_number === room.room_number,
-    );
-    if (index !== -1) {
-      get().rooms[index] = room;
-      set((state) => ({
-        rooms: [...state.rooms],
+    },
+    setRooms: (rooms: HospitalRoom[]) => {
+      set(() => ({
+        rooms,
       }));
-    }
-  },
-  setPathwayTemplates: (pathways: PathwayTemplate[]) => {
-    set(() => ({
-      pathways,
-    }));
-  },
-  setPeople: (people: Person[]) => {
-    set(() => ({
-      people,
-    }));
-  },
-  setStageTemplates: (stages: StageTemplate[]) => {
-    set(() => ({
-      stages,
-    }));
-  },
-  setRooms: (rooms: HospitalRoom[]) => {
-    set(() => ({
-      rooms,
-    }));
-  },
-  setRunningPathways: (runningPathways: RunningPathway[]) => {
-    set(() => ({
-      runningPathways,
-    }));
-  },
-})));
+    },
+    setRunningPathways: (runningPathways: RunningPathway[]) => {
+      set(() => ({
+        runningPathways,
+      }));
+    },
+  })),
+);

@@ -6,7 +6,7 @@ const runningPathwaySchema = new mongoose.Schema({
   patient: String,
   startDate: Date,
   notes: String,
-  stages: [{type: mongoose.Schema.Types.ObjectId, ref: 'RunningStage'}],
+  stages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RunningStage' }],
 });
 
 const RunningPathway = mongoose.model('RunningPathway', runningPathwaySchema);

@@ -9,7 +9,9 @@ const stageTemplateSchema = new mongoose.Schema({
   type: String,
   required_staff: [String],
   required_room: String,
-  required_equipment: [{type: mongoose.Schema.Types.ObjectId, ref: 'Equipment'}],
+  required_equipment: [
+    { type: mongoose.Schema.Types.ObjectId, ref: 'Equipment' },
+  ],
   outputs: { type: String, enum: outputTypes },
   durationEstimate: Number,
 });

@@ -1,4 +1,3 @@
-
 // server/src/index.js
 
 import { Connection, MongooseError } from 'mongoose';
@@ -8,11 +7,17 @@ import mongoose from 'mongoose';
 import { databaseTest } from './models/databaseTest';
 import { v4 as uuid } from 'uuid';
 import { UserModel } from './models/User';
-import { procedures, stageTemplates, runningPathways, displayedPeople, displayedRooms} from './initialData'
+import {
+  procedures,
+  stageTemplates,
+  runningPathways,
+  displayedPeople,
+  displayedRooms,
+} from './initialData';
 import PathwayTemplate from './models/pathwayTemplate';
 import RunningPathway from './models/runningPathway';
 import StageTemplate from './models/stageTemplate';
-import {loadDb} from './loadDb';
+import { loadDb } from './loadDb';
 
 const httpPort = 3001;
 
@@ -58,33 +63,33 @@ try {
     .then((connection: any) => {
       db = connection;
       console.log('Connected to mongodb');
-      UserModel.findOne({ username: 'test' })
-        .then((existingUser) => {
-          if (!existingUser) {
-            const user = new UserModel({
-              id: 9999,
-              name: 'Test User',
-              role: 'Admin',
-              department: 'Administrator',
-              phone: '1234567890',
-              email: 'admin@example.com',
-              admin: true,
-              location: 'Room 9999',
-              username: 'test',
-              password: 'test',
-            });
+      UserModel.findOne({ username: 'test' }).then((existingUser) => {
+        if (!existingUser) {
+          const user = new UserModel({
+            id: 9999,
+            name: 'Test User',
+            role: 'Admin',
+            department: 'Administrator',
+            phone: '1234567890',
+            email: 'admin@example.com',
+            admin: true,
+            location: 'Room 9999',
+            username: 'test',
+            password: 'test',
+          });
 
-            user.save()
-              .then(() => {
-                console.log('User created');
-              })
-              .catch((err) => {
-                console.log(err);
-              });
-          } else {
-            console.log('User already exists');
-          }
-        })
+          user
+            .save()
+            .then(() => {
+              console.log('User created');
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          console.log('User already exists');
+        }
+      });
 
       //loadDb(connection.db);
     })
@@ -94,7 +99,6 @@ try {
 } catch (err) {
   console.log(err);
 }
-
 
 io.on('connection', (socket: any) => {
   console.log('a user connected');

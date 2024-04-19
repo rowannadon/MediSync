@@ -1,4 +1,9 @@
-import { HospitalRoom, PathwayTemplate, RunningPathway, StageTemplate } from "../../client/src/DataTypes";
+import {
+  HospitalRoom,
+  PathwayTemplate,
+  RunningPathway,
+  StageTemplate,
+} from '../../client/src/DataTypes';
 
 export const stageTemplates: StageTemplate[] = [
   {
