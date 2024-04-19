@@ -47,7 +47,7 @@ export interface RemoteDataStore {
   ) => void;
   updateStageTemplate: (stage: StageTemplate) => void;
   updatePathwayTemplate: (pathway: PathwayTemplate) => void;
-  updatePerson: (person: Person) => void;
+  // updatePerson: (person: Person) => void;
   updateRoom: (room: HospitalRoom) => void;
   setPathwayTemplates: (pathways: PathwayTemplate[]) => void;
   setPeople: (people: Person[]) => void;
@@ -257,15 +257,15 @@ export const useRemoteDataStore = create(
         }));
       }
     },
-    updatePerson: (person: Person) => {
-      const index = get().people.findIndex((p) => p.id === person.id);
-      if (index !== -1) {
-        get().people[index] = person;
-        set((state) => ({
-          people: [...state.people],
-        }));
-      }
-    },
+    // updatePerson: (person: Person) => {
+    //   const index = get().people.findIndex((p) => p.id === person.id);
+    //   if (index !== -1) {
+    //     get().people[index] = person;
+    //     set((state) => ({
+    //       people: [...state.people],
+    //     }));
+    //   }
+    // },
     updateRoom: (room: HospitalRoom) => {
       const index = get().rooms.findIndex(
         (r) => r.room_number === room.room_number,
