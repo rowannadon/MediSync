@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const personSchema = new mongoose.Schema({
-  id: Number,
   name: String,
   role: String,
   department: String,

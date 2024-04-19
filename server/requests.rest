@@ -1,0 +1,41 @@
+
+POST http://localhost:3001/login
+Content-Type: application/json
+
+{
+"username": "test",
+"password": "test"
+}
+
+###
+
+Post http://localhost:3001/users
+Content-Type: application/json
+
+{
+    "name": "New User",
+    "role": "Worker",
+    "department": "Emergency",
+    "phone": "631-444-9999",
+    "email": "NewUser1@test.com",
+    "admin": false,
+    "location": "None",
+    "username": "NewUser1",
+    "password": "password"
+}
+
+###
+Post http://localhost:3001/users
+Content-Type: application/json
+
+{
+    "name": "New User",
+    "role": "Worker",
+    "department": "Emergency",
+    "phone": "631-333-5555",
+    "email": "NewUser2@test.com",
+    "admin": false,
+    "location": "None",
+    "username": "NewUser2",
+    "password": "password"
+}

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Person } from '../../../client/src/TempData';
+import { Person } from '../../../client/src/DataTypes';
 
 export interface User extends Person {
   username: string;
@@ -7,7 +7,6 @@ export interface User extends Person {
 }
 
 const userSchema = new mongoose.Schema<User>({
-  id: { type: Number, required: true },
   name: { type: String, required: true },
   role: { type: String, required: true },
   department: { type: String, required: true },

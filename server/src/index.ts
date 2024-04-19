@@ -1,5 +1,3 @@
-// server/src/index.js
-
 import { Connection, MongooseError } from 'mongoose';
 import express from 'express';
 import { Server } from 'socket.io';
@@ -18,18 +16,21 @@ import PathwayTemplate from './models/pathwayTemplate';
 import RunningPathway from './models/runningPathway';
 import StageTemplate from './models/stageTemplate';
 import { loadDb } from './loadDb';
+import { Request, Response, NextFunction } from 'express';
 
+require('dotenv').config({ path: __dirname + '/../../.env' });
+
+const jwt = require('jsonwebtoken');
 const httpPort = 3001;
-
 const socketIOPort = 3002;
 
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 
 export const io = new Server(socketIOPort);
 export const app = express();
 app.use(express.json());
 
-console.log(process.argv);
+// console.log(process.argv);
 const stage = process.env.STAGE;
 console.log(stage);
 
@@ -63,7 +64,7 @@ try {
     .then((connection: any) => {
       db = connection;
       console.log('Connected to mongodb');
-      UserModel.findOne({ username: 'test' }).then((existingUser) => {
+      UserModel.findOne({ id: 9999 }).then((existingUser) => {
         if (!existingUser) {
           const user = new UserModel({
             id: 9999,
@@ -81,7 +82,7 @@ try {
           user
             .save()
             .then(() => {
-              console.log('User created');
+              console.log('Test user created');
             })
             .catch((err) => {
               console.log(err);
@@ -119,6 +120,10 @@ io.on('connection', (socket: any) => {
   socket.emit('runningPathways', runningPathways);
 });
 
+interface RequestWithUser extends Request {
+  user?: any;
+};
+
 // add pathway template
 app.post('/pathwayTemplates', async (req: any, res: any) => {
   console.log(req.body);
@@ -150,16 +155,59 @@ const server = app.listen(httpPort, () => {
   console.log(`Server listening on ${httpPort}`);
 });
 
-// app.post('/users', async (req, res) => {
-//   try {
-//     const salt = await bcrypt.genSalt();
-//     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-//     const user = { name: req.body.name, password: hashedPassword };
+// to login and assign jwt token to user
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+  const user = { username: username, password: password };
+  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+  console.log(`access token secret: ${process.env.ACCESS_TOKEN_SECRET}`);
+  res.json({ accessToken: accessToken });
+});
 
-//   } catch {
-//     res.status(500).send();
-//   }
-// });
+
+app.get('/posts', authenticateToken, (req: RequestWithUser, res: Response) => {
+  res.json(req.user);
+});
+
+function authenticateToken(req: RequestWithUser, res: Response, next: NextFunction) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if(token==null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: Error, user: any) => {
+    if(err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+  
+};
+
+// to add a new user with a hashed password
+app.post('/users', async (req, res) => {
+  try {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const user = new UserModel({
+      name: req.body.name,
+      role: req.body.role,
+      department: req.body.department,
+      phone: req.body.phone,
+      email: req.body.email,
+      admin: req.body.admin,
+      location: req.body.location, 
+      username: req.body.username,
+      password: hashedPassword,
+    });
+
+    const savedUser = await user.save();
+    res.json(savedUser);
+
+
+  } catch {
+    res.status(500).send();
+  }
+});
 
 // clean up on exit
 process.on('exit', () => {
