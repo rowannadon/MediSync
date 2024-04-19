@@ -11,6 +11,8 @@ import {
   runningPathways,
   RunningPathway,
   PathwayStage,
+  Conflict,
+  conflicts,
 } from './TempData';
 
 export interface RemoteDataStore {
@@ -19,6 +21,7 @@ export interface RemoteDataStore {
   stages: StageTemplate[];
   rooms: HospitalRoom[];
   runningPathways: RunningPathway[];
+  conflicts: Conflict[];
   getStageTemplate: (id: string) => StageTemplate | undefined;
   addPathwayTemplate: (pathway: PathwayTemplate) => void;
   addStageTemplate: (stage: StageTemplate) => void;
@@ -33,6 +36,7 @@ export interface RemoteDataStore {
   updatePathwayTemplate: (pathway: PathwayTemplate) => void;
   updatePerson: (person: Person) => void;
   updateRoom: (room: HospitalRoom) => void;
+  addConflict: (conflict: Conflict) => void;
 }
 
 export const useRemoteDataStore = create<RemoteDataStore>((set, get) => ({
@@ -41,6 +45,7 @@ export const useRemoteDataStore = create<RemoteDataStore>((set, get) => ({
   stages: stageTemplates,
   rooms: displayedRooms,
   runningPathways: runningPathways,
+  conflicts: conflicts,
   getStageTemplate: (id: string) => {
     return stageTemplates.find((template) => template.id === id);
   },
@@ -124,5 +129,10 @@ export const useRemoteDataStore = create<RemoteDataStore>((set, get) => ({
         rooms: [...state.rooms],
       }));
     }
+  },
+  addConflict: (conflict: Conflict) => {
+    set((state) => ({
+      conflicts: [...state.conflicts, conflict],
+    }));
   },
 }));

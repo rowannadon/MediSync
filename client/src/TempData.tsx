@@ -2635,3 +2635,5 @@ export type Conflict = {
   pathway: string;
   time: string;
 };
+
+export const conflicts: Conflict[] = []
