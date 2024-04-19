@@ -24,11 +24,12 @@ import {
 } from './components/ui/select';
 import { useRemoteDataStore } from './RemoteDataStore';
 import { useLocalDataStore } from './LocalDataStore';
+
 import {
   OutputType,
   outputTypes,
   Conflict,
-} from './TempData';
+} from './DataTypes';
 import { useEffect, useState } from 'react';
 
 const conflictFormSchema = z.object({
@@ -48,9 +49,11 @@ interface ConflictManagerFormProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function ConflictManagerForm({conflict}: ConflictManagerFormProps) {
+  /*
   const addConflict = useRemoteDataStore(
     (state) => state.addConflict,
   );
+  */
 
   const pathways = ['pathway1', 'pathway2'];
 
@@ -78,7 +81,7 @@ export function ConflictManagerForm({conflict}: ConflictManagerFormProps) {
       time: data.time,
     };
     console.log(data);
-    addConflict(newConflict);
+    //addConflict(newConflict);
   }
 
   function onSubmit2(data: conflictManagerFormValues) {

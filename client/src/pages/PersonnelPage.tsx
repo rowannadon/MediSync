@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Check, ChevronsUpDown, MoreHorizontal, X } from 'lucide-react';
 import { DataTable } from '../DataTable';
-import { Person } from '../TempData';
+import { Person } from '../DataTypes';
 import { useRemoteDataStore } from '@/RemoteDataStore';
 
 export const columns: ColumnDef<Person>[] = [

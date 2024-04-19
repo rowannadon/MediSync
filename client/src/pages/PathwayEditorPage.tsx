@@ -11,10 +11,19 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 import { StageLibrary } from '../StageLibrary';
-import { PathwayTemplate } from '../TempData';
+import { PathwayTemplate } from '../DataTypes';
 import PathwayFlowDisplay from '../PathwayFlowDisplay';
 import { PathwayLibrary } from '../PathwayLibrary';
 import { useLocalDataStore } from '@/LocalDataStore';
+import { v4 as uuid } from 'uuid';
+import { useRemoteDataStore } from '@/RemoteDataStore';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const PathwayEditor = () => {
   const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
@@ -25,6 +34,38 @@ const PathwayEditor = () => {
     (state) => state.clearSelectedPathway,
   );
 
+  const addPathwayTemplate = useRemoteDataStore(
+    (state) => state.addPathwayTemplate,
+  );
+  const removePathwayTemplate = useRemoteDataStore(
+    (state) => state.removePathwayTemplate,
+  );
+
+  const [newPathwayName, setNewPathwayName] = useState('');
+  const [newPathwayDesc, setNewPathwayDesc] = useState('');
+  const [newPathwayMenuOpen, setNewPathwayMenuOpen] = useState(false);
+
+  const handleCreatePathway = () => {
+    setNewPathwayDesc('');
+    setNewPathwayName('');
+    setNewPathwayMenuOpen(false);
+    const newPathway: PathwayTemplate = {
+      id: uuid(),
+      desc: newPathwayDesc || '',
+      title: newPathwayName || 'Untitled Pathway',
+      stages: [],
+    };
+    setSelectedPathway(newPathway);
+    addPathwayTemplate(newPathway);
+  };
+
+  const handleDeletePathway = () => {
+    if (!selectedPathway) return;
+    if (!confirm('Are you sure you want to delete this pathway?')) return;
+    removePathwayTemplate(selectedPathway.id);
+    clearSelectedPathway();
+  };
+
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -34,45 +75,52 @@ const PathwayEditor = () => {
           <Card className="space-between ml-2 mr-2 mt-2 flex flex-row">
             <TooltipProvider>
               <div className="flex flex-1 flex-row space-x-2 p-4">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
+                <Popover
+                  open={newPathwayMenuOpen}
+                  onOpenChange={setNewPathwayMenuOpen}
+                >
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setNewPathwayMenuOpen(!newPathwayMenuOpen)}
+                    >
                       <FilePlus className="h-6 w-6" />
                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={5}>
-                    <p>New</p>
-                  </TooltipContent>
-                </Tooltip>
-
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <RefreshCcw className="h-6 w-6" />
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="flex flex-col space-y-3 p-4"
+                    align="start"
+                  >
+                    <Input
+                      value={newPathwayName}
+                      onChange={(v) => setNewPathwayName(v.target.value)}
+                      placeholder="Pathway name..."
+                    ></Input>
+                    <Textarea
+                      value={newPathwayDesc}
+                      onChange={(v) => setNewPathwayDesc(v.target.value)}
+                      placeholder="Description"
+                    ></Textarea>
+                    <Button variant="default" onClick={handleCreatePathway}>
+                      Create Pathway
                     </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={5}>
-                    <p>Reload</p>
-                  </TooltipContent>
-                </Tooltip>
+                  </PopoverContent>
+                </Popover>
               </div>
               <div className="flex flex-grow flex-row items-center justify-center p-4">
-                <h1 className="  text-lg font-bold">Pathway Template Editor</h1>
+                <h1 className="  text-lg font-bold">
+                  {selectedPathway && selectedPathway.title}
+                </h1>
               </div>
               <div className="flex flex-1 flex-row-reverse space-x-2 space-x-reverse p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Plus className="h-6 w-6" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={5}>
-                    <p>Add Node</p>
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="icon">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={handleDeletePathway}
+                    >
                       <Trash className="h-6 w-6" />
                     </Button>
                   </TooltipTrigger>
@@ -83,11 +131,10 @@ const PathwayEditor = () => {
               </div>
             </TooltipProvider>
           </Card>
-          <PathwayFlowDisplay pathway={selectedPathway} control={true} />
+          <PathwayFlowDisplay control={true} />
         </div>
         <PathwayLibrary
           onPathwayClick={(pathway: PathwayTemplate) => {
-            console.log(pathway);
             if (selectedPathway !== pathway) {
               setSelectedPathway(pathway);
             } else {

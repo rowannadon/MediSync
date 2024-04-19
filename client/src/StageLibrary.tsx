@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { createRef, useEffect, useState } from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -9,7 +9,7 @@ import { Card } from './components/ui/card';
 import { Input } from './components/ui/input';
 import { ScrollArea } from './components/ui/scroll-area';
 import { StageDisplay } from './StageDisplay';
-import { StageTemplate, StageType, stageTypes } from './TempData';
+import { StageTemplate, StageType, stageTypes } from './DataTypes';
 import { useLocalDataStore } from './LocalDataStore';
 import { useRemoteDataStore } from './RemoteDataStore';
 
@@ -24,8 +24,8 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
     (state) => state.clearSelectedStage,
   );
   const stages = useRemoteDataStore((state) => state.stages);
-  const hasChanges = useLocalDataStore((state) => state.hasChanges);
-  const setHasChanges = useLocalDataStore((state) => state.setHasChanges);
+  const hasChanges = useLocalDataStore((state) => state.hasStageChanges);
+  const setHasChanges = useLocalDataStore((state) => state.setHasStageChanges);
 
   const [filter, setFilter] = useState<string>('');
   const filteredStages = stages.filter((stage: StageTemplate) =>
@@ -34,6 +34,30 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
   const [accordionValue, setAccordionValue] = useState<string[]>([
     selectedStage ? selectedStage.type : stageTypes[0],
   ]);
+
+  const scrollRef = createRef<HTMLDivElement>();
+
+  useEffect(() => {
+    const scrollTo = (id: string) => {
+      const selectedElement = document.getElementById(id);
+      selectedElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center',
+      });
+    };
+
+    if (selectedStage) {
+      if (accordionValue.find((value) => value === selectedStage.type)) {
+        scrollTo(selectedStage.id);
+        return;
+      }
+      setAccordionValue((prev) => [...prev, selectedStage.type]);
+      setTimeout(() => {
+        scrollTo(selectedStage.id);
+      }, 500);
+    }
+  }, [selectedStage]);
 
   const onStageClick = (stage: StageTemplate) => {
     if (!selectable) return;
@@ -59,12 +83,13 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
             .filter((stage: StageTemplate) => stage.type === type)
             .map((stage: StageTemplate) => {
               return (
-                <StageDisplay
-                  stage={stage}
-                  key={stage.name}
-                  onClick={() => onStageClick(stage)}
-                  selected={selectable && selectedStage === stage}
-                />
+                <div id={stage.id} key={stage.name}>
+                  <StageDisplay
+                    stage={stage}
+                    onClick={() => onStageClick(stage)}
+                    selected={selectable && selectedStage === stage}
+                  />
+                </div>
               );
             })}
         </AccordionContent>
@@ -90,7 +115,7 @@ export const StageLibrary = ({ selectable }: StageLibraryProps) => {
         />
       </div>
 
-      <ScrollArea className="flex-grow px-2">
+      <ScrollArea className="flex-grow px-2" ref={scrollRef}>
         <Accordion
           type="multiple"
           className="w-full text-foreground"

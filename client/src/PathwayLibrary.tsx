@@ -8,7 +8,7 @@ import {
 import { Card } from './components/ui/card';
 import { Input } from './components/ui/input';
 import { ScrollArea } from './components/ui/scroll-area';
-import { PathwayTemplate } from './TempData';
+import { PathwayTemplate } from './DataTypes';
 import { PathwayDisplay } from './PathwayDisplay';
 import { useRemoteDataStore } from './RemoteDataStore';
 

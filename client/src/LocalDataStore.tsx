@@ -1,17 +1,14 @@
 import { create } from 'zustand';
-import {
-  PathwayTemplate,
-  procedures,
-  StageTemplate,
-  stageTemplates,
-} from './TempData';
+import { PathwayTemplate, StageTemplate } from './DataTypes';
 
 export interface LocalDataStore {
   selectedStage: StageTemplate | null;
   setSelectedStage: (stage: StageTemplate) => void;
   clearSelectedStage: () => void;
-  hasChanges: boolean;
-  setHasChanges: (hasChanges: boolean) => void;
+  hasStageChanges: boolean;
+  setHasStageChanges: (hasChanges: boolean) => void;
+  hasPathwayChanges: boolean;
+  setHasPathwayChanges: (hasChanges: boolean) => void;
 
   selectedPathway: PathwayTemplate | null;
   setSelectedPathway: (pathway: PathwayTemplate) => void;
@@ -19,14 +16,18 @@ export interface LocalDataStore {
 }
 
 export const useLocalDataStore = create<LocalDataStore>((set) => ({
-  selectedStage: stageTemplates[0],
-  setSelectedStage: (stage: StageTemplate) =>
+  selectedStage: null,
+  setSelectedStage: (stage: StageTemplate | null) =>
     set(() => ({ selectedStage: stage })),
   clearSelectedStage: () => set(() => ({ selectedStage: null })),
-  hasChanges: false,
-  setHasChanges: (hasChanges: boolean) => set(() => ({ hasChanges })),
+  hasStageChanges: false,
+  setHasStageChanges: (hasStageChanges: boolean) =>
+    set(() => ({ hasStageChanges })),
+  hasPathwayChanges: false,
+  setHasPathwayChanges: (hasStageChanges: boolean) =>
+    set(() => ({ hasStageChanges })),
 
-  selectedPathway: procedures[0],
+  selectedPathway: null,
   setSelectedPathway: (pathway: PathwayTemplate) =>
     set(() => ({ selectedPathway: pathway })),
   clearSelectedPathway: () => set(() => ({ selectedPathway: null })),

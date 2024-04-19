@@ -1,7 +1,6 @@
 import { Route } from 'wouter';
 import TestPage from './TestPage';
 import PathwayEditor from './pages/PathwayEditorPage';
-import { SocketProvider } from './SocketContext';
 import Calendar from './pages/CalendarPage';
 import Personnel from './pages/PersonnelPage';
 import Rooms from './pages/RoomsPage';
@@ -13,12 +12,13 @@ import ConflictManager from './pages/ConflictManagerPage';
 import TaskPage from './pages/TaskPage';
 import AccountPage from './pages/AccountPage';
 import LoginPage from './pages/LoginPage';
+import { SocketProvider } from './SocketProvider';
 
 const App = () => {
   return (
     <DndProvider backend={HTML5Backend}>
-      <SocketProvider>
-        <div className="flex h-screen w-screen flex-row">
+      <div className="flex h-screen w-screen flex-row">
+        <SocketProvider>
           <Route path="/" component={LoginPage}></Route>
           <Route path="/tasks" component={TaskPage}></Route>
           <Route path="/login" component={LoginPage}></Route>
@@ -31,8 +31,8 @@ const App = () => {
           <Route path="/rooms" component={Rooms}></Route>
           <Route path="/personnel" component={Personnel}></Route>
           <Route path="/account" component={AccountPage}></Route>
-        </div>
-      </SocketProvider>
+        </SocketProvider>
+      </div>
     </DndProvider>
   );
 };
