@@ -100,15 +100,11 @@ try {
   console.log(err);
 }
 
+
 io.on('connection', (socket: any) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
     console.log('a user disconnected');
-  });
-
-  socket.on('addPathwayTemplate', (pathwayTemplate: any) => {
-    console.log('adding pathway template', pathwayTemplate);
-    io.emit('addPathwayTemplate', pathwayTemplate);
   });
 
   console.log('sending initial data');
@@ -117,6 +113,7 @@ io.on('connection', (socket: any) => {
   socket.emit('rooms', displayedRooms);
   socket.emit('stageTemplates', stageTemplates);
   socket.emit('runningPathways', runningPathways);
+
 });
 
 // add pathway template
@@ -128,6 +125,29 @@ app.post('/pathwayTemplates', async (req: any, res: any) => {
   });
   await pathwayTemplate.save();
   return res.json();
+});
+
+// add pathway template
+app.post('/pathwayTemplates', async (req: any, res: any) => {
+  console.log(req.body);
+  const pathwayTemplate = new PathwayTemplate({
+    ...req.body,
+    id: uuid(),
+  });
+  await pathwayTemplate.save();
+  return res.json();
+});
+
+app.delete('/pathwayTemplates/:id', async (req: any, res: any) => {
+  const id = req.params.id;
+  await PathwayTemplate.deleteOne({
+    id,
+  });
+  return res.json(id);
+});
+
+app.get('/test', async (req: any, res: any) => {
+  return res.json({ status: 'healthy' });
 });
 
 app.delete('/pathwayTemplates/:id', async (req: any, res: any) => {

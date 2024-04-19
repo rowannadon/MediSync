@@ -7,7 +7,7 @@ import {
   RunningPathway,
   PathwayStage,
 } from './DataTypes';
-import { subscribeWithSelector } from 'zustand/middleware';
+import { subscribeWithSelector } from 'zustand/middleware'
 import axios from 'axios';
 
 export interface RemoteDataStore {

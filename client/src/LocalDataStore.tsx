@@ -1,5 +1,8 @@
 import { create } from 'zustand';
-import { PathwayTemplate, StageTemplate } from './DataTypes';
+import {
+  PathwayTemplate,
+  StageTemplate,
+} from './DataTypes';
 
 export interface LocalDataStore {
   selectedStage: StageTemplate | null;
