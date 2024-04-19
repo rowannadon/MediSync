@@ -25,11 +25,7 @@ import {
 import { useRemoteDataStore } from './RemoteDataStore';
 import { useLocalDataStore } from './LocalDataStore';
 
-import {
-  OutputType,
-  outputTypes,
-  Conflict,
-} from './DataTypes';
+import { OutputType, outputTypes, Conflict } from './DataTypes';
 import { useEffect, useState } from 'react';
 
 const conflictFormSchema = z.object({
@@ -48,7 +44,7 @@ interface ConflictManagerFormProps extends React.HTMLAttributes<HTMLElement> {
   conflict: Conflict;
 }
 
-export function ConflictManagerForm({conflict}: ConflictManagerFormProps) {
+export function ConflictManagerForm({ conflict }: ConflictManagerFormProps) {
   /*
   const addConflict = useRemoteDataStore(
     (state) => state.addConflict,
@@ -87,11 +83,10 @@ export function ConflictManagerForm({conflict}: ConflictManagerFormProps) {
   function onSubmit2(data: conflictManagerFormValues) {
     console.log(data);
   }
-  
 
   return (
     <div className="flex-grow ">
-      {(
+      {
         <div className="flex flex-grow flex-row p-2">
           <Form {...form}>
             <form
@@ -111,7 +106,10 @@ export function ConflictManagerForm({conflict}: ConflictManagerFormProps) {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Pathways</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <SelectTrigger className="w-[180px]">
                           {field.value}
                         </SelectTrigger>
@@ -155,7 +153,7 @@ export function ConflictManagerForm({conflict}: ConflictManagerFormProps) {
             </form>
           </Form>
         </div>
-      )}
+      }
       <div className="flex flex-grow flex-row p-2">
         <Form {...form}>
           <form

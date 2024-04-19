@@ -306,6 +306,6 @@ export const useRemoteDataStore = create(
       set((state) => ({
         conflicts: [...state.conflicts, conflict],
       }));
-    }
+    },
   })),
 );
