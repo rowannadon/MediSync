@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useSocket } from './SocketContext';
 import { ScrollArea } from './components/ui/scroll-area';
 import NavMenu from './NavMenu';
 import { Button } from './components/ui/button';
@@ -11,26 +10,6 @@ const TestPage = () => {
   const [socketIoResponse, setSocketIoResponse] = useState('');
   const [currentTime, setCurrentTime] = useState('');
   const [savedTime, setSavedTime] = useState(['']);
-
-  const socket = useSocket();
-
-  useEffect(() => {
-    function testResponse(message: string) {
-      setSocketIoResponse(message);
-    }
-
-    if (socket) {
-      console.log(socket);
-
-      setCurrentTime(new Date().toLocaleTimeString());
-
-      socket.on('test', testResponse);
-
-      return () => {
-        socket.off('test', testResponse);
-      };
-    }
-  }, [socket]);
 
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
@@ -52,20 +31,6 @@ const TestPage = () => {
                 Get API Response
               </Button>
               <p id="api-response">API response: {response}</p>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  socket?.emit(
-                    'testSocketIo',
-                    'This is a test message from the client!',
-                  );
-                }}
-              >
-                Get socket.io Response
-              </Button>
-              <p id="socket.io-response">
-                socket.io response: {socketIoResponse}
-              </p>
               <Button
                 variant="secondary"
                 onClick={() => {

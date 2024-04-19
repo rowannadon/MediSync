@@ -19,6 +19,7 @@ import { PathwayLaunchEditorForm } from '../PathwayLaunchEditorForm';
 import { ScrollArea } from '../components/ui/scroll-area';
 import PathwayFlowDisplay from '../PathwayFlowDisplay';
 import { useLocalDataStore } from '@/LocalDataStore';
+import { Separator } from '@/components/ui/separator';
 
 const PathwayLaunchEditor = () => {
   const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
@@ -118,25 +119,29 @@ const PathwayLaunchEditor = () => {
             )}
           >
             {selectedPathway && (
-              <Card className="flex flex-grow flex-row space-x-4 pl-4">
-                <Card className="mb-4 mt-4 flex w-[300px] min-w-[300px] max-w-[300px]">
+              <Card className="flex flex-grow flex-row">
+                <Card className="mb-4 ml-4 mt-4 flex w-[300px] min-w-[300px] max-w-[300px]">
                   <PathwayFlowDisplay
                     pathway={selectedPathway}
                     controls={false}
                   />
                 </Card>
-                <div>
+                <ScrollArea
+                  className="flex flex-grow flex-col"
+                  style={{
+                    maxHeight: 'calc(100vh - 100px)',
+                  }}
+                >
                   <SidebarNav
                     items={stagePropertyTypes}
                     selected={selectedPathwayPropertyType}
                     setSelected={setSelectedPathwayPropertyType}
                   />
-                </div>
-
-                <PathwayLaunchEditorForm
-                  pathway={selectedPathway}
-                  selectedPathwayPropertyType={selectedPathwayPropertyType}
-                />
+                  <PathwayLaunchEditorForm
+                    pathway={selectedPathway}
+                    selectedPathwayPropertyType={selectedPathwayPropertyType}
+                  />
+                </ScrollArea>
               </Card>
             )}
           </div>

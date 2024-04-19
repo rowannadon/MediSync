@@ -76,8 +76,8 @@ export function StageEditorForm({
 }: StageEditorFormProps) {
   const people = useRemoteDataStore((state) => state.people);
   const rooms = useRemoteDataStore((state) => state.rooms);
-  const hasChanges = useLocalDataStore((state) => state.hasChanges);
-  const setHasChanges = useLocalDataStore((state) => state.setHasChanges);
+  const hasChanges = useLocalDataStore((state) => state.hasStageChanges);
+  const setHasChanges = useLocalDataStore((state) => state.setHasStageChanges);
   const updateStageTemplate = useRemoteDataStore(
     (state) => state.updateStageTemplate,
   );
@@ -154,7 +154,7 @@ export function StageEditorForm({
   }, [form.watch()]);
 
   return (
-    <div className="relative flex flex-grow pb-4 pt-4">
+    <div className="relative flex flex-grow">
       {hasChanges && (
         <div className="absolute right-4 top-4 flex flex-row items-center rounded-lg bg-red-400 p-2 text-sm text-white">
           <CircleAlert className="mr-2" />

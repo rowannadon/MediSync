@@ -1,4 +1,6 @@
 import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger } from './components/ui/tabs';
+import { useEffect, useState } from 'react';
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items: {
@@ -9,36 +11,36 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   setSelected: (id: string) => void;
 }
 
-export function SidebarNav({
-  className,
-  items,
-  selected,
-  setSelected,
-  ...props
-}: SidebarNavProps) {
+export function SidebarNav({ items, setSelected }: SidebarNavProps) {
+  const [selected, setSelectedLocal] = useState('information');
+
+  useEffect(() => {
+    setSelected(selected);
+  }, [selected]);
+
   return (
-    <nav
-      className={cn(
-        'ml-4 mt-4 flex min-w-[150px] flex-shrink flex-col space-y-2 p-1',
-        className,
-      )}
-      {...props}
-    >
-      {items.map((item) => (
-        <div
-          key={item.id}
-          onClick={() => setSelected(item.id)}
-          className={cn(
-            'flex w-full cursor-pointer items-center rounded-lg p-2 pl-4 text-center font-semibold text-muted-foreground',
-            selected === item.id
-              ? 'bg-muted text-foreground'
-              : 'hover:bg-muted hover:underline',
-            'justify-start',
-          )}
-        >
-          {item.title}
-        </div>
-      ))}
-    </nav>
+    <div className="ml-4 mr-4 mt-1 flex max-h-[40px] flex-grow">
+      <Tabs
+        className="flex flex-grow"
+        defaultValue="information"
+        onValueChange={(v) => setSelectedLocal(v)}
+      >
+        <TabsList className="grid w-full grid-cols-3 bg-background">
+          {items.map((item) => (
+            <TabsTrigger
+              key={item.id}
+              value={item.id}
+              className="rounded-lg bg-background"
+              style={{
+                backgroundColor:
+                  item.id === selected ? '#f0f0f0' : 'background',
+              }}
+            >
+              {item.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+    </div>
   );
 }

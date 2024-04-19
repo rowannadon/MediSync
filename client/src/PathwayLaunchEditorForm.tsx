@@ -18,7 +18,6 @@ import { ChevronDown, Rocket } from 'lucide-react';
 import { PathwayLaunchEditorFormResourceField } from './PathwayLaunchEditorFormResourceField';
 import { Card } from './components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from './components/ui/table';
-import { ScrollArea } from './components/ui/scroll-area';
 import { DateTimePicker } from '@/components/ui/date-time-picker/date-time-picker';
 import { useRemoteDataStore } from './RemoteDataStore';
 import {
@@ -34,6 +33,17 @@ import {
   CommandItem,
   CommandList,
 } from './components/ui/command';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from './components/ui/select';
+import { Input } from './components/ui/input';
+import { parseAbsolute, getLocalTimeZone } from '@internationalized/date';
 
 const pathwayFormSchema = z.object({
   patient: z.string({
@@ -42,7 +52,12 @@ const pathwayFormSchema = z.object({
   notes: z.string(),
   startDate: z.string(),
   staff: z.array(
-    z.object({ staff: z.string(), stage: z.string(), selected: z.string() }),
+    z.object({
+      staff: z.string(),
+      stageName: z.string(),
+      stageId: z.string(),
+      value: z.string(),
+    }),
   ),
   equipment: z.array(
     z.object({
@@ -55,16 +70,20 @@ const pathwayFormSchema = z.object({
   outputs: z.array(
     z.object({
       type: z.string(),
-      title: z.string(),
-      date: z.string(),
-      stage: z.string(),
+      value: z.string(),
+      stageId: z.string(),
+      stageName: z.string(),
+      next: z.string(),
+      nextId: z.string(),
     }),
   ),
 });
 
 interface StaffType {
   staff: string;
-  stage: string;
+  stageId: string;
+  value: string;
+  stageName: string;
 }
 
 interface EquipmentType {
@@ -77,8 +96,11 @@ interface EquipmentType {
 interface OutputType {
   type: string;
   title: string;
-  date: string;
-  stage: string;
+  value: string;
+  stageId: string;
+  stageName: string;
+  next: string;
+  nextId: string;
 }
 
 type PathwayFormValues = z.infer<typeof pathwayFormSchema>;
@@ -118,8 +140,9 @@ export function PathwayLaunchEditorForm({
           if (!template) return [];
           return template.required_staff.map((staff) => ({
             staff: staff,
-            stage: template.name,
-            selected: 'Automatic',
+            stageName: template.name,
+            stageId: template.id,
+            value: 'Automatic',
           }));
         }),
       );
@@ -138,14 +161,25 @@ export function PathwayLaunchEditorForm({
       );
       form.setValue(
         'outputs',
-        pathway?.stages.flatMap((stage) => {
+        pathway?.stages.flatMap((stage, index) => {
           const template = getStageTemplate(stage.template);
           if (!template) return [];
-          return template.outputs.map((output) => ({
-            type: output,
-            title: output,
-            date: '',
-            stage: template.name,
+          const ind =
+            template.outputs[index] in outputTypes
+              ? template.outputs[index]
+              : 'Scheduled';
+          return stage.next.map((nextStage, index) => ({
+            type: template.outputs[index],
+            value: '',
+            stageId: template.id,
+            stageName: template.name,
+            next:
+              getStageTemplate(
+                pathway?.stages.find(
+                  (s) => s.id === nextStage[template.outputs[index]],
+                )?.template || '',
+              )?.name || '',
+            nextId: nextStage[ind] || '',
           }));
         }),
       );
@@ -154,6 +188,51 @@ export function PathwayLaunchEditorForm({
 
   function onSubmit(data: PathwayFormValues) {
     console.log(data);
+  }
+
+  function updateStaff(
+    field: any[],
+    stage: string,
+    staff: string,
+    newValue: any,
+  ) {
+    return field.map((item) =>
+      item.stageId === stage && item.staff === staff
+        ? { ...item, value: newValue }
+        : item,
+    );
+  }
+
+  function updateOutputType(
+    field: any[],
+    stage: string,
+    nextStage: string,
+    type: string,
+  ) {
+    return field.map((item) =>
+      item.stageId === stage && item.next === nextStage
+        ? { ...item, type: type }
+        : item,
+    );
+  }
+
+  function updateOutputValue(
+    field: any[],
+    stage: string,
+    nextStage: string,
+    value: string,
+  ) {
+    return field.map((item) =>
+      item.stageId === stage && item.next === nextStage
+        ? { ...item, value: value }
+        : item,
+    );
+  }
+
+  function getOutputValue(field: any[], stage: string, nextStage: string) {
+    return field.find(
+      (item) => item.stageId === stage && item.next === nextStage,
+    )?.value;
   }
 
   function splitArrayByProperty<ArrayType>(arr: ArrayType[], prop: string) {
@@ -169,305 +248,399 @@ export function PathwayLaunchEditorForm({
   }
 
   return (
-    <div className="flex flex-grow flex-col">
+    <div className="ml-4 mr-4 flex flex-grow flex-col">
       {pathway && (
         <div className="flex flex-grow flex-row">
-          <ScrollArea
-            className="flex-grow pr-8"
-            style={{ maxHeight: 'calc(100vh - 100px)' }}
-          >
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="m-1 mb-4 mt-4 flex-grow space-y-8"
-              >
-                {selectedPathwayPropertyType === 'information' && (
-                  <FormField
-                    control={form.control}
-                    name="patient"
-                    render={({ field }) => {
-                      const [open, setOpen] = useState(false);
-                      return (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Patient</FormLabel>
-                          <Popover open={open}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 w-[200px] border-dashed"
-                                onClick={() => setOpen(!open)}
-                              >
-                                <div className="flex flex-grow flex-row justify-between">
-                                  <ChevronDown className="mr-2 h-4 w-4" />
-                                  <div className="flex-grow text-center">
-                                    {field.value}
-                                  </div>
-                                </div>
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-[200px] p-0"
-                              align="start"
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="m-1 mb-4 mt-4 flex-grow space-y-8"
+            >
+              {selectedPathwayPropertyType === 'information' && (
+                <FormField
+                  control={form.control}
+                  name="patient"
+                  render={({ field }) => {
+                    const [open, setOpen] = useState(false);
+                    return (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Patient</FormLabel>
+                        <Popover open={open}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-8 w-[200px] border-dashed"
+                              onClick={() => setOpen(!open)}
                             >
-                              <Command>
-                                <CommandInput
-                                  placeholder={`Search for ${name}`}
-                                />
-                                <CommandList>
-                                  <CommandEmpty>No results found.</CommandEmpty>
-                                  <CommandGroup>
-                                    {people.map((person) => {
-                                      return (
-                                        <CommandItem
-                                          key={person.name}
-                                          onSelect={() => {
-                                            setOpen(false);
-                                            field.onChange(person.name);
-                                          }}
-                                        >
-                                          <span>{person.name}</span>
-                                        </CommandItem>
-                                      );
-                                    })}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
-                          <FormDescription>Add a patient.</FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                )}
-                {selectedPathwayPropertyType === 'information' && (
-                  <FormField
-                    control={form.control}
-                    name="notes"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Notes</FormLabel>
-                        <Textarea {...field} />
-
-                        <FormDescription>
-                          Notes about the patient.
-                        </FormDescription>
+                              <div className="flex flex-grow flex-row justify-between">
+                                <ChevronDown className="mr-2 h-4 w-4" />
+                                <div className="flex-grow text-center">
+                                  {field.value}
+                                </div>
+                              </div>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-[200px] p-0"
+                            align="start"
+                          >
+                            <Command>
+                              <CommandInput
+                                placeholder={`Search for ${name}`}
+                              />
+                              <CommandList>
+                                <CommandEmpty>No results found.</CommandEmpty>
+                                <CommandGroup>
+                                  {people.map((person) => {
+                                    return (
+                                      <CommandItem
+                                        key={person.name}
+                                        onSelect={() => {
+                                          setOpen(false);
+                                          field.onChange(person.name);
+                                        }}
+                                      >
+                                        <span>{person.name}</span>
+                                      </CommandItem>
+                                    );
+                                  })}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormDescription>Add a patient.</FormDescription>
                         <FormMessage />
                       </FormItem>
-                    )}
-                  />
-                )}
-                {selectedPathwayPropertyType === 'information' && (
-                  <FormField
-                    control={form.control}
-                    name="notes"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Start Date</FormLabel>
-                        <DateTimePicker
-                          granularity={'hour'}
-                          aria-label="Launch Date and Time"
-                          onChange={(date) => field.onChange(date.toString())}
-                        />
+                    );
+                  }}
+                />
+              )}
+              {selectedPathwayPropertyType === 'information' && (
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Notes</FormLabel>
+                      <Textarea {...field} />
 
-                        <FormDescription>Start date.</FormDescription>
+                      <FormDescription>
+                        Notes about the patient.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {selectedPathwayPropertyType === 'information' && (
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Start Date</FormLabel>
+                      <DateTimePicker
+                        granularity={'hour'}
+                        aria-label="Launch Date and Time"
+                        value={
+                          !!field.value
+                            ? parseAbsolute(field.value, getLocalTimeZone())
+                            : null
+                        }
+                        onChange={(date) => {
+                          field.onChange(
+                            date.toDate(getLocalTimeZone()).toISOString(),
+                          );
+                        }}
+                      />
+
+                      <FormDescription>Start date.</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {selectedPathwayPropertyType === 'resources' && (
+                <FormField
+                  control={form.control}
+                  name="staff"
+                  render={({ field }) => {
+                    const staffByStage = splitArrayByProperty(
+                      field.value,
+                      'stageId',
+                    ) as { [stageId: string]: [StaffType] };
+                    return (
+                      <FormItem className="flex flex-col">
+                        {staffByStage &&
+                          Object.keys(staffByStage) &&
+                          Object.keys(staffByStage).map((stage: string) => {
+                            return (
+                              <div key={stage}>
+                                <FormLabel>
+                                  {staffByStage[stage][0].stageName}
+                                </FormLabel>
+                                <Card>
+                                  <Table>
+                                    <TableBody>
+                                      {staffByStage[stage].map(
+                                        (staff: StaffType) => {
+                                          return (
+                                            <TableRow
+                                              key={staff.staff}
+                                              className="flex flex-row justify-between"
+                                            >
+                                              <TableCell>
+                                                {staff.staff}
+                                              </TableCell>
+                                              <TableCell>
+                                                <PathwayLaunchEditorFormResourceField
+                                                  name={staff.staff}
+                                                  initialValue={staff.value}
+                                                  onFieldChange={(value) => {
+                                                    console.log(value);
+                                                    field.onChange(
+                                                      updateStaff(
+                                                        field.value,
+                                                        stage,
+                                                        staff.staff,
+                                                        value,
+                                                      ),
+                                                    );
+                                                  }}
+                                                  types={Array.from(
+                                                    new Set(
+                                                      people.map(
+                                                        (p: Person) => p.name,
+                                                      ),
+                                                    ),
+                                                  )}
+                                                  options={['Automatic']}
+                                                />
+                                              </TableCell>
+                                            </TableRow>
+                                          );
+                                        },
+                                      )}
+                                    </TableBody>
+                                  </Table>
+                                </Card>
+                              </div>
+                            );
+                          })}
                         <FormMessage />
                       </FormItem>
-                    )}
-                  />
-                )}
-                {selectedPathwayPropertyType === 'resources' && (
-                  <FormField
-                    control={form.control}
-                    name="staff"
-                    render={({ field }) => {
-                      const staffByStage = splitArrayByProperty(
-                        field.value,
-                        'stage',
-                      ) as { [stage: string]: [StaffType] };
-                      return (
-                        <FormItem className="flex flex-col">
-                          {staffByStage &&
-                            Object.keys(staffByStage) &&
-                            Object.keys(staffByStage).map((stage: string) => {
-                              return (
-                                <div key={stage}>
-                                  <FormLabel>{stage}</FormLabel>
-                                  <Card>
-                                    <Table>
-                                      <TableBody>
-                                        {staffByStage[stage].map(
-                                          (staff: StaffType) => {
-                                            //console.log(staff)
-                                            return (
-                                              <TableRow
-                                                key={staff.staff}
-                                                className="flex flex-row justify-between"
-                                              >
-                                                <TableCell>
-                                                  {staff.staff}
-                                                </TableCell>
-                                                <TableCell>
-                                                  <PathwayLaunchEditorFormResourceField
-                                                    name={staff.staff}
-                                                    onFieldChange={
-                                                      field.onChange
-                                                    }
-                                                    types={Array.from(
-                                                      new Set(
-                                                        people.map(
-                                                          (p: Person) => p.name,
-                                                        ),
-                                                      ),
-                                                    )}
-                                                    options={['Automatic']}
-                                                  />
-                                                </TableCell>
-                                              </TableRow>
-                                            );
-                                          },
-                                        )}
-                                      </TableBody>
-                                    </Table>
-                                  </Card>
-                                </div>
-                              );
-                            })}
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                )}
-                {selectedPathwayPropertyType === 'resources' && (
-                  <FormField
-                    control={form.control}
-                    name="equipment"
-                    render={({ field }) => {
-                      const eqByStage = splitArrayByProperty(
-                        field.value,
-                        'stage',
-                      ) as { [stage: string]: [EquipmentType] };
-                      return (
-                        <FormItem className="flex flex-col">
-                          {eqByStage &&
-                            Object.keys(eqByStage) &&
-                            Object.keys(eqByStage).map((stage: string) => {
-                              return (
-                                <div key={`eq-${stage}`}>
-                                  <FormLabel>{stage}</FormLabel>
-                                  <Card>
-                                    <Table>
-                                      <TableBody>
-                                        {eqByStage[stage].map(
-                                          (eq: EquipmentType) => {
-                                            //console.log(staff)
-                                            return (
-                                              <TableRow
-                                                key={`${eq.type}-${eq.stage}`}
-                                                className="flex flex-row justify-between"
-                                              >
-                                                <TableCell>{eq.type}</TableCell>
-                                                <TableCell>
-                                                  {eq.count}
-                                                </TableCell>
-                                              </TableRow>
-                                            );
-                                          },
-                                        )}
-                                      </TableBody>
-                                    </Table>
-                                  </Card>
-                                </div>
-                              );
-                            })}
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                )}
-                {selectedPathwayPropertyType === 'schedule' && (
-                  <FormField
-                    control={form.control}
-                    name="outputs"
-                    render={({ field }) => {
-                      const outputsByStage = splitArrayByProperty(
-                        field.value,
-                        'stage',
-                      ) as { [stage: string]: [OutputType] };
+                    );
+                  }}
+                />
+              )}
+              {selectedPathwayPropertyType === 'resources' && (
+                <FormField
+                  control={form.control}
+                  name="equipment"
+                  render={({ field }) => {
+                    const eqByStage = splitArrayByProperty(
+                      field.value,
+                      'stage',
+                    ) as { [stage: string]: [EquipmentType] };
+                    return (
+                      <FormItem className="flex flex-col">
+                        {eqByStage &&
+                          Object.keys(eqByStage) &&
+                          Object.keys(eqByStage).map((stage: string) => {
+                            return (
+                              <div key={`eq-${stage}`}>
+                                <FormLabel>{stage}</FormLabel>
+                                <Card>
+                                  <Table>
+                                    <TableBody>
+                                      {eqByStage[stage].map(
+                                        (eq: EquipmentType) => {
+                                          //console.log(staff)
+                                          return (
+                                            <TableRow
+                                              key={`${eq.type}-${eq.stage}`}
+                                              className="flex flex-row justify-between"
+                                            >
+                                              <TableCell>{eq.type}</TableCell>
+                                              <TableCell>{eq.count}</TableCell>
+                                            </TableRow>
+                                          );
+                                        },
+                                      )}
+                                    </TableBody>
+                                  </Table>
+                                </Card>
+                              </div>
+                            );
+                          })}
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              )}
+              {selectedPathwayPropertyType === 'schedule' && (
+                <FormField
+                  control={form.control}
+                  name="outputs"
+                  render={({ field }) => {
+                    const outputsByStage = splitArrayByProperty(
+                      field.value,
+                      'stageId',
+                    ) as { [stage: string]: [OutputType] };
 
-                      return (
-                        <FormItem className="flex flex-col">
-                          {outputsByStage &&
-                            Object.keys(outputsByStage) &&
-                            Object.keys(outputsByStage).map((stage: string) => {
-                              return (
-                                <div key={stage}>
-                                  <FormLabel>{stage}</FormLabel>
-                                  <Card>
-                                    <Table>
-                                      <TableBody>
-                                        {outputsByStage[stage].map(
-                                          (output: OutputType, i: number) => {
-                                            //console.log(staff)
-                                            return (
-                                              <TableRow
-                                                key={`${output.title}-${stage}-${i}`}
-                                                className="flex flex-row justify-between"
-                                              >
-                                                <TableCell>
-                                                  {output.title}
-                                                </TableCell>
-                                                <TableCell>
-                                                  <PathwayLaunchEditorFormResourceField
-                                                    onFieldChange={
-                                                      field.onChange
-                                                    }
-                                                    name={output.type}
-                                                    types={Array.from(
-                                                      new Set(
-                                                        people.map(
-                                                          (p: Person) => p.name,
-                                                        ),
+                    return (
+                      <FormItem className="flex flex-col">
+                        {outputsByStage &&
+                          Object.keys(outputsByStage) &&
+                          Object.keys(outputsByStage).map((stage: string) => {
+                            return (
+                              <div key={stage}>
+                                <FormLabel>
+                                  {outputsByStage[stage][0].stageName}
+                                </FormLabel>
+                                <Card className="flex flex-shrink">
+                                  <Table>
+                                    <TableBody>
+                                      {outputsByStage[stage].map(
+                                        (output: OutputType, i: number) => {
+                                          return (
+                                            <TableRow
+                                              key={`${output.title}-${stage}-${i}`}
+                                              className="flex flex-row justify-between"
+                                            >
+                                              <TableCell>
+                                                {output.next}
+                                              </TableCell>
+                                              <TableCell>
+                                                <Select
+                                                  value={output.type}
+                                                  onValueChange={(value) => {
+                                                    console.log(value);
+                                                    field.onChange(
+                                                      updateOutputType(
+                                                        field.value,
+                                                        stage,
+                                                        output.next,
+                                                        value,
                                                       ),
-                                                    )}
-                                                    options={Array.from(
-                                                      outputTypes,
-                                                    )}
-                                                  />
-                                                </TableCell>
+                                                    );
+                                                  }}
+                                                >
+                                                  <SelectTrigger className="space-x-2">
+                                                    <SelectValue placeholder="Select a scheduling type" />
+                                                  </SelectTrigger>
+                                                  <SelectContent>
+                                                    <SelectGroup>
+                                                      <SelectLabel>
+                                                        Scheduling
+                                                      </SelectLabel>
+                                                      {outputTypes.map(
+                                                        (type) => (
+                                                          <SelectItem
+                                                            key={type}
+                                                            value={type}
+                                                          >
+                                                            {type}
+                                                          </SelectItem>
+                                                        ),
+                                                      )}
+                                                    </SelectGroup>
+                                                  </SelectContent>
+                                                </Select>
+                                              </TableCell>
+                                              {output.type === 'Scheduled' && (
                                                 <TableCell>
                                                   <DateTimePicker
                                                     granularity={'hour'}
                                                     aria-label="Launch Date and Time"
+                                                    value={
+                                                      !!getOutputValue(
+                                                        field.value,
+                                                        stage,
+                                                        output.next,
+                                                      )
+                                                        ? parseAbsolute(
+                                                            getOutputValue(
+                                                              field.value,
+                                                              stage,
+                                                              output.next,
+                                                            ),
+                                                            getLocalTimeZone(),
+                                                          )
+                                                        : null
+                                                    }
+                                                    onChange={(date) => {
+                                                      field.onChange(
+                                                        updateOutputValue(
+                                                          field.value,
+                                                          stage,
+                                                          output.next,
+                                                          date
+                                                            .toDate(
+                                                              getLocalTimeZone(),
+                                                            )
+                                                            .toISOString(),
+                                                        ),
+                                                      );
+                                                    }}
                                                   />
                                                 </TableCell>
-                                              </TableRow>
-                                            );
-                                          },
-                                        )}
-                                      </TableBody>
-                                    </Table>
-                                  </Card>
-                                </div>
-                              );
-                            })}
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                )}
-                <Button variant="default" size="sm" className="flex space-x-2">
-                  <Rocket className="h-6 w-6" />
-                  <div>Launch Pathway</div>
-                </Button>
-              </form>
-            </Form>
-          </ScrollArea>
+                                              )}
+                                              {output.type === 'Delay' && (
+                                                <TableCell>
+                                                  <Input
+                                                    placeholder="Delay in minutes"
+                                                    value={
+                                                      !!getOutputValue(
+                                                        field.value,
+                                                        stage,
+                                                        output.next,
+                                                      )
+                                                        ? getOutputValue(
+                                                            field.value,
+                                                            stage,
+                                                            output.next,
+                                                          )
+                                                        : ''
+                                                    }
+                                                    onChange={(text) => {
+                                                      field.onChange(
+                                                        updateOutputValue(
+                                                          field.value,
+                                                          stage,
+                                                          output.next,
+                                                          text.target.value,
+                                                        ),
+                                                      );
+                                                    }}
+                                                  />
+                                                </TableCell>
+                                              )}
+                                            </TableRow>
+                                          );
+                                        },
+                                      )}
+                                    </TableBody>
+                                  </Table>
+                                </Card>
+                              </div>
+                            );
+                          })}
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              )}
+              <Button variant="default" size="sm" className="flex space-x-2">
+                <Rocket className="h-6 w-6" />
+                <div>Launch Pathway</div>
+              </Button>
+            </form>
+          </Form>
         </div>
       )}
     </div>

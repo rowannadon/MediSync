@@ -2,7 +2,6 @@ import { Handle, Position } from 'reactflow';
 import { StageDisplay } from './StageDisplay';
 import { PathwayStage, StageType } from './TempData';
 import { useRemoteDataStore } from './RemoteDataStore';
-import { get } from 'lodash';
 
 export function StageNode(props: any) {
   const stage = props.data.stage;
@@ -16,37 +15,30 @@ export function StageNode(props: any) {
       return [];
     }
 
-    const length = stage.next.length;
-    if (length <= 1) {
-      return [
-        <Handle
-          key={1}
-          id={template?.name}
-          type="source"
-          position={Position.Bottom}
-        />,
-      ];
-    }
+    const width = 268;
+    const length = template?.outputs.length || 1;
 
-    const padding = 40;
-    const totalWidth = 260 - padding * 2;
-    const spaceBetween = totalWidth / (length - 1);
+    const padding = width / (length + 1);
 
-    return stage.next.map((_, index) => {
-      const left = index * spaceBetween;
-      return (
-        <Handle
-          key={index}
-          style={{ left: left + padding }}
-          id={index.toString()}
-          type="source"
-          position={Position.Bottom}
-        />
-      );
-    });
+    const totalWidth = width - padding * 2;
+    const spaceBetween = length > 1 ? totalWidth / (length - 1) : 1;
+
+    return (
+      template &&
+      template.outputs.map((output, index) => {
+        const left = index * spaceBetween;
+        return (
+          <Handle
+            key={index}
+            style={{ left: left + padding }}
+            id={`${output}$${index.toString()}`}
+            type="source"
+            position={Position.Bottom}
+          />
+        );
+      })
+    );
   };
-
-  const handles = mapStageToHandles(stage);
 
   return (
     <>
@@ -55,7 +47,7 @@ export function StageNode(props: any) {
         onClick={null}
         selected={props.selected}
       />
-      {handles}
+      {mapStageToHandles(stage)}
       <Handle type="target" position={Position.Top} />
     </>
   );

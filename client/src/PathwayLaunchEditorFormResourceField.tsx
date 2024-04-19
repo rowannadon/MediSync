@@ -20,13 +20,14 @@ interface PathwayLaunchEditorFormResourceFieldProps
   name: string;
   types: string[];
   options: string[];
+  initialValue: string;
   onFieldChange: (value: string) => void;
 }
 
 export const PathwayLaunchEditorFormResourceField = (
   props: PathwayLaunchEditorFormResourceFieldProps,
 ) => {
-  const [selectedType, setSelectedType] = useState(props.options[0]);
+  const [selectedType, setSelectedType] = useState(props.initialValue);
   const [open, setOpen] = useState(false);
 
   return (
@@ -48,7 +49,6 @@ export const PathwayLaunchEditorFormResourceField = (
                     <CommandItem
                       key={option}
                       onSelect={() => {
-                        console.log(option);
                         setOpen(false);
                         setSelectedType(option);
                         props.onFieldChange(option);
@@ -66,7 +66,8 @@ export const PathwayLaunchEditorFormResourceField = (
                     <CommandItem
                       key={type}
                       onSelect={() => {
-                        console.log(type);
+                        //console.log(type);
+                        props.onFieldChange(type);
                         setOpen(false);
                         setSelectedType(type);
                       }}
