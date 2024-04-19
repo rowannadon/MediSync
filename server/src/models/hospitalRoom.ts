@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
-import equipmentSchema from './equipment';
-import occupancySchema from './occupancy';
+import { equipmentSchema } from './equipment';
+import { occupancySchema } from './occupancy';
 
 const hospitalRoomSchema = new mongoose.Schema({
   room_number: Number,
   type: String,
-  equipment: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Equipment' }],
-  occupancy: { type: mongoose.Schema.Types.ObjectId, ref: 'Occupancy' },
+  equipment: [{ type: equipmentSchema.obj }],
+  occupancy: { type: occupancySchema.obj },
 });
 
 const HospitalRoom = mongoose.model('HospitalRoom', hospitalRoomSchema);

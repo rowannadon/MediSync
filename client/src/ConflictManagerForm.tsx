@@ -22,10 +22,15 @@ import {
   SelectValue,
   SelectGroup,
 } from './components/ui/select';
+import { useRemoteDataStore } from './RemoteDataStore';
+import { useLocalDataStore } from './LocalDataStore';
 
-type Conflict = {
-  pathway: string;
-};
+import {
+  OutputType,
+  outputTypes,
+  Conflict,
+} from './DataTypes';
+import { useEffect, useState } from 'react';
 
 const conflictFormSchema = z.object({
   pathway: z.string({
@@ -43,14 +48,17 @@ interface ConflictManagerFormProps extends React.HTMLAttributes<HTMLElement> {
   conflict: Conflict;
 }
 
-export function ConflictManagerForm(props: ConflictManagerFormProps) {
-  const pathways = [
-    { label: 'Pathway1', value: 'pathway1' },
-    { label: 'Pathway2', value: 'pathway2' },
-  ];
+export function ConflictManagerForm({conflict}: ConflictManagerFormProps) {
+  /*
+  const addConflict = useRemoteDataStore(
+    (state) => state.addConflict,
+  );
+  */
 
-  const defaultValues: Partial<conflictManagerFormValues> = {
-    pathway: 'pathway1' || '',
+  const pathways = ['pathway1', 'pathway2'];
+
+  const defaultValues: conflictManagerFormValues = {
+    pathway: 'pathway1',
     time: '',
     outputs: [{ pathway: 'defaultOutput', time: 'Default Output' }],
   };
@@ -60,17 +68,30 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
     defaultValues,
   });
 
+  useEffect(() => {
+    if (conflict && form) {
+      form.setValue('pathway', conflict.pathway);
+      form.setValue('time', conflict.time);
+    }
+  }, [conflict]);
+
   function onSubmit(data: conflictManagerFormValues) {
+    const newConflict: Conflict = {
+      pathway: data.pathway,
+      time: data.time,
+    };
     console.log(data);
+    //addConflict(newConflict);
   }
 
   function onSubmit2(data: conflictManagerFormValues) {
     console.log(data);
   }
+  
 
   return (
     <div className="flex-grow ">
-      {props.conflict && (
+      {(
         <div className="flex flex-grow flex-row p-2">
           <Form {...form}>
             <form
@@ -90,16 +111,15 @@ export function ConflictManagerForm(props: ConflictManagerFormProps) {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Pathways</FormLabel>
-                      <Select value={field.value}>
-                        <SelectTrigger className="w-[180px]"></SelectTrigger>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-[180px]">
+                          {field.value}
+                        </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             {pathways.map((pathway) => (
-                              <SelectItem
-                                key={pathway.value}
-                                value={pathway.value}
-                              >
-                                {pathway.label}
+                              <SelectItem key={pathway} value={pathway}>
+                                {pathway}
                               </SelectItem>
                             ))}
                           </SelectGroup>

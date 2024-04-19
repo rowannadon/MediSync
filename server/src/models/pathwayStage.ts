@@ -1,11 +1,10 @@
 import mongoose from 'mongoose';
-
-const nextTypeSchema = new mongoose.Schema({}, { strict: false });
+import { nextSchema } from './next';
 
 export const pathwayStageSchema = new mongoose.Schema({
   id: String,
   template: String,
-  next: { type: nextTypeSchema },
+  next: { type: [nextSchema.obj] },
 });
 
 const PathwayStage = mongoose.model('PathwayStage', pathwayStageSchema);

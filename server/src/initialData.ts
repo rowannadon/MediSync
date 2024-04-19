@@ -3,7 +3,7 @@ import {
   PathwayTemplate,
   RunningPathway,
   StageTemplate,
-} from '../../client/src/DataTypes';
+} from './DataTypes';
 
 export const stageTemplates: StageTemplate[] = [
   {

@@ -6,6 +6,7 @@ import {
   StageTemplate,
   RunningPathway,
   PathwayStage,
+  Conflict,
 } from './DataTypes';
 import { subscribeWithSelector } from 'zustand/middleware';
 import axios from 'axios';
@@ -16,6 +17,7 @@ export interface RemoteDataStore {
   stages: StageTemplate[];
   rooms: HospitalRoom[];
   runningPathways: RunningPathway[];
+  conflicts: Conflict[];
   getStageTemplate: (id: string) => StageTemplate | undefined;
   addPathwayTemplate: (pathway: PathwayTemplate) => void;
   removePathwayTemplate: (pathwayId: string) => void;
@@ -52,6 +54,7 @@ export interface RemoteDataStore {
   setStageTemplates: (stages: StageTemplate[]) => void;
   setRooms: (rooms: HospitalRoom[]) => void;
   setRunningPathways: (runningPathways: RunningPathway[]) => void;
+  addConflict: (conflict: Conflict) => void;
 }
 
 export const useRemoteDataStore = create(
@@ -61,6 +64,7 @@ export const useRemoteDataStore = create(
     stages: [],
     rooms: [],
     runningPathways: [],
+    conflicts: [],
     getStageTemplate: (id: string) => {
       return get().stages.find((template) => template.id === id);
     },
@@ -77,7 +81,7 @@ export const useRemoteDataStore = create(
     removePathwayTemplate: async (pathwayId: string) => {
       const res = await axios.delete('/api/pathwayTemplates/' + pathwayId);
       if (res.status !== 200) {
-        console.error('Failed to add pathway template');
+        console.error('Failed to remove pathway template');
       } else {
         set((state) => ({
           pathways: state.pathways.filter(
@@ -86,15 +90,25 @@ export const useRemoteDataStore = create(
         }));
       }
     },
-    addStageTemplate: (stage: StageTemplate) => {
-      set((state) => ({
-        stages: [...state.stages, stage],
-      }));
+    addStageTemplate: async (stage: StageTemplate) => {
+      const res = await axios.post('/api/stageTemplates', stage);
+      if (res.status !== 200) {
+        console.error('Failed to add stage template');
+      } else {
+        set((state) => ({
+          stages: [...state.stages, stage],
+        }));
+      }
     },
-    removeStageTemplate: (stageId: string) => {
-      set((state) => ({
-        stages: state.stages.filter((template) => template.id !== stageId),
-      }));
+    removeStageTemplate: async (stageId: string) => {
+      const res = await axios.delete('/api/pathwayTemplates/' + stageId);
+      if (res.status !== 200) {
+        console.error('Failed to remove stage template');
+      } else {
+        set((state) => ({
+          stages: state.stages.filter((template) => template.id !== stageId),
+        }));
+      }
     },
     addPerson: (person: Person) => {
       set((state) => ({
@@ -111,7 +125,7 @@ export const useRemoteDataStore = create(
         runningPathways: [...state.runningPathways, runningPathway],
       }));
     },
-    addStageToPathwayTemplate: (
+    addStageToPathwayTemplate: async (
       pathwayTemplateId: string,
       stage: PathwayStage,
     ) => {
@@ -120,12 +134,20 @@ export const useRemoteDataStore = create(
       );
       if (pathwayTemplate) {
         pathwayTemplate.stages.push(stage);
-        set((state) => ({
-          pathways: [...state.pathways],
-        }));
+        const res = await axios.put(
+          '/api/pathwayTemplates/' + pathwayTemplateId,
+          pathwayTemplate,
+        );
+        if (res.status !== 200) {
+          console.error('Failed to add stage to pathway template');
+        } else {
+          set((state) => ({
+            pathways: [...state.pathways],
+          }));
+        }
       }
     },
-    removeStageFromPathwayTemplate: (
+    removeStageFromPathwayTemplate: async (
       pathwayTemplateId: string,
       stageId: string,
     ) => {
@@ -136,12 +158,21 @@ export const useRemoteDataStore = create(
         pathwayTemplate.stages = pathwayTemplate.stages.filter(
           (stage) => stage.id !== stageId,
         );
-        set((state) => ({
-          pathways: [...state.pathways],
-        }));
+
+        const res = await axios.put(
+          '/api/pathwayTemplates/' + pathwayTemplateId,
+          pathwayTemplate,
+        );
+        if (res.status !== 200) {
+          console.error('Failed to remove stage template');
+        } else {
+          set((state) => ({
+            pathways: [...state.pathways],
+          }));
+        }
       }
     },
-    addNextToPathwayStage: (
+    addNextToPathwayStage: async (
       pathwayTemplateId: string,
       stageId: string,
       nextId: string,
@@ -156,13 +187,22 @@ export const useRemoteDataStore = create(
         );
         if (stage) {
           stage.next.push({ [outputType]: nextId });
-          set((state) => ({
-            pathways: [...state.pathways],
-          }));
+
+          const res = await axios.put(
+            '/api/pathwayTemplates/' + pathwayTemplateId,
+            pathwayTemplate,
+          );
+          if (res.status !== 200) {
+            console.error('Failed to remove stage template');
+          } else {
+            set((state) => ({
+              pathways: [...state.pathways],
+            }));
+          }
         }
       }
     },
-    removeNextFromPathwayStage: (
+    removeNextFromPathwayStage: async (
       pathwayTemplateId: string,
       stageId: string,
       nextId: string,
@@ -178,21 +218,34 @@ export const useRemoteDataStore = create(
           stage.next = stage.next.filter(
             (next) => Object.values(next)[0] !== nextId,
           );
-          set((state) => ({
-            pathways: [...state.pathways],
-          }));
+          const res = await axios.put(
+            '/api/pathwayTemplates/' + pathwayTemplateId,
+            pathwayTemplate,
+          );
+          if (res.status !== 200) {
+            console.error('Failed to remove stage template');
+          } else {
+            set((state) => ({
+              pathways: [...state.pathways],
+            }));
+          }
         }
       }
     },
-    updateStageTemplate: (stage: StageTemplate) => {
+    updateStageTemplate: async (stage: StageTemplate) => {
       const index = get().stages.findIndex(
         (template) => template.id === stage.id,
       );
       if (index !== -1) {
         get().stages[index] = stage;
-        set((state) => ({
-          stages: [...state.stages],
-        }));
+        const res = await axios.put('/api/stageTemplates/' + stage.id, stage);
+        if (res.status !== 200) {
+          console.error('Failed to remove stage template');
+        } else {
+          set((state) => ({
+            stages: [...state.stages],
+          }));
+        }
       }
     },
     updatePathwayTemplate: (pathway: PathwayTemplate) => {
@@ -249,5 +302,10 @@ export const useRemoteDataStore = create(
         runningPathways,
       }));
     },
+    addConflict: (conflict: Conflict) => {
+      set((state) => ({
+        conflicts: [...state.conflicts, conflict],
+      }));
+    }
   })),
 );

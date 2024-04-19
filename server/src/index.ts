@@ -2,16 +2,8 @@ import { Connection, MongooseError } from 'mongoose';
 import express from 'express';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
-import { databaseTest } from './models/databaseTest';
 import { v4 as uuid } from 'uuid';
 import { UserModel } from './models/User';
-import {
-  procedures,
-  stageTemplates,
-  runningPathways,
-  displayedPeople,
-  displayedRooms,
-} from './initialData';
 import PathwayTemplate from './models/pathwayTemplate';
 import RunningPathway from './models/runningPathway';
 import StageTemplate from './models/stageTemplate';
@@ -91,8 +83,6 @@ try {
           console.log('User already exists');
         }
       });
-
-      //loadDb(connection.db);
     })
     .catch((err: MongooseError) => {
       console.log(err);
@@ -101,23 +91,28 @@ try {
   console.log(err);
 }
 
-io.on('connection', (socket: any) => {
+mongoose.connection.once('open', function callback() {
+  console.log('Connected successfully.');
+  loadDb(mongoose.connection);
+});
+
+io.on('connection', async (socket: any) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
     console.log('a user disconnected');
   });
 
-  socket.on('addPathwayTemplate', (pathwayTemplate: any) => {
-    console.log('adding pathway template', pathwayTemplate);
-    io.emit('addPathwayTemplate', pathwayTemplate);
+  socket.on('getPathwayTemplates', async () => {
+    console.log('sending pathway templates');
+    socket.emit('pathwayTemplates', await PathwayTemplate.find());
   });
 
-  console.log('sending initial data');
-  socket.emit('pathwayTemplates', procedures);
-  socket.emit('people', displayedPeople);
-  socket.emit('rooms', displayedRooms);
-  socket.emit('stageTemplates', stageTemplates);
-  socket.emit('runningPathways', runningPathways);
+  console.log('sending all data');
+  socket.emit('pathwayTemplates', await PathwayTemplate.find());
+  socket.emit('people', await Person.find());
+  socket.emit('rooms', await HospitalRoom.find());
+  socket.emit('stageTemplates', await StageTemplate.find());
+  socket.emit('runningPathways', await RunningPathway.find());
 });
 
 interface RequestWithUser extends Request {
@@ -126,15 +121,16 @@ interface RequestWithUser extends Request {
 
 // add pathway template
 app.post('/pathwayTemplates', async (req: any, res: any) => {
-  console.log(req.body);
+  console.log('adding pathway template', req.body);
   const pathwayTemplate = new PathwayTemplate({
     ...req.body,
     id: uuid(),
   });
   await pathwayTemplate.save();
-  return res.json();
+  return res.json(pathwayTemplate);
 });
 
+// delete pathway template
 app.delete('/pathwayTemplates/:id', async (req: any, res: any) => {
   const id = req.params.id;
   await PathwayTemplate.deleteOne({
@@ -142,6 +138,80 @@ app.delete('/pathwayTemplates/:id', async (req: any, res: any) => {
   });
   return res.json(id);
 });
+
+// update pathway template
+app.put('/pathwayTemplates/:id', async (req: any, res: any) => {
+  const id = req.params.id;
+  console.log(`updating pathway template with id: ${id}`);
+  await PathwayTemplate.updateOne(
+    {
+      id,
+    },
+    req.body,
+  );
+  return res.json(id);
+});
+
+// add stage template
+app.post('/stageTemplates', async (req: any, res: any) => {
+  const stageTemplate = new StageTemplate(req.body);
+  await stageTemplate.save();
+  return res.json(stageTemplate);
+});
+
+// delete stage template
+app.delete('/stageTemplates/:id', async (req: any, res: any) => {
+  const id = req.params.id;
+  await StageTemplate.deleteOne({
+    id,
+  });
+  return res.json(id);
+});
+
+// update stage template
+app.put('/stageTemplates/:id', async (req: any, res: any) => {
+  const id = req.params.id;
+  await StageTemplate.updateOne(
+    {
+      id,
+    },
+    req.body,
+  );
+  return res.json(id);
+});
+
+// // add stage to pathway
+// app.post('/pathwayTemplates/:id/stage', async (req: any, res: any) => {
+//   const pathwayId = req.params.id;
+//   const pathway = await PathwayTemplate.findOne({ id: pathwayId });
+//   if (!pathway) {
+//     return res.status(404).json('Pathway not found');
+//   }
+//   const stage = new StageTemplate(req.body);
+//   pathway.stages.push(stage);
+//   await pathway.save();
+//   return res.json(stage);
+// });
+
+// // remove stage from pathway
+// app.delete('/pathwayTemplates/:pid/stage/:sid',
+//   async (req: any, res: any) => {
+//     const pathwayId = req.params.pid;
+//     const stageId = req.params.sid;
+//     const pathway = await PathwayTemplate.findOne({ id: pathwayId });
+//     if (!pathway) {
+//       return res.status(404).json('Pathway not found');
+//     }
+//     const stage = pathway.stages.id(stageId);
+//     if (stage) {
+//       stage.remove();
+//       await pathway.save();
+//       return res.json(stageId);
+//     } else {
+//       return res.status(404).json('Stage not found');
+//     }
+//   },
+// );
 
 app.get('/test', async (req: any, res: any) => {
   return res.json({ status: 'healthy' });

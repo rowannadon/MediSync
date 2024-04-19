@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 import { pathwayTemplateSchema } from './pathwayTemplate';
+import { runningStageSchema } from './runningStage';
 
 const runningPathwaySchema = new mongoose.Schema({
   ...pathwayTemplateSchema.obj,
   patient: String,
   startDate: Date,
   notes: String,
-  stages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'RunningStage' }],
+  stages: [{ type: runningStageSchema.obj }],
 });
 
 const RunningPathway = mongoose.model('RunningPathway', runningPathwaySchema);
