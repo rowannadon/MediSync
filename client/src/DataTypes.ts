@@ -27,7 +27,6 @@ export type HospitalRoom = {
   occupancy: Occupancy;
 };
 
-
 export type StaffType =
   | 'Surgeon'
   | 'Anesthesiologist'
