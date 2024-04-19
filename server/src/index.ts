@@ -1,11 +1,10 @@
-// server/src/index.js
-
 import { MongooseError } from 'mongoose';
 import express from 'express';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import { databaseTest } from './models/databaseTest';
 import { v4 as uuid } from 'uuid';
+import { UserModel } from './models/User';
 
 const httpPort = 3001;
 
@@ -41,6 +40,7 @@ switch (stage) {
 console.log(mongoDomain);
 
 let db: any = null;
+
 try {
   mongoose
     .connect(mongoDomain, {
@@ -50,6 +50,34 @@ try {
     .then((connection: any) => {
       db = connection;
       console.log('Connected to mongodb');
+      UserModel.findOne({ username: 'test' })
+        .then((existingUser) => {
+          if (!existingUser) {
+            const user = new UserModel({
+              id: 9999,
+              name: 'Test User',
+              role: 'Admin',
+              department: 'Administrator',
+              phone: '1234567890',
+              email: 'admin@example.com',
+              admin: true,
+              location: 'Room 9999',
+              username: 'test',
+              password: 'test',
+            });
+
+            user.save()
+              .then(() => {
+                console.log('User created');
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            console.log('User already exists');
+          }
+        })
+
     })
     .catch((err: MongooseError) => {
       console.log(err);
