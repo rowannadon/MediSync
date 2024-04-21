@@ -11,15 +11,14 @@ import { loadDb } from './loadDb';
 import { Request, Response, NextFunction } from 'express';
 import Person from './models/person';
 import HospitalRoom from './models/hospitalRoom';
+import jwt, { VerifyErrors } from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 
+dotenv.config({ path: __dirname + '/../../.env' });
 
-require('dotenv').config({ path: __dirname + '/../../.env' });
-
-const jwt = require('jsonwebtoken');
 const httpPort = 3001;
 const socketIOPort = 3002;
-
-const bcrypt = require('bcrypt');
 
 export const io = new Server(socketIOPort);
 export const app = express();
@@ -120,7 +119,7 @@ io.on('connection', async (socket: any) => {
 
 interface RequestWithUser extends Request {
   user?: any;
-};
+}
 
 // add pathway template
 app.post('/pathwayTemplates', async (req: any, res: any) => {
@@ -233,28 +232,38 @@ app.post('/login', (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const user = { username: username, password: password };
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+  const accessToken = jwt.sign(
+    user,
+    process.env.ACCESS_TOKEN_SECRET || 'secret',
+  );
   console.log(`access token secret: ${process.env.ACCESS_TOKEN_SECRET}`);
   res.json({ accessToken: accessToken });
 });
-
 
 app.get('/posts', authenticateToken, (req: RequestWithUser, res: Response) => {
   res.json(req.user);
 });
 
-function authenticateToken(req: RequestWithUser, res: Response, next: NextFunction) {
+function authenticateToken(
+  req: RequestWithUser,
+  res: Response,
+  next: NextFunction,
+) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  if(token==null) return res.sendStatus(401);
+  if (token == null) return res.sendStatus(401);
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err: Error, user: any) => {
-    if(err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-  
-};
+  jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET || 'secret',
+    { complete: true },
+    (err: VerifyErrors | null, user: any) => {
+      if (err) return res.sendStatus(403);
+      req.user = user;
+      next();
+    },
+  );
+}
 
 // to add a new user with a hashed password
 app.post('/users', async (req, res) => {
@@ -268,15 +277,13 @@ app.post('/users', async (req, res) => {
       phone: req.body.phone,
       email: req.body.email,
       admin: req.body.admin,
-      location: req.body.location, 
+      location: req.body.location,
       username: req.body.username,
       password: hashedPassword,
     });
 
     const savedUser = await user.save();
     res.json(savedUser);
-
-
   } catch {
     res.status(500).send();
   }

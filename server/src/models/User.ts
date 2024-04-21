@@ -1,21 +1,10 @@
 import mongoose from 'mongoose';
-import { Person } from '../../../client/src/DataTypes';
+import { personSchema } from './person';
 
-export interface User extends Person {
-  username: string;
-  password: string;
-}
-
-const userSchema = new mongoose.Schema<User>({
-  name: { type: String, required: true },
-  role: { type: String, required: true },
-  department: { type: String, required: true },
-  phone: { type: String, required: true },
-  email: { type: String, required: true },
-  admin: { type: Boolean, required: true },
-  location: { type: String, required: true },
+const userSchema = new mongoose.Schema({
+  ...personSchema.obj,
   username: { type: String, required: true },
   password: { type: String, required: true },
 });
 
-export const UserModel = mongoose.model<User>('User', userSchema);
+export const UserModel = mongoose.model('User', userSchema);

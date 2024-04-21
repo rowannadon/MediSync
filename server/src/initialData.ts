@@ -1953,7 +1953,6 @@ export const displayedPeople = [
     location: 'Room 215',
   },
   {
-
     name: 'Michael Johnson',
     role: 'Surgeon',
     department: 'Orthopedics',
@@ -1963,7 +1962,6 @@ export const displayedPeople = [
     location: 'Operating Room 1',
   },
   {
-
     name: 'Sarah Williams',
     role: 'Anesthesiologist',
     department: 'Anesthesia',
@@ -1973,7 +1971,6 @@ export const displayedPeople = [
     location: 'Operating Room 3',
   },
   {
-
     name: 'Christopher Brown',
     role: 'Physician Assistant',
     department: 'Emergency Medicine',
@@ -1983,7 +1980,6 @@ export const displayedPeople = [
     location: 'Emergency Department',
   },
   {
-
     name: 'Jessica Garcia',
     role: 'Registered Nurse',
     department: 'Intensive Care Unit',
@@ -1993,7 +1989,6 @@ export const displayedPeople = [
     location: 'ICU Ward 2',
   },
   {
-
     name: 'William Martinez',
     role: 'Radiologist',
     department: 'Radiology',
@@ -2003,7 +1998,6 @@ export const displayedPeople = [
     location: 'Radiology Department',
   },
   {
-
     name: 'Amanda Davis',
     role: 'Medical Technologist',
     department: 'Laboratory',
@@ -2013,7 +2007,6 @@ export const displayedPeople = [
     location: 'Lab Room 4',
   },
   {
-
     name: 'James Wilson',
     role: 'Physical Therapist',
     department: 'Rehabilitation Services',
@@ -2023,7 +2016,6 @@ export const displayedPeople = [
     location: 'Physical Therapy Gym',
   },
   {
-
     name: 'Jennifer Taylor',
     role: 'Clinical Psychologist',
     department: 'Psychiatry',
@@ -2033,7 +2025,6 @@ export const displayedPeople = [
     location: 'Psychiatry Office',
   },
   {
-
     name: 'John Rodriguez',
     role: 'Respiratory Therapist',
     department: 'Respiratory Care',
@@ -2043,7 +2034,6 @@ export const displayedPeople = [
     location: 'Respiratory Therapy Unit',
   },
   {
-
     name: 'Emily Thompson',
     role: 'Registered Nurse',
     department: 'Emergency Medicine',
@@ -2053,7 +2043,6 @@ export const displayedPeople = [
     location: 'Emergency Room',
   },
   {
-
     name: 'Michael Nguyen',
     role: 'Anesthesiologist',
     department: 'Anesthesiology',
@@ -2063,7 +2052,6 @@ export const displayedPeople = [
     location: 'Operating Room',
   },
   {
-
     name: 'Sarah Martinez',
     role: 'Occupational Therapist',
     department: 'Rehabilitation Services',
@@ -2073,7 +2061,6 @@ export const displayedPeople = [
     location: 'Occupational Therapy Room',
   },
   {
-
     name: 'Christopher Lee',
     role: 'Radiologic Technologist',
     department: 'Radiology',
@@ -2083,7 +2070,6 @@ export const displayedPeople = [
     location: 'Radiology Department',
   },
   {
-
     name: 'Jessica Brown',
     role: 'Speech-Language Pathologist',
     department: 'Speech Therapy',
@@ -2093,7 +2079,6 @@ export const displayedPeople = [
     location: 'Speech Therapy Clinic',
   },
   {
-
     name: 'Matthew Garcia',
     role: 'Pharmacist',
     department: 'Pharmacy',
@@ -2103,7 +2088,6 @@ export const displayedPeople = [
     location: 'Pharmacy Department',
   },
   {
-
     name: 'Amanda Clark',
     role: 'Medical Technologist',
     department: 'Laboratory',
@@ -2113,7 +2097,6 @@ export const displayedPeople = [
     location: 'Laboratory',
   },
   {
-
     name: 'Ryan Baker',
     role: 'Cardiologist',
     department: 'Cardiology',
@@ -2123,7 +2106,6 @@ export const displayedPeople = [
     location: 'Cardiology Clinic',
   },
   {
-  
     name: 'Lauren White',
     role: 'Neurologist',
     department: 'Neurology',
@@ -2134,7 +2116,6 @@ export const displayedPeople = [
   },
 
   {
-  
     name: 'Olivia Johnson',
     role: 'Nurse',
     department: 'Pediatrics',
@@ -2145,7 +2126,6 @@ export const displayedPeople = [
   },
 
   {
-  
     name: 'Daniel Scott',
     role: 'Medical Social Worker',
     department: 'Social Services',
@@ -2155,7 +2135,6 @@ export const displayedPeople = [
     location: 'Social Services Office',
   },
   {
-  
     name: 'Olivia Wilson',
     role: 'Registered Nurse',
     department: 'Pediatrics',
@@ -2165,7 +2144,6 @@ export const displayedPeople = [
     location: 'Pediatric Ward',
   },
   {
-  
     name: 'Ethan Thomas',
     role: 'Registered Nurse',
     department: 'Intensive Care Unit',
@@ -2175,7 +2153,6 @@ export const displayedPeople = [
     location: 'ICU',
   },
   {
-  
     name: 'Sophia Martinez',
     role: 'Registered Nurse',
     department: 'Surgery',
@@ -2185,7 +2162,6 @@ export const displayedPeople = [
     location: 'Surgical Ward',
   },
   {
-  
     name: 'Alexander Nguyen',
     role: 'Physician',
     department: 'Emergency Medicine',
@@ -2195,7 +2171,6 @@ export const displayedPeople = [
     location: 'Emergency Room',
   },
   {
-  
     name: 'Isabella Garcia',
     role: 'Physician',
     department: 'Internal Medicine',
@@ -2205,7 +2180,6 @@ export const displayedPeople = [
     location: 'Internal Medicine Clinic',
   },
   {
-  
     name: 'Mason Lopez',
     role: 'Physician',
     department: 'Family Medicine',
@@ -2215,7 +2189,6 @@ export const displayedPeople = [
     location: 'Family Medicine Clinic',
   },
   {
-  
     name: 'Amelia Clark',
     role: 'Physician',
     department: 'Obstetrics and Gynecology',
@@ -2225,7 +2198,6 @@ export const displayedPeople = [
     location: 'OB/GYN Clinic',
   },
   {
-  
     name: 'William Baker',
     role: 'Physician',
     department: 'Cardiology',
@@ -2235,7 +2207,6 @@ export const displayedPeople = [
     location: 'Cardiology Clinic',
   },
   {
-  
     name: 'Chloe White',
     role: 'Physician',
     department: 'Dermatology',
@@ -2245,7 +2216,6 @@ export const displayedPeople = [
     location: 'Dermatology Clinic',
   },
   {
-  
     name: 'Benjamin Scott',
     role: 'Physician',
     department: 'Orthopedics',
@@ -2255,7 +2225,6 @@ export const displayedPeople = [
     location: 'Orthopedic Clinic',
   },
   {
-  
     name: 'Emma Johnson',
     role: 'Administrative Assistant',
     department: 'Administration',
@@ -2265,7 +2234,6 @@ export const displayedPeople = [
     location: 'Administration Office',
   },
   {
-  
     name: 'Noah Martinez',
     role: 'Human Resources Coordinator',
     department: 'Human Resources',
@@ -2275,7 +2243,6 @@ export const displayedPeople = [
     location: 'Human Resources Office',
   },
   {
-  
     name: 'Ava Brown',
     role: 'Billing Specialist',
     department: 'Finance',
@@ -2285,7 +2252,6 @@ export const displayedPeople = [
     location: 'Finance Department',
   },
   {
-  
     name: 'Liam Davis',
     role: 'IT Support Technician',
     department: 'Information Technology',
@@ -2295,7 +2261,6 @@ export const displayedPeople = [
     location: 'IT Department',
   },
   {
-  
     name: 'Mia Garcia',
     role: 'Quality Assurance Manager',
     department: 'Quality Assurance',
@@ -2305,7 +2270,6 @@ export const displayedPeople = [
     location: 'Quality Assurance Office',
   },
   {
-  
     name: 'Jacob Rodriguez',
     role: 'Facilities Manager',
     department: 'Facilities Management',
@@ -2315,7 +2279,6 @@ export const displayedPeople = [
     location: 'Facilities Management Office',
   },
   {
-  
     name: 'Sophie Wilson',
     role: 'Patient Services Coordinator',
     department: 'Patient Services',
@@ -2325,7 +2288,6 @@ export const displayedPeople = [
     location: 'Patient Services Office',
   },
   {
-  
     name: 'Elijah Thompson',
     role: 'Medical Records Clerk',
     department: 'Medical Records',
@@ -2335,7 +2297,6 @@ export const displayedPeople = [
     location: 'Medical Records Department',
   },
   {
-  
     name: 'Avery Martinez',
     role: 'Patient Accounts Representative',
     department: 'Finance',
@@ -2345,7 +2306,6 @@ export const displayedPeople = [
     location: 'Finance Department',
   },
   {
-  
     name: 'Liam Rodriguez',
     role: 'Emergency Room Physician',
     department: 'Emergency Medicine',
@@ -2355,7 +2315,6 @@ export const displayedPeople = [
     location: 'Emergency Department',
   },
   {
-  
     name: 'Harper Brown',
     role: 'Compliance Officer',
     department: 'Compliance',
@@ -2365,7 +2324,6 @@ export const displayedPeople = [
     location: 'Compliance Office',
   },
   {
-  
     name: 'Ava Martinez',
     role: 'Medical Technologist',
     department: 'Laboratory',
@@ -2375,7 +2333,6 @@ export const displayedPeople = [
     location: 'Lab Facility',
   },
   {
-  
     name: 'Noah Thompson',
     role: 'Radiologist',
     department: 'Radiology',
@@ -2386,7 +2343,6 @@ export const displayedPeople = [
   },
 
   {
-  
     name: 'Isabella White',
     role: 'Pharmacist',
     department: 'Pharmacy',
@@ -2396,7 +2352,6 @@ export const displayedPeople = [
     location: 'Pharmacy Area',
   },
   {
-  
     name: 'Mason Lee',
     role: 'Patient Care Technician',
     department: 'Nursing',
@@ -2406,7 +2361,6 @@ export const displayedPeople = [
     location: 'Nursing Station',
   },
   {
-  
     name: 'Sophia Harris',
     role: 'Physical Therapist',
     department: 'Rehabilitation',
@@ -2416,7 +2370,6 @@ export const displayedPeople = [
     location: 'Rehabilitation Center',
   },
   {
-  
     name: 'William Clark',
     role: 'Anesthesiologist',
     department: 'Anesthesiology',
@@ -2426,7 +2379,6 @@ export const displayedPeople = [
     location: 'Operating Room',
   },
   {
-  
     name: 'Charlotte Turner',
     role: 'Occupational Therapist',
     department: 'Occupational Therapy',
@@ -2436,7 +2388,6 @@ export const displayedPeople = [
     location: 'Occupational Therapy Unit',
   },
   {
-    
     name: 'Daniel Baker',
     role: 'Psychiatrist',
     department: 'Psychiatry',
@@ -2446,7 +2397,6 @@ export const displayedPeople = [
     location: 'Psychiatry Clinic',
   },
   {
-    
     name: 'Amelia Young',
     role: 'Clinical Psychologist',
     department: 'Psychology',
@@ -2456,7 +2406,6 @@ export const displayedPeople = [
     location: 'Psychology Department',
   },
   {
-    
     name: 'James Hernandez',
     role: 'Medical Social Worker',
     department: 'Social Services',
@@ -2466,7 +2415,6 @@ export const displayedPeople = [
     location: 'Social Work Office',
   },
   {
-    
     name: 'Evelyn King',
     role: 'Dietitian',
     department: 'Nutrition Services',
@@ -2476,7 +2424,6 @@ export const displayedPeople = [
     location: 'Nutrition Department',
   },
   {
-    
     name: 'Pat Scott',
     role: 'Medical Librarian',
     department: 'Library',
@@ -2486,7 +2433,6 @@ export const displayedPeople = [
     location: 'Medical Library',
   },
   {
-    
     name: 'Harper Evans',
     role: 'Patient Advocate',
     department: 'Patient Relations',
