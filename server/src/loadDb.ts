@@ -47,6 +47,6 @@ export const loadDb = async (connection: Connection) => {
       console.log('User already exists');
     }
   });
-  
+
   console.log('Database loaded');
 };

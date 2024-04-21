@@ -10,5 +10,4 @@ export = async function globalTeardown() {
   }
 
   await cleanup();
-
 };

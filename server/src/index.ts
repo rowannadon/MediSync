@@ -143,7 +143,7 @@ app.post('/stageTemplates', async (req: any, res: any) => {
 // delete stage template
 app.delete('/stageTemplates/:id', async (req: any, res: any) => {
   const id = req.params.id;
-  console.log(`deleting stage template with id: ${id}`)
+  console.log(`deleting stage template with id: ${id}`);
   await StageTemplate.deleteOne({
     id,
   });
@@ -239,7 +239,7 @@ process.on('exit', () => {
 });
 
 export const cleanup = async () => {
-  console.log('Cleaning up')
+  console.log('Cleaning up');
   await new Promise((resolve, reject) => {
     io.close((err) => {
       if (err) {
@@ -247,7 +247,7 @@ export const cleanup = async () => {
       } else {
         resolve('closed io server');
       }
-    })
+    });
   });
   await new Promise((resolve, reject) => {
     server.close((err) => {
@@ -256,7 +256,7 @@ export const cleanup = async () => {
       } else {
         resolve('closed http server');
       }
-    })
+    });
   });
   await mongoose.connection.close();
 };

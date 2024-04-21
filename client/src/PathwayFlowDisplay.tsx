@@ -90,7 +90,9 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
   useEffect(() => {
     selectedPathwayRef.current = selectedPathway;
     if (selectedPathway && selectedPathway.stages.length > 0) {
-      const convertedNodesAndEdges = convertToNodesAndEdges(selectedPathway.stages);
+      const convertedNodesAndEdges = convertToNodesAndEdges(
+        selectedPathway.stages,
+      );
       const layoutedElements = getLayoutedElements(
         convertedNodesAndEdges.nodes,
         convertedNodesAndEdges.edges,
@@ -171,7 +173,10 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
         selectedPathway &&
         selectedPathway.stages.some((stage) => stage.id === removedNode.id)
       ) {
-        removeStageFromPathwayTemplate(selectedPathway.id, removedNode.data.stage.id);
+        removeStageFromPathwayTemplate(
+          selectedPathway.id,
+          removedNode.data.stage.id,
+        );
       }
     },
     [nodes, selectedPathway, removeStageFromPathwayTemplate],
@@ -337,11 +342,10 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
     accept: 'stage',
     // Props to collect
     drop: (item: any, monitor: any) => {
-      console.log(selectedPathwayRef.current)
+      console.log(selectedPathwayRef.current);
       if (selectedPathwayRef.current) {
         handleStageDropped(item, monitor);
       }
-      
     },
     collect: (monitor: any) => ({
       isOver: monitor.isOver(),
