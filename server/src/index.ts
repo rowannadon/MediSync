@@ -58,10 +58,44 @@ try {
   console.log(err);
 }
 
-mongoose.connection.once('open', () => {
+let server: any;
+mongoose.connection.once('open', async () => {
   console.log('Connected successfully.');
-  loadDb(mongoose.connection);
+  await loadDb(mongoose.connection);
+  console.log('Loaded database');
+
+  server = app.listen(httpPort, () => {
+    console.log(`Server listening on ${httpPort}`);
+  });
+
+  //clean up on exit
+  process.on('exit', () => {
+    cleanup();
+  });
 });
+
+export const cleanup = async () => {
+  console.log('Cleaning up');
+  await new Promise((resolve, reject) => {
+    io.close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve('closed io server');
+      }
+    });
+  });
+  await new Promise((resolve, reject) => {
+    (server as Server).close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve('closed http server');
+      }
+    });
+  });
+  await mongoose.connection.close();
+};
 
 io.on('connection', async (socket: any) => {
   console.log('a user connected');
@@ -102,10 +136,7 @@ app.get('/pathwayTemplates/:id', async (req: any, res: any) => {
 // add pathway template
 app.post('/pathwayTemplates', async (req: any, res: any) => {
   console.log('adding pathway template', req.body);
-  const pathwayTemplate = new PathwayTemplate({
-    ...req.body,
-    id: uuid(),
-  });
+  const pathwayTemplate = new PathwayTemplate(req.body);
   await pathwayTemplate.save();
   return res.json(pathwayTemplate);
 });
@@ -130,6 +161,19 @@ app.put('/pathwayTemplates/:id', async (req: any, res: any) => {
     req.body,
   );
   return res.json(id);
+});
+
+// get all stage templates
+app.get('/stageTemplates', async (req: any, res: any) => {
+  const stageTemplates = await StageTemplate.find();
+  return res.json(stageTemplates);
+});
+
+// get stage template by id
+app.get('/stageTemplates/:id', async (req: any, res: any) => {
+  const id = req.params.id;
+  const stageTemplate = await StageTemplate.findOne({ id });
+  return res.json(stageTemplate);
 });
 
 // add stage template
@@ -165,10 +209,6 @@ app.put('/stageTemplates/:id', async (req: any, res: any) => {
 
 app.get('/health', (req: any, res: any) => {
   return res.json({ status: 'healthy' });
-});
-
-const server = app.listen(httpPort, () => {
-  console.log(`Server listening on ${httpPort}`);
 });
 
 // to login and assign jwt token to user
@@ -232,31 +272,3 @@ app.post('/users', async (req, res) => {
     res.status(500).send();
   }
 });
-
-//clean up on exit
-process.on('exit', () => {
-  cleanup();
-});
-
-export const cleanup = async () => {
-  console.log('Cleaning up');
-  await new Promise((resolve, reject) => {
-    io.close((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve('closed io server');
-      }
-    });
-  });
-  await new Promise((resolve, reject) => {
-    server.close((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve('closed http server');
-      }
-    });
-  });
-  await mongoose.connection.close();
-};
