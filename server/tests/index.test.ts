@@ -21,7 +21,7 @@ describe('GET /pathwayTemplates', () => {
   test('responds with all pathway templates', async () => {
     const response = await request(app).get('/pathwayTemplates');
     expect(response.statusCode).toBe(200);
-    response.body.forEach((procedure : PathwayTemplate, index: number) => {
+    response.body.forEach((procedure: PathwayTemplate, index: number) => {
       expect(procedure).toMatchObject(procedures[index]);
     });
   });
@@ -29,7 +29,7 @@ describe('GET /pathwayTemplates', () => {
 
 describe('POST /pathwayTemplates', () => {
   test('responds with the newly created pathway template', async () => {
-    const newProcedure : PathwayTemplate = {
+    const newProcedure: PathwayTemplate = {
       id: 'test-id',
       title: 'newTitle',
       desc: 'newDesc',
@@ -45,7 +45,7 @@ describe('POST /pathwayTemplates', () => {
 
 describe('PUT /pathwayTemplates/:id', () => {
   test('responds with the id of the updated pathway template', async () => {
-    const updatedProcedure : PathwayTemplate = {
+    const updatedProcedure: PathwayTemplate = {
       id: 'test-id',
       title: 'updatedTitle',
       desc: 'updatedDesc',
@@ -77,7 +77,7 @@ describe('GET /stageTemplates', () => {
   test('responds with all stage templates', async () => {
     const response = await request(app).get('/stageTemplates');
     expect(response.statusCode).toBe(200);
-    response.body.forEach((stage : PathwayTemplate, index: number) => {
+    response.body.forEach((stage: PathwayTemplate, index: number) => {
       expect(stage).toMatchObject(stageTemplates[index]);
     });
   });
@@ -85,7 +85,7 @@ describe('GET /stageTemplates', () => {
 
 describe('POST /stageTemplates', () => {
   test('responds with the newly created stage template', async () => {
-    const newStage : StageTemplate = {
+    const newStage: StageTemplate = {
       id: 'test-stage-id',
       name: 'newName',
       desc: 'newDesc',
@@ -96,9 +96,7 @@ describe('POST /stageTemplates', () => {
       outputs: ['Scheduled'],
       durationEstimate: 10,
     };
-    const response = await request(app)
-      .post('/stageTemplates')
-      .send(newStage);
+    const response = await request(app).post('/stageTemplates').send(newStage);
     expect(response.statusCode).toBe(200);
     expect(response.body).toMatchObject(newStage);
   });
@@ -106,7 +104,7 @@ describe('POST /stageTemplates', () => {
 
 describe('PUT /stageTemplates/:id', () => {
   test('responds with the id of the updated stage template', async () => {
-    const updatedStage : StageTemplate = {
+    const updatedStage: StageTemplate = {
       id: 'test-stage-id',
       name: 'updatedName',
       desc: 'updatedDesc',
