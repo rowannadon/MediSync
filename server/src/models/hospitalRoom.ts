@@ -5,7 +5,7 @@ import { occupancySchema } from './occupancy';
 const hospitalRoomSchema = new mongoose.Schema({
   room_number: Number,
   type: String,
-  equipment: [{ type: equipmentSchema.obj }],
+  equipment: { type: [equipmentSchema.obj] },
   occupancy: { type: occupancySchema.obj },
 });
 

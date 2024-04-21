@@ -11,13 +11,9 @@ import { ScrollArea } from './components/ui/scroll-area';
 import { PathwayTemplate } from './DataTypes';
 import { PathwayDisplay } from './PathwayDisplay';
 import { useRemoteDataStore } from './RemoteDataStore';
+import { useLocalDataStore } from './LocalDataStore';
 
-interface PathwayLibraryProps {
-  onPathwayClick: (pathway: PathwayTemplate) => void;
-  selectedPathway: PathwayTemplate | null;
-}
-
-export const PathwayLibrary = (props: PathwayLibraryProps) => {
+export const PathwayLibrary = () => {
   const [filter, setFilter] = useState<string>('');
   const pathways = useRemoteDataStore((state) => state.pathways);
   const filteredPathways = pathways.filter((procedure: PathwayTemplate) =>
@@ -25,13 +21,27 @@ export const PathwayLibrary = (props: PathwayLibraryProps) => {
   );
   const [accordionValue, setAccordionValue] = useState<string[]>(['Templates']);
 
+  const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
+  const setSelectedPathway = useLocalDataStore(
+    (state) => state.setSelectedPathway,
+  );
+  const clearSelectedPathway = useLocalDataStore(
+    (state) => state.clearSelectedPathway,
+  );
+
   const displayedPathways = filteredPathways.map((pathway: PathwayTemplate) => {
     return (
       <PathwayDisplay
         key={pathway.title}
         pathway={pathway}
-        onClick={() => props.onPathwayClick(pathway)}
-        selected={props.selectedPathway?.title === pathway.title}
+        onClick={() => {
+          if (selectedPathway?.id === pathway.id) {
+            clearSelectedPathway();
+          } else {
+            setSelectedPathway(pathway);
+          }
+        }}
+        selected={selectedPathway?.title === pathway.title}
       />
     );
   });

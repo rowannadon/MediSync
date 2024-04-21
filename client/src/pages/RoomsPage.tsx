@@ -68,12 +68,12 @@ export const columns: ColumnDef<HospitalRoom>[] = [
         <div className="flex flex-row flex-wrap space-x-2">
           {(row.getValue('equipment') as Equipment[]).map((eq: Equipment) => (
             <Badge
-              className="mt-2 flex h-[30px] max-h-[30px] flex-row bg-[#eee] hover:bg-[#ddd]"
+              className="mt-2 flex justify-center items-center h-[30px] max-h-[30px] flex-row bg-[#eee] hover:bg-[#ddd]"
               variant="secondary"
               key={eq.type}
             >
-              <div className="pr-2">
-                <h1>
+              <div className="pr-2 text-center">
+                <h1 className='text-center'>
                   {eq.type.charAt(0).toUpperCase()}
                   {eq.type.slice(1).replaceAll('_', ' ')}
                 </h1>
@@ -182,7 +182,6 @@ export const columns: ColumnDef<HospitalRoom>[] = [
 
 const Rooms = () => {
   const rooms = useRemoteDataStore((state) => state.rooms);
-
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />

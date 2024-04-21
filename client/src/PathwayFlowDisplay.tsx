@@ -84,11 +84,13 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
     (state) => state.getStageTemplate,
   );
   const stageTemplates = useRemoteDataStore((state) => state.stages);
-  const pathway = useLocalDataStore((state) => state.selectedPathway);
+  const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
+  const selectedPathwayRef = useRef(selectedPathway);
 
   useEffect(() => {
-    if (pathway && pathway.stages.length > 0) {
-      const convertedNodesAndEdges = convertToNodesAndEdges(pathway.stages);
+    selectedPathwayRef.current = selectedPathway;
+    if (selectedPathway && selectedPathway.stages.length > 0) {
+      const convertedNodesAndEdges = convertToNodesAndEdges(selectedPathway.stages);
       const layoutedElements = getLayoutedElements(
         convertedNodesAndEdges.nodes,
         convertedNodesAndEdges.edges,
@@ -100,7 +102,7 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
       setNodes([]);
       setEdges([]);
     }
-  }, [pathway]);
+  }, [selectedPathway]);
 
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -151,14 +153,14 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
       const addedNode = nodes.find((node) => node.id === change.id);
       if (
         addedNode &&
-        pathway &&
-        !pathway.stages.some((stage) => stage.id === addedNode.id)
+        selectedPathway &&
+        !selectedPathway.stages.some((stage) => stage.id === addedNode.id)
       ) {
         console.log('adding stage');
-        addStageToPathwayTemplate(pathway.id, addedNode.data.stage);
+        addStageToPathwayTemplate(selectedPathway.id, addedNode.data.stage);
       }
     },
-    [nodes, pathway, addStageToPathwayTemplate],
+    [nodes, selectedPathway, addStageToPathwayTemplate],
   );
 
   const handleNodeRemoved = useCallback(
@@ -166,40 +168,39 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
       const removedNode = nodes.find((node) => node.id === change.id);
       if (
         removedNode &&
-        pathway &&
-        pathway.stages.some((stage) => stage.id === removedNode.id)
+        selectedPathway &&
+        selectedPathway.stages.some((stage) => stage.id === removedNode.id)
       ) {
-        removeStageFromPathwayTemplate(pathway.id, removedNode.data.stage.id);
+        removeStageFromPathwayTemplate(selectedPathway.id, removedNode.data.stage.id);
       }
     },
-    [nodes, pathway, removeStageFromPathwayTemplate],
+    [nodes, selectedPathway, removeStageFromPathwayTemplate],
   );
 
   const handleEdgeCreated = useCallback(
     (params: any) => {
       console.log(params);
-      if (!pathway) return;
-      const sourceStage = pathway.stages.find(
+      if (!selectedPathway) return;
+      const sourceStage = selectedPathway.stages.find(
         (node) => node.id === params.source,
       );
-      const targetStage = pathway.stages.find(
+      const targetStage = selectedPathway.stages.find(
         (node) => node.id === params.target,
       );
 
       console.log(sourceStage, targetStage);
-      console.log(pathway);
       if (sourceStage && targetStage) {
         console.log('adding edge');
         console.log(params.sourceHandle.split('$')[0]);
         addNextToPathwayStage(
-          pathway.id,
+          selectedPathway.id,
           sourceStage.id,
           targetStage.id,
           params.sourceHandle.split('$')[0],
         );
       }
     },
-    [addNextToPathwayStage, pathway],
+    [addNextToPathwayStage, selectedPathway],
   );
 
   const handleEdgeChanged = useCallback(
@@ -207,18 +208,18 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
       changes.forEach((change: any) => {
         if (change.type === 'remove') {
           const [sourceId, targetId] = change.id.split('=');
-          if (pathway) {
-            const sourceStage = pathway.stages.find(
+          if (selectedPathway) {
+            const sourceStage = selectedPathway.stages.find(
               (node) => node.id === sourceId,
             );
-            const targetStage = pathway.stages.find(
+            const targetStage = selectedPathway.stages.find(
               (node) => node.id === targetId,
             );
 
             if (sourceStage && targetStage) {
               console.log('removing edge');
               removeNextFromPathwayStage(
-                pathway.id,
+                selectedPathway.id,
                 sourceStage.id,
                 targetStage.id,
               );
@@ -227,7 +228,7 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
         }
       });
     },
-    [removeNextFromPathwayStage, pathway],
+    [removeNextFromPathwayStage, selectedPathway],
   );
 
   const onNodesChange = useCallback(
@@ -336,7 +337,11 @@ const PathwayEditorInner = ({ control }: PathwayEditorInnerProps) => {
     accept: 'stage',
     // Props to collect
     drop: (item: any, monitor: any) => {
-      handleStageDropped(item, monitor);
+      console.log(selectedPathwayRef.current)
+      if (selectedPathwayRef.current) {
+        handleStageDropped(item, monitor);
+      }
+      
     },
     collect: (monitor: any) => ({
       isOver: monitor.isOver(),

@@ -1,9 +1,8 @@
-import { Connection, MongooseError } from 'mongoose';
+import { MongooseError } from 'mongoose';
 import express from 'express';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import { v4 as uuid } from 'uuid';
-import { UserModel } from './models/User';
 import PathwayTemplate from './models/pathwayTemplate';
 import RunningPathway from './models/runningPathway';
 import StageTemplate from './models/stageTemplate';
@@ -14,6 +13,7 @@ import HospitalRoom from './models/hospitalRoom';
 import jwt, { VerifyErrors } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+import { User } from './models/user';
 
 dotenv.config({ path: __dirname + '/../../.env' });
 
@@ -24,9 +24,7 @@ export const io = new Server(socketIOPort);
 export const app = express();
 app.use(express.json());
 
-// console.log(process.argv);
 const stage = process.env.STAGE;
-console.log(stage);
 
 let mongoDomain = '';
 switch (stage) {
@@ -47,44 +45,11 @@ switch (stage) {
 
 console.log(mongoDomain);
 
-let db: any = null;
-
 try {
   mongoose
     .connect(mongoDomain, {
       ssl: stage === 'prod' ? true : false,
       retryWrites: false,
-    })
-    .then((connection: any) => {
-      db = connection;
-      console.log('Connected to mongodb');
-      UserModel.findOne({ id: 9999 }).then((existingUser) => {
-        if (!existingUser) {
-          const user = new UserModel({
-            id: 9999,
-            name: 'Test User',
-            role: 'Admin',
-            department: 'Administrator',
-            phone: '1234567890',
-            email: 'admin@example.com',
-            admin: true,
-            location: 'Room 9999',
-            username: 'test',
-            password: 'test',
-          });
-
-          user
-            .save()
-            .then(() => {
-              console.log('Test user created');
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          console.log('User already exists');
-        }
-      });
     })
     .catch((err: MongooseError) => {
       console.log(err);
@@ -93,7 +58,7 @@ try {
   console.log(err);
 }
 
-mongoose.connection.once('open', function callback() {
+mongoose.connection.once('open', () => {
   console.log('Connected successfully.');
   loadDb(mongoose.connection);
 });
@@ -121,6 +86,19 @@ interface RequestWithUser extends Request {
   user?: any;
 }
 
+// get all pathway templates
+app.get('/pathwayTemplates', async (req: any, res: any) => {
+  const pathwayTemplates = await PathwayTemplate.find();
+  return res.json(pathwayTemplates);
+});
+
+// get pathway template by id
+app.get('/pathwayTemplates/:id', async (req: any, res: any) => {
+  const id = req.params.id;
+  const pathwayTemplate = await PathwayTemplate.findOne({ id });
+  return res.json(pathwayTemplate);
+});
+
 // add pathway template
 app.post('/pathwayTemplates', async (req: any, res: any) => {
   console.log('adding pathway template', req.body);
@@ -144,7 +122,7 @@ app.delete('/pathwayTemplates/:id', async (req: any, res: any) => {
 // update pathway template
 app.put('/pathwayTemplates/:id', async (req: any, res: any) => {
   const id = req.params.id;
-  console.log(`updating pathway template with id: ${id}`);
+  console.log(`updating pathway template with id: ${id} to`, req.body);
   await PathwayTemplate.updateOne(
     {
       id,
@@ -156,6 +134,7 @@ app.put('/pathwayTemplates/:id', async (req: any, res: any) => {
 
 // add stage template
 app.post('/stageTemplates', async (req: any, res: any) => {
+  console.log('adding stage template', req.body);
   const stageTemplate = new StageTemplate(req.body);
   await stageTemplate.save();
   return res.json(stageTemplate);
@@ -164,6 +143,7 @@ app.post('/stageTemplates', async (req: any, res: any) => {
 // delete stage template
 app.delete('/stageTemplates/:id', async (req: any, res: any) => {
   const id = req.params.id;
+  console.log(`deleting stage template with id: ${id}`)
   await StageTemplate.deleteOne({
     id,
   });
@@ -173,6 +153,7 @@ app.delete('/stageTemplates/:id', async (req: any, res: any) => {
 // update stage template
 app.put('/stageTemplates/:id', async (req: any, res: any) => {
   const id = req.params.id;
+  console.log(`updating stage template with id: ${id} to`, req.body);
   await StageTemplate.updateOne(
     {
       id,
@@ -180,43 +161,6 @@ app.put('/stageTemplates/:id', async (req: any, res: any) => {
     req.body,
   );
   return res.json(id);
-});
-
-// // add stage to pathway
-// app.post('/pathwayTemplates/:id/stage', async (req: any, res: any) => {
-//   const pathwayId = req.params.id;
-//   const pathway = await PathwayTemplate.findOne({ id: pathwayId });
-//   if (!pathway) {
-//     return res.status(404).json('Pathway not found');
-//   }
-//   const stage = new StageTemplate(req.body);
-//   pathway.stages.push(stage);
-//   await pathway.save();
-//   return res.json(stage);
-// });
-
-// // remove stage from pathway
-// app.delete('/pathwayTemplates/:pid/stage/:sid',
-//   async (req: any, res: any) => {
-//     const pathwayId = req.params.pid;
-//     const stageId = req.params.sid;
-//     const pathway = await PathwayTemplate.findOne({ id: pathwayId });
-//     if (!pathway) {
-//       return res.status(404).json('Pathway not found');
-//     }
-//     const stage = pathway.stages.id(stageId);
-//     if (stage) {
-//       stage.remove();
-//       await pathway.save();
-//       return res.json(stageId);
-//     } else {
-//       return res.status(404).json('Stage not found');
-//     }
-//   },
-// );
-
-app.get('/test', async (req: any, res: any) => {
-  return res.json({ status: 'healthy' });
 });
 
 app.get('/health', (req: any, res: any) => {
@@ -270,7 +214,7 @@ app.post('/users', async (req, res) => {
   try {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
-    const user = new UserModel({
+    const user = new User({
       name: req.body.name,
       role: req.body.role,
       department: req.body.department,
@@ -289,13 +233,30 @@ app.post('/users', async (req, res) => {
   }
 });
 
-// clean up on exit
+//clean up on exit
 process.on('exit', () => {
   cleanup();
 });
 
-export const cleanup = () => {
-  io.close();
-  server.close();
-  console.log('Cleaning up...');
+export const cleanup = async () => {
+  console.log('Cleaning up')
+  await new Promise((resolve, reject) => {
+    io.close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve('closed io server');
+      }
+    })
+  });
+  await new Promise((resolve, reject) => {
+    server.close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve('closed http server');
+      }
+    })
+  });
+  await mongoose.connection.close();
 };
