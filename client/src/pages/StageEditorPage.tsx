@@ -107,6 +107,7 @@ const StageEditor = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
+                      data-cy="NewStageButton"
                       variant="outline"
                       size="icon"
                       onClick={handleCreateStage}
