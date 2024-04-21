@@ -27,27 +27,27 @@ export const SocketProvider = (props: any) => {
     });
 
     socket.on('pathwayTemplates', (pathwayTemplates) => {
-      console.log('setting pathway templates')
+      console.log('setting pathway templates');
       setPathwayTemplates(pathwayTemplates);
     });
 
     socket.on('stageTemplates', (stageTemplates) => {
-      console.log('setting stage templates')
+      console.log('setting stage templates');
       setStageTemplates(stageTemplates);
     });
 
     socket.on('people', (people) => {
-      console.log('setting people')
+      console.log('setting people');
       setPeople(people);
     });
 
     socket.on('rooms', (rooms) => {
-      console.log('setting rooms')
+      console.log('setting rooms');
       setRooms(rooms);
     });
 
     socket.on('runningPathways', (runningPathways) => {
-      console.log('setting running pathways')
+      console.log('setting running pathways');
       setRunningPathways(runningPathways);
     });
 

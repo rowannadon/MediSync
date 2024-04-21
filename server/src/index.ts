@@ -61,7 +61,6 @@ let server: any;
 mongoose.connection.once('open', async () => {
   console.log('Connected successfully.');
   await loadDb(mongoose.connection);
-  console.log('Loaded database');
 
   server = app.listen(httpPort, () => {
     console.log(`Server listening on ${httpPort}`);

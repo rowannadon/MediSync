@@ -14,6 +14,11 @@ import { User } from './models/user';
 export const loadDb = async (connection: Connection) => {
   console.log('Clearing database');
   await connection.db.dropDatabase();
+
+  if ((await PathwayTemplate.find()).length) {
+    console.log('Database not cleared');
+    return;
+  }
   await PathwayTemplate.insertMany(procedures);
   await StageTemplate.insertMany(stageTemplates);
   await RunningPathway.insertMany(runningPathways);
