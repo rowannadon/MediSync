@@ -2,7 +2,6 @@ import { MongooseError } from 'mongoose';
 import express from 'express';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
-import { v4 as uuid } from 'uuid';
 import PathwayTemplate from './models/pathwayTemplate';
 import RunningPathway from './models/runningPathway';
 import StageTemplate from './models/stageTemplate';
