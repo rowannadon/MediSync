@@ -1,5 +1,6 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { config } from './config';
+//import { cleanup } from '../src';
 
 export = async function globalTeardown() {
   if (config.Memory) {
@@ -7,4 +8,6 @@ export = async function globalTeardown() {
     const instance: MongoMemoryServer = (global as any).__MONGOINSTANCE;
     await instance.stop();
   }
+
+  //await cleanup();
 };

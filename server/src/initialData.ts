@@ -90,7 +90,7 @@ export const stageTemplates: StageTemplate[] = [
     desc: 'Decision point: Choose the treatment option for the patient.',
     type: 'peri-operative',
     required_staff: ['Oncologist', 'Nurse'],
-    required_room: 'Meeting Room',
+    required_room: 'Consultation Room',
     required_equipment: [],
     outputs: ['Scheduled', 'Scheduled', 'Scheduled'],
     durationEstimate: 30,
@@ -101,7 +101,7 @@ export const stageTemplates: StageTemplate[] = [
     desc: 'Chemotherapy treatment.',
     type: 'peri-operative',
     required_staff: ['Oncologist', 'Nurse'],
-    required_room: 'Treatment Room',
+    required_room: 'Laboratory',
     required_equipment: [
       { type: 'Chemotherapy Drugs', count: 1, desc: 'Chemotherapy drugs' },
     ],
@@ -114,7 +114,7 @@ export const stageTemplates: StageTemplate[] = [
     desc: 'Radiation therapy treatment.',
     type: 'peri-operative',
     required_staff: ['Radiation Therapist', 'Nurse'],
-    required_room: 'Radiation Room',
+    required_room: 'Radiation Oncology',
     required_equipment: [
       { type: 'Radiation Machine', count: 1, desc: 'Linear accelerator' },
     ],
@@ -177,7 +177,7 @@ export const stageTemplates: StageTemplate[] = [
     desc: 'Removal of breast tissue for analysis',
     type: 'peri-operative',
     required_staff: ['Surgeon', 'Nurse'],
-    required_room: 'Surgery Room',
+    required_room: 'Operating Room',
     required_equipment: [
       {
         type: 'Surgical Instruments',
@@ -254,7 +254,7 @@ export const stageTemplates: StageTemplate[] = [
     desc: 'Magnetic Resonance Imaging',
     type: 'diagnostic',
     required_staff: ['Radiologic Technologist'],
-    required_room: 'MRI Suite',
+    required_room: 'Imaging Suite',
     required_equipment: [
       {
         type: 'MRI Machine',
@@ -305,7 +305,7 @@ export const stageTemplates: StageTemplate[] = [
     desc: 'Medical imaging technique that uses high-frequency sound waves to visualize internal body structures.',
     type: 'diagnostic',
     required_staff: ['Radiologist', 'Sonographer'],
-    required_room: 'Ultrasound Room',
+    required_room: 'Imaging Suite',
     required_equipment: [
       {
         type: 'Ultrasound Machine',
@@ -322,7 +322,7 @@ export const stageTemplates: StageTemplate[] = [
     desc: 'Laboratory analysis of blood sample for various purposes.',
     type: 'diagnostic',
     required_staff: ['Phlebotomist'],
-    required_room: 'Phlebotomy Room',
+    required_room: 'Laboratory',
     required_equipment: [
       {
         type: 'Blood Collection Kit',
@@ -575,6 +575,12 @@ export const displayedRooms: HospitalRoom[] = [
     room_number: 223,
     type: 'X-Ray Room',
     equipment: [{ type: 'x-ray machine', count: 2, desc: 'X-ray Machine' }],
+    occupancy: { current: 0, total: 2 },
+  },
+  {
+    room_number: 223,
+    type: 'Cath Lab',
+    equipment: [],
     occupancy: { current: 0, total: 2 },
   },
   {

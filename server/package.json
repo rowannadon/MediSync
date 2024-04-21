@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "dev": "nodemon --exec ts-node src/index.ts",
-    "test": "jest --forceExit --detectOpenHandles --runInBand",
+    "test": "jest --detectOpenHandles --runInBand",
     "lint": "eslint . --ext .ts --fix && prettier --write ."
   },
   "author": "",

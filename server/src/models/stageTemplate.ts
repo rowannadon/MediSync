@@ -9,7 +9,7 @@ const stageTemplateSchema = new mongoose.Schema({
   type: String,
   required_staff: [String],
   required_room: String,
-  required_equipment: [{ type: equipmentSchema.obj }],
+  required_equipment: { type: [equipmentSchema.obj] },
   outputs: { type: [String], enum: outputTypes },
   durationEstimate: Number,
 });
