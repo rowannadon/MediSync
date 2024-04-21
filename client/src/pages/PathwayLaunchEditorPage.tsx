@@ -146,16 +146,7 @@ const PathwayLaunchEditor = () => {
             )}
           </div>
         </div>
-        <PathwayLibrary
-          onPathwayClick={(pathway: PathwayTemplate) => {
-            if (selectedPathway !== pathway) {
-              setSelectedPathway(pathway);
-            } else {
-              clearSelectedPathway();
-            }
-          }}
-          selectedPathway={selectedPathway}
-        />
+        <PathwayLibrary />
       </div>
     </div>
   );
