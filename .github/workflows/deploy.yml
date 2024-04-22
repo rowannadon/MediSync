@@ -29,7 +29,7 @@ jobs:
           start:  |
             npm install
             npm run test
-          wait-on: 'http://localhost:5173/test'
+          wait-on: 'npx wait-on --timeout 60000 tcp:5173'
 
   test-backend-supertest:
     runs-on: ubuntu-22.04
