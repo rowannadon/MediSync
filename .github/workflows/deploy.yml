@@ -19,16 +19,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install npm dependencies
-        run: |
-          npm install
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
+      
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
         with:
-          # wait for the URL to respond
-          # using the default parameter
-          start: npm run start
-          wait-on: 'npx wait-on --timeout 60000 tcp:5173'
+          mongodb-version: latest
+      - run: npm install
+      - run: npm run test
 
   test-backend-supertest:
     runs-on: ubuntu-22.04
