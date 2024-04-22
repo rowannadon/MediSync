@@ -19,16 +19,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Install npm dependencies, cache them correctly
-      # and run all Cypress tests
+      - name: Install npm dependencies
+        run: |
+          npm install
       - name: Cypress run
-        uses: ./
+        uses: cypress-io/github-action@v2
         with:
           # wait for the URL to respond
           # using the default parameter
-          start:  |
-            npm install
-            npm run test
+          start: npm run start
           wait-on: 'npx wait-on --timeout 60000 tcp:5173'
 
   test-backend-supertest:
