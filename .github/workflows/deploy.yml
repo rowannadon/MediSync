@@ -22,9 +22,9 @@ jobs:
       # Install npm dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
-        uses: cypress-io/github-action@v6
+        uses: actions/checkout@v4
         with:
-          start: npm start
+          run: npm run test
           wait-on: 'http://localhost:5173'
   test-backend-supertest:
     runs-on: ubuntu-22.04
