@@ -118,6 +118,10 @@ interface RequestWithUser extends Request {
   user?: any;
 }
 
+app.get('/test', async (req: any, res: any) => {
+  return res.send('API response: This is a response from the server!');
+});
+
 // get all pathway templates
 app.get('/pathwayTemplates', async (req: any, res: any) => {
   const pathwayTemplates = await PathwayTemplate.find();

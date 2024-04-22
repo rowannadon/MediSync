@@ -164,7 +164,8 @@ export function StageEditorForm({
       {stage && (
         <div className="flex flex-grow flex-row overflow-auto pb-4 pl-1 pr-4 pt-4">
           <Form {...form}>
-            <form data-cy = "NewStageForm"
+            <form
+              data-cy="NewStageForm"
               onSubmit={form.handleSubmit(onSubmit)}
               className="flex-grow space-y-8"
             >
@@ -176,7 +177,11 @@ export function StageEditorForm({
                     <FormItem>
                       <FormLabel>Title</FormLabel>
                       <FormControl>
-                        <Input data-cy = "NewStageFormTitle" placeholder="Stage title" {...field} />
+                        <Input
+                          data-cy="NewStageFormTitle"
+                          placeholder="Stage title"
+                          {...field}
+                        />
                       </FormControl>
                       <FormDescription>
                         This is the title of the stage that will be displayed in
@@ -188,13 +193,13 @@ export function StageEditorForm({
                 />
               )}
               {selectedStagePropertyType === 'information' && (
-                <FormField 
+                <FormField
                   control={form.control}
                   name="type"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Stage Category</FormLabel>
-                      <Select 
+                      <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
@@ -203,7 +208,7 @@ export function StageEditorForm({
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel >Category</SelectLabel>
+                            <SelectLabel>Category</SelectLabel>
                             {stageTypes.map((type) => (
                               <SelectItem key={type} value={type}>
                                 {type}
@@ -228,7 +233,8 @@ export function StageEditorForm({
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Required Room</FormLabel>
-                      <Select data-cy = "NewStageFormRooom"
+                      <Select
+                        data-cy="NewStageFormRooom"
                         onValueChange={field.onChange}
                         value={field.value}
                       >
