@@ -41,7 +41,7 @@ const PathwayLaunchEditor = () => {
 
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     // The type (or types) to accept - strings or symbols
-    accept: 'stage',
+    accept: 'pathway',
     // Props to collect
     drop: (item: any) => {
       const stage = item.props.pathway;
