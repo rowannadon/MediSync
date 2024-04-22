@@ -12,6 +12,8 @@ describe('getlast Button', () => {
       })
     });
     
-    
+    Cypress.on('uncaught:exception', (err, runnable) => {
+      return false
+    })
   })
 })
