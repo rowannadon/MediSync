@@ -22,9 +22,15 @@ jobs:
       # Install npm dependencies, cache them correctly
       # and run all Cypress tests
       - name: Cypress run
-        run:  |
-          npm install
-          npm run test
+        uses: ./
+        with:
+          # wait for the URL to respond
+          # using the default parameter
+          start:  |
+            npm install
+            npm run test
+          wait-on: 'http://localhost:5173/test'
+
   test-backend-supertest:
     runs-on: ubuntu-22.04
     steps:
