@@ -213,49 +213,106 @@ app.get('/health', (req: any, res: any) => {
   return res.json({ status: 'healthy' });
 });
 
-// to login and assign jwt token to user
-app.post('/login', (req, res) => {
+
+// login and assign access token to user
+app.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  const user = { username: username, password: password };
-  const accessToken = jwt.sign(
-    user,
-    process.env.ACCESS_TOKEN_SECRET || 'secret',
-  );
-  console.log(`access token secret: ${process.env.ACCESS_TOKEN_SECRET}`);
-  res.json({ accessToken: accessToken });
+
+  // find user in db
+  const dbUser = await User.findOne({ username: username });
+  if (!dbUser) {
+    return res.status(400).json({ error: 'User not found' });
+  }
+
+  // compare passwords
+  const match = await bcrypt.compare(password, dbUser.password);
+  if (!match) {
+    return res.status(400).json({ error: 'Invalid password' });
+  }
+
+  const user = { username: username };
+  const refreshTokenSecret = checkRefreshTokenSecret();
+  const accessToken = generateAccessToken(user);
+  const refreshToken = jwt.sign(user, refreshTokenSecret);
+
+  // add refresh token to db
+  dbUser.refreshTokens.push(refreshToken);
+  await dbUser.save();
+
+  res.json({ accessToken: accessToken, refreshToken: refreshToken });
 });
 
-app.get('/posts', authenticateToken, (req: RequestWithUser, res: Response) => {
-  res.json(req.user);
+// generate new access token using refresh token
+app.post('/token', async (req, res) => {
+  const refreshToken = req.body.token;
+  if (refreshToken == null) return res.sendStatus(401);
+  const username = req.body.username;
+
+  // check if refresh token exists in db for the user
+  const dbUser = await User.findOne({ username: username });
+  if (!dbUser) {
+    return res.status(400).json({ error: 'User not found' });
+  }
+
+  if (!dbUser.refreshTokens.includes(refreshToken)) {
+    return res.status(403).json({ error: 'Refresh token not found' });
+  }
+
+  const refreshTokenSecret = checkRefreshTokenSecret();
+
+  // refresh token exists, create new access token
+  jwt.verify(refreshToken, refreshTokenSecret, (err: any, user: any) => {
+    if (err) return res.sendStatus(403);
+    const accessToken = generateAccessToken({ username: user.username });
+    res.json({ accessToken: accessToken });
+  })
 });
 
-function authenticateToken(
-  req: RequestWithUser,
-  res: Response,
-  next: NextFunction,
-) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  if (token == null) return res.sendStatus(401);
+// delete refresh token
+app.delete('/logout', async (req: any, res: any) => {
+  const refreshToken = req.body.token;
+  const username = req.body.username;
 
-  jwt.verify(
-    token,
-    process.env.ACCESS_TOKEN_SECRET || 'secret',
-    { complete: true },
-    (err: VerifyErrors | null, user: any) => {
-      if (err) return res.sendStatus(403);
-      req.user = user;
-      next();
-    },
-  );
+  const dbUser = await User.findOne({ username: username });
+  if (!dbUser) {
+    return res.status(400).json({ error: 'User not found' });
+  }
+
+  dbUser.refreshTokens = dbUser.refreshTokens.filter((token: string) => token !== refreshToken);
+  await dbUser.save();
+
+  res.sendStatus(204);
+});
+
+
+// generate a new access token
+function generateAccessToken(user: any) {
+  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+  if (!accessTokenSecret) {
+    throw new Error('ACCESS_TOKEN_SECRET is not defined');
+  }
+
+  return jwt.sign(user, accessTokenSecret, { expiresIn: '10m' });
+};
+
+function checkRefreshTokenSecret() {
+  if (!process.env.REFRESH_TOKEN_SECRET) {
+    throw new Error('REFRESH_TOKEN_SECRET is not defined');
+  } else {
+    return process.env.REFRESH_TOKEN_SECRET;
+  }
+
 }
 
-// to add a new user with a hashed password
+// add a new user and store password hash
 app.post('/users', async (req, res) => {
   try {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    console.log(salt);
+    console.log(hashedPassword);
     const user = new User({
       name: req.body.name,
       role: req.body.role,

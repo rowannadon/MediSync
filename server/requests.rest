@@ -9,6 +9,27 @@ Content-Type: application/json
 
 ###
 
+
+POST http://localhost:3001/token
+Content-Type: application/json
+
+{ 
+    "username": "test",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE3MTQwMTQxOTV9.KkSnGzjjsm1hayJlg8szNxmxcs1milyWRkGUg9i7DeY"
+}
+
+###
+
+DELETE http://localhost:3001/logout
+Content-Type: application/json
+
+{
+    "username": "test",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpYXQiOjE3MTQwMTUyMjF9.CS-MCPE-dmJjBq61hxcFn_YQ2fLNSdib7saHSdHTDwE"
+}
+
+###
+
 Post http://localhost:3001/users
 Content-Type: application/json
 
@@ -16,7 +37,7 @@ Content-Type: application/json
     "name": "New User",
     "role": "Worker",
     "department": "Emergency",
-    "phone": "631-444-9999",
+    "phone": "111-111-1111",
     "email": "NewUser1@test.com",
     "admin": false,
     "location": "None",
@@ -32,7 +53,7 @@ Content-Type: application/json
     "name": "New User",
     "role": "Worker",
     "department": "Emergency",
-    "phone": "631-333-5555",
+    "phone": "222-222-2222",
     "email": "NewUser2@test.com",
     "admin": false,
     "location": "None",

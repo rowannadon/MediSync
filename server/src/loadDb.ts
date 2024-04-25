@@ -10,6 +10,7 @@ import StageTemplate from './models/stageTemplate';
 import HospitalRoom from './models/hospitalRoom';
 import Person from './models/person';
 import { User } from './models/user';
+import bcrypt from 'bcrypt';
 
 export const loadDb = async (connection: Connection) => {
   console.log('Clearing database');
@@ -25,8 +26,11 @@ export const loadDb = async (connection: Connection) => {
   await HospitalRoom.insertMany(displayedRooms);
   await Person.insertMany(displayedPeople);
 
-  User.findOne({ id: 9999 }).then((existingUser) => {
+  // creates a test user if it doesn't yet exist
+  // username/password: test/test
+  User.findOne({ id: 9999 }).then(async (existingUser) => {
     if (!existingUser) {
+      const hashedPassword = await bcrypt.hash('test', 10);
       const user = new User({
         id: 9999,
         name: 'Test User',
@@ -37,7 +41,7 @@ export const loadDb = async (connection: Connection) => {
         admin: true,
         location: 'Room 9999',
         username: 'test',
-        password: 'test',
+        password: hashedPassword,
       });
 
       user
