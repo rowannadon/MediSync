@@ -98,10 +98,29 @@ jobs:
           container-name: frontend
           image: ${{ steps.build-image-frontend.outputs.image }}
 
+      - name: Build, tag, and push solver image to Amazon ECR
+        id: build-image-solver
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: medisync-solver
+          IMAGE_TAG: ${{ github.sha }}-solver
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f solver/Dockerfile.solver .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new image ID in the Amazon ECS task definition for solver
+        id: medisync-task-def-solver
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.medisync-task-def-frontend.outputs.task-definition }}
+          container-name: solver
+          image: ${{ steps.build-image-solver.outputs.image }}
+
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          task-definition: ${{ steps.medisync-task-def-frontend.outputs.task-definition }}
+          task-definition: ${{ steps.medisync-task-def-solver.outputs.task-definition }}
           service: medisync-service
           cluster: medisync
           wait-for-service-stability: true

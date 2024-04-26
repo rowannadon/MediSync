@@ -13,18 +13,18 @@ import { User } from './models/user';
 import bcrypt from 'bcrypt';
 
 export const loadDb = async (connection: Connection) => {
-  console.log('Clearing database');
-  await connection.db.dropDatabase();
+  // console.log('Clearing database');
+  // await connection.db.dropDatabase();
 
-  if ((await PathwayTemplate.find()).length) {
-    console.log('Database not cleared');
-    return;
-  }
-  await PathwayTemplate.insertMany(procedures);
-  await StageTemplate.insertMany(stageTemplates);
-  await RunningPathway.insertMany(runningPathways);
-  await HospitalRoom.insertMany(displayedRooms);
-  await Person.insertMany(displayedPeople);
+  // if ((await PathwayTemplate.find()).length) {
+  //   console.log('Database not cleared');
+  //   return;
+  // }
+  // await PathwayTemplate.insertMany(procedures);
+  // await StageTemplate.insertMany(stageTemplates);
+  // await RunningPathway.insertMany(runningPathways);
+  // await HospitalRoom.insertMany(displayedRooms);
+  // await Person.insertMany(displayedPeople);
 
   // creates a test user if it doesn't yet exist
   // username/password: test/test

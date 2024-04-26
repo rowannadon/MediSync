@@ -2,7 +2,6 @@ import request from 'supertest';
 import { app, cleanup } from '../src/index';
 import { procedures, stageTemplates } from '../src/initialData';
 import { PathwayTemplate, StageTemplate } from '../src/DataTypes';
-import { before } from 'lodash';
 
 beforeAll(async () => {
   // delay starting tests to allow server to start

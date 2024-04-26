@@ -3,16 +3,18 @@ import express from 'express';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import PathwayTemplate from './models/pathwayTemplate';
-import RunningPathway from './models/runningPathway';
 import StageTemplate from './models/stageTemplate';
 import { loadDb } from './loadDb';
-import { Request, Response, NextFunction } from 'express';
+import { Request } from 'express';
 import Person from './models/person';
 import HospitalRoom from './models/hospitalRoom';
-import jwt, { VerifyErrors } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { User } from './models/user';
+import axios from 'axios';
+import { RunningPathway } from './DataTypes';
+import { v4 as uuid } from 'uuid';
 
 dotenv.config({ path: __dirname + '/../../.env' });
 
@@ -26,23 +28,30 @@ app.use(express.json());
 const stage = process.env.STAGE;
 
 let mongoDomain = '';
+let solverDomain = '';
 switch (stage) {
   case 'local':
     mongoDomain = 'mongodb://mongodb:27017/medisync';
+    solverDomain = 'http://solver:5000';
     break;
   case 'prod':
     mongoDomain = `mongodb://${process.env.MONGO_URI}:27017/medisync`;
+    solverDomain = 'http://127.0.0.1:5000';
     break;
   case 'test':
     mongoDomain = process.env.MONGO_URI
       ? process.env.MONGO_URI
       : 'mongodb://127.0.0.1:27017/medisync';
+    solverDomain = 'http://127.0.0.1:5000';
     break;
   default:
     mongoDomain = 'mongodb://127.0.0.1:27017/medisync';
+    solverDomain = 'http://127.0.0.1:5000';
+    break;
 }
 
 console.log(mongoDomain);
+console.log(solverDomain);
 
 try {
   mongoose
@@ -56,6 +65,12 @@ try {
 } catch (err) {
   console.log(err);
 }
+
+axios.get(solverDomain + '/health').then((res) => {
+  console.log('Solver health check:', res.data);
+}).catch((err) => { 
+  console.log('Solver health check failed:', err);
+});
 
 let server: any;
 mongoose.connection.once('open', async () => {
@@ -95,6 +110,8 @@ export const cleanup = async () => {
   await mongoose.connection.close();
 };
 
+const runningPathways: RunningPathway[] = [];
+
 io.on('connection', async (socket: any) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
@@ -111,7 +128,7 @@ io.on('connection', async (socket: any) => {
   socket.emit('people', await Person.find());
   socket.emit('rooms', await HospitalRoom.find());
   socket.emit('stageTemplates', await StageTemplate.find());
-  socket.emit('runningPathways', await RunningPathway.find());
+  socket.emit('runningPathways', runningPathways);
 });
 
 interface RequestWithUser extends Request {
@@ -211,6 +228,76 @@ app.put('/stageTemplates/:id', async (req: any, res: any) => {
 
 app.get('/health', (req: any, res: any) => {
   return res.json({ status: 'healthy' });
+});
+
+app.post('/runningPathways', async (req: any, res: any) => {
+  console.log('creating new running pathway from: ', req.body);
+  const timePadding = 5;
+
+  const staff = req.body.form.staff;
+  const stages = req.body.stages;
+  const tasks = []
+  for (let stage of stages) {
+    const stageStaff = staff.filter((s: any) => s.stageId === stage.template.id);
+    const s = stageStaff.map((s: any) => ({'type': s.staff, 'count': 1}));
+    const next = stage.next.filter((n: any) => n['Next Available']).map((n: any) => n['Next Available']);
+    const task = {
+      'name': stage.id,
+      'duration': stage.template.durationEstimate + timePadding,
+      'required_people': s,
+      'next': next
+    }
+    console.log(task);
+    tasks.push(task);
+  }
+
+  const unavailable_periods: any = [
+  ]
+
+  const people = await Person.find();
+  const p = people.map((person: any, index: number) => ({'id': index+1, 'type': person.role, 'available_hours': [8*60, 16*60]}));
+  
+  console.log('tasks', tasks);
+
+  let result;
+  try {
+    result = await axios.post(solverDomain + '/schedule', {tasks: tasks, people: p, unavailable_periods: unavailable_periods})
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ error: 'Error scheduling pathway' });
+  }
+  console.log(result.data);
+
+  const startDate = new Date();
+
+  const newId = uuid();
+
+  const newRunningPathway: RunningPathway = {
+    id: newId,
+    patient: req.body.form.patient,
+    startDate: startDate,
+    notes: req.body.form.notes,
+    title: req.body.pathway.title,
+    desc: req.body.pathway.desc,
+    stages: req.body.stages.map((stage: any) => {
+      return {
+        ...stage,
+        id: stage.id + '-' + newId,
+        template: stage.template.id,
+        assigned_staff: [],
+        assigned_room: '',
+        date: new Date(startDate.valueOf() + result.data[stage.id]['start']*60000),
+        completed: false,
+        progress: 0,
+      }
+    }),
+  }
+
+  console.log('new running pathway', newRunningPathway)
+
+  runningPathways.push(newRunningPathway);
+  io.emit('runningPathways', runningPathways);
+  
 });
 
 

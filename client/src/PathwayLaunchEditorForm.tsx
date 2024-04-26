@@ -44,6 +44,8 @@ import {
 } from './components/ui/select';
 import { Input } from './components/ui/input';
 import { parseAbsolute, getLocalTimeZone } from '@internationalized/date';
+import axios from 'axios';
+import { template } from 'lodash';
 
 const pathwayFormSchema = z.object({
   patient: z.string({
@@ -187,7 +189,18 @@ export function PathwayLaunchEditorForm({
   }, [pathway, form]);
 
   function onSubmit(data: PathwayFormValues) {
-    console.log(data);
+    const m = pathway?.stages.map((stage) => {
+      return {
+        ...stage,
+        template: getStageTemplate(stage.template),
+      };
+    });
+    const d = { form: data, stages: m, pathway: pathway };
+    console.log(d)
+
+    axios.post('/api/runningPathways', d).then((res) => {
+      console.log(res);
+    });
   }
 
   function updateStaff(
@@ -563,13 +576,13 @@ export function PathwayLaunchEditorForm({
                                                         output.next,
                                                       )
                                                         ? parseAbsolute(
-                                                            getOutputValue(
-                                                              field.value,
-                                                              stage,
-                                                              output.next,
-                                                            ),
-                                                            getLocalTimeZone(),
-                                                          )
+                                                          getOutputValue(
+                                                            field.value,
+                                                            stage,
+                                                            output.next,
+                                                          ),
+                                                          getLocalTimeZone(),
+                                                        )
                                                         : null
                                                     }
                                                     onChange={(date) => {
@@ -600,10 +613,10 @@ export function PathwayLaunchEditorForm({
                                                         output.next,
                                                       )
                                                         ? getOutputValue(
-                                                            field.value,
-                                                            stage,
-                                                            output.next,
-                                                          )
+                                                          field.value,
+                                                          stage,
+                                                          output.next,
+                                                        )
                                                         : ''
                                                     }
                                                     onChange={(text) => {

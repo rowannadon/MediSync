@@ -23,6 +23,20 @@ services:
     expose:
       - "3001"
       - "3002"
+    depends_on:
+      - mongodb
+      - solver
+    networks:
+      - network
+
+  solver:
+    image: ${DOCKER_REGISTRY}/medisync:backend
+    container_name: solver
+    build:
+      context: .
+      dockerfile: solver/Dockerfile.solver
+    expose:
+      - "5000"
     networks:
       - network
 
