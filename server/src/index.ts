@@ -66,11 +66,14 @@ try {
   console.log(err);
 }
 
-axios.get(solverDomain + '/health').then((res) => {
-  console.log('Solver health check:', res.data);
-}).catch((err) => { 
-  console.log('Solver health check failed:', err);
-});
+axios
+  .get(solverDomain + '/health')
+  .then((res) => {
+    console.log('Solver health check:', res.data);
+  })
+  .catch((err) => {
+    console.log('Solver health check failed:', err);
+  });
 
 let server: any;
 mongoose.connection.once('open', async () => {
@@ -236,32 +239,44 @@ app.post('/runningPathways', async (req: any, res: any) => {
 
   const staff = req.body.form.staff;
   const stages = req.body.stages;
-  const tasks = []
-  for (let stage of stages) {
-    const stageStaff = staff.filter((s: any) => s.stageId === stage.template.id);
-    const s = stageStaff.map((s: any) => ({'type': s.staff, 'count': 1}));
-    const next = stage.next.filter((n: any) => n['Next Available']).map((n: any) => n['Next Available']);
+  const tasks = [];
+  for (const stage of stages) {
+    const stageStaff = staff.filter(
+      (s: any) => s.stageId === stage.template.id,
+    );
+    const s = stageStaff.map((s: any) => ({ type: s.staff, count: 1 }));
+    const next = stage.next
+      .filter((n: any) => n['Next Available'])
+      .map((n: any) => n['Next Available']);
+    console.log(next);
     const task = {
-      'name': stage.id,
-      'duration': stage.template.durationEstimate + timePadding,
-      'required_people': s,
-      'next': next
-    }
-    console.log(task);
+      name: stage.id,
+      duration: stage.template.durationEstimate + timePadding,
+      required_people: s,
+      next: next,
+    };
+    //console.log(task);
     tasks.push(task);
   }
 
-  const unavailable_periods: any = [
-  ]
+  const unavailable_periods: any = [];
 
   const people = await Person.find();
-  const p = people.map((person: any, index: number) => ({'id': index+1, 'type': person.role, 'available_hours': [8*60, 16*60]}));
-  
+  const p = people.map((person: any, index: number) => ({
+    id: index + 1,
+    type: person.role,
+    available_hours: [8 * 60, 16 * 60],
+  }));
+
   console.log('tasks', tasks);
 
   let result;
   try {
-    result = await axios.post(solverDomain + '/schedule', {tasks: tasks, people: p, unavailable_periods: unavailable_periods})
+    result = await axios.post(solverDomain + '/schedule', {
+      tasks: tasks,
+      people: p,
+      unavailable_periods: unavailable_periods,
+    });
   } catch (e) {
     console.log(e);
     return res.status(500).json({ error: 'Error scheduling pathway' });
@@ -286,20 +301,20 @@ app.post('/runningPathways', async (req: any, res: any) => {
         template: stage.template.id,
         assigned_staff: [],
         assigned_room: '',
-        date: new Date(startDate.valueOf() + result.data[stage.id]['start']*60000),
+        date: new Date(
+          startDate.valueOf() + result.data[stage.id]['start'] * 60000,
+        ),
         completed: false,
         progress: 0,
-      }
+      };
     }),
-  }
+  };
 
-  console.log('new running pathway', newRunningPathway)
+  console.log('new running pathway', newRunningPathway);
 
   runningPathways.push(newRunningPathway);
   io.emit('runningPathways', runningPathways);
-  
 });
-
 
 // login and assign access token to user
 app.post('/login', async (req, res) => {
@@ -353,7 +368,7 @@ app.post('/token', async (req, res) => {
     if (err) return res.sendStatus(403);
     const accessToken = generateAccessToken({ username: user.username });
     res.json({ accessToken: accessToken });
-  })
+  });
 });
 
 // delete refresh token
@@ -366,12 +381,13 @@ app.delete('/logout', async (req: any, res: any) => {
     return res.status(400).json({ error: 'User not found' });
   }
 
-  dbUser.refreshTokens = dbUser.refreshTokens.filter((token: string) => token !== refreshToken);
+  dbUser.refreshTokens = dbUser.refreshTokens.filter(
+    (token: string) => token !== refreshToken,
+  );
   await dbUser.save();
 
   res.sendStatus(204);
 });
-
 
 // generate a new access token
 function generateAccessToken(user: any) {
@@ -382,7 +398,7 @@ function generateAccessToken(user: any) {
   }
 
   return jwt.sign(user, accessTokenSecret, { expiresIn: '10m' });
-};
+}
 
 function checkRefreshTokenSecret() {
   if (!process.env.REFRESH_TOKEN_SECRET) {
@@ -390,7 +406,6 @@ function checkRefreshTokenSecret() {
   } else {
     return process.env.REFRESH_TOKEN_SECRET;
   }
-
 }
 
 // add a new user and store password hash

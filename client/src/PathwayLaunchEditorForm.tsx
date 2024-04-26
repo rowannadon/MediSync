@@ -196,7 +196,7 @@ export function PathwayLaunchEditorForm({
       };
     });
     const d = { form: data, stages: m, pathway: pathway };
-    console.log(d)
+    console.log(d);
 
     axios.post('/api/runningPathways', d).then((res) => {
       console.log(res);
@@ -576,13 +576,13 @@ export function PathwayLaunchEditorForm({
                                                         output.next,
                                                       )
                                                         ? parseAbsolute(
-                                                          getOutputValue(
-                                                            field.value,
-                                                            stage,
-                                                            output.next,
-                                                          ),
-                                                          getLocalTimeZone(),
-                                                        )
+                                                            getOutputValue(
+                                                              field.value,
+                                                              stage,
+                                                              output.next,
+                                                            ),
+                                                            getLocalTimeZone(),
+                                                          )
                                                         : null
                                                     }
                                                     onChange={(date) => {
@@ -613,10 +613,10 @@ export function PathwayLaunchEditorForm({
                                                         output.next,
                                                       )
                                                         ? getOutputValue(
-                                                          field.value,
-                                                          stage,
-                                                          output.next,
-                                                        )
+                                                            field.value,
+                                                            stage,
+                                                            output.next,
+                                                          )
                                                         : ''
                                                     }
                                                     onChange={(text) => {
