@@ -13,7 +13,14 @@ import { Pin, PinOff, Plus, Trash } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { nodeColors, PathwayStage, PathwayTemplate, RunningPathway, RunningStage, StageTemplate } from '../DataTypes';
+import {
+  nodeColors,
+  PathwayStage,
+  PathwayTemplate,
+  RunningPathway,
+  RunningStage,
+  StageTemplate,
+} from '../DataTypes';
 import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
 import { add, parse } from 'date-fns';
@@ -66,14 +73,20 @@ const Calendar = () => {
             .flatMap((stage) => {
               console.log('stage', stage);
               const color =
-                nodeColors[stage.template.type ? stage.template.type : 'default'];
+                nodeColors[
+                  stage.template.type ? stage.template.type : 'default'
+                ];
               return [
                 {
                   id: stage.id,
                   start: stage.date,
                   title: stage.template?.name ? stage.template.name : 'No Name',
-                  end: add(stage.date, { minutes: stage.template?.durationEstimate }),
-                  content: stage.template?.name ? stage.template.name : 'No Name',
+                  end: add(stage.date, {
+                    minutes: stage.template?.durationEstimate,
+                  }),
+                  content: stage.template?.name
+                    ? stage.template.name
+                    : 'No Name',
                   group: stage.patient,
                   selectable: false,
                   type: 'box',
@@ -83,7 +96,9 @@ const Calendar = () => {
                   id: stage.id + '-background',
                   start: stage.date,
                   title: '',
-                  end: add(stage.date, { minutes: stage.template?.durationEstimate }),
+                  end: add(stage.date, {
+                    minutes: stage.template?.durationEstimate,
+                  }),
                   content: '',
                   group: stage.patient,
                   selectable: false,

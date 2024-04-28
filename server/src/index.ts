@@ -244,9 +244,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
   const stages = [...req.body.stages, ...runningStages];
   const tasks = [];
   for (const stage of stages) {
-    const stageStaff = staff.filter(
-      (s: any) => s.stageId === stage.template.id,
-    ).map((s: any) => ({ type: s.staff, count: 1 }));
+    const stageStaff = staff
+      .filter((s: any) => s.stageId === stage.template.id)
+      .map((s: any) => ({ type: s.staff, count: 1 }));
 
     const next = stage.next
       .filter((n: any) => n['Next Available'])
@@ -322,15 +322,15 @@ app.post('/runningPathways', async (req: any, res: any) => {
     }),
   };
 
-  for (let pathway of runningPathways) {
-    for (let stage of pathway.stages) {
+  for (const pathway of runningPathways) {
+    for (const stage of pathway.stages) {
       if (stage.completed) {
         continue;
       }
       if (tasksData[stage.id]['start'])
         stage.date = new Date(
           startDate.valueOf() + tasksData[stage.id]['start'] * 60000,
-        )
+        );
     }
   }
 
