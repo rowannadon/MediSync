@@ -235,24 +235,27 @@ app.get('/health', (req: any, res: any) => {
 
 app.post('/runningPathways', async (req: any, res: any) => {
   console.log('creating new running pathway from: ', req.body);
-  const timePadding = 5;
+  const timePadding = 0;
+  const runningStages = runningPathways.flatMap((p) => p.stages);
+  console.log(runningStages);
+  console.log(req.body.stages);
 
   const staff = req.body.form.staff;
-  const stages = req.body.stages;
+  const stages = [...req.body.stages, ...runningStages];
   const tasks = [];
   for (const stage of stages) {
     const stageStaff = staff.filter(
       (s: any) => s.stageId === stage.template.id,
-    );
-    const s = stageStaff.map((s: any) => ({ type: s.staff, count: 1 }));
+    ).map((s: any) => ({ type: s.staff, count: 1 }));
+
     const next = stage.next
       .filter((n: any) => n['Next Available'])
       .map((n: any) => n['Next Available']);
-    console.log(next);
+    //console.log(next);
     const task = {
       name: stage.id,
       duration: stage.template.durationEstimate + timePadding,
-      required_people: s,
+      required_people: stageStaff,
       next: next,
     };
     //console.log(task);
@@ -265,6 +268,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
   const p = people.map((person: any, index: number) => ({
     id: index + 1,
     type: person.role,
+    name: person.name,
     available_hours: [8 * 60, 16 * 60],
   }));
 
@@ -278,10 +282,18 @@ app.post('/runningPathways', async (req: any, res: any) => {
       unavailable_periods: unavailable_periods,
     });
   } catch (e) {
-    console.log(e);
+    //console.log(e);
     return res.status(500).json({ error: 'Error scheduling pathway' });
   }
   console.log(result.data);
+
+  const tasksData = result.data.tasks;
+  const personTasks = result.data.person_tasks;
+  console.log(personTasks);
+  Object.keys(personTasks).forEach((key: any) => {
+    const person = p.find((p) => p.id == key);
+    console.log(person?.name, personTasks[key]);
+  });
 
   const startDate = new Date();
 
@@ -298,11 +310,11 @@ app.post('/runningPathways', async (req: any, res: any) => {
       return {
         ...stage,
         id: stage.id + '-' + newId,
-        template: stage.template.id,
+        template: stage.template,
         assigned_staff: [],
         assigned_room: '',
         date: new Date(
-          startDate.valueOf() + result.data[stage.id]['start'] * 60000,
+          startDate.valueOf() + tasksData[stage.id]['start'] * 60000,
         ),
         completed: false,
         progress: 0,
@@ -310,10 +322,24 @@ app.post('/runningPathways', async (req: any, res: any) => {
     }),
   };
 
+  for (let pathway of runningPathways) {
+    for (let stage of pathway.stages) {
+      if (stage.completed) {
+        continue;
+      }
+      if (tasksData[stage.id]['start'])
+        stage.date = new Date(
+          startDate.valueOf() + tasksData[stage.id]['start'] * 60000,
+        )
+    }
+  }
+
   console.log('new running pathway', newRunningPathway);
 
-  runningPathways.push(newRunningPathway);
-  io.emit('runningPathways', runningPathways);
+  if (!runningPathways.some((p) => p.patient === req.body.form.patient)) {
+    runningPathways.push(newRunningPathway);
+    io.emit('runningPathways', runningPathways);
+  }
 });
 
 // login and assign access token to user

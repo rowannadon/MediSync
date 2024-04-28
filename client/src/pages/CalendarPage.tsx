@@ -13,7 +13,7 @@ import { Pin, PinOff, Plus, Trash } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { nodeColors, RunningPathway } from '../DataTypes';
+import { nodeColors, PathwayStage, PathwayTemplate, RunningPathway, RunningStage, StageTemplate } from '../DataTypes';
 import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
 import { add, parse } from 'date-fns';
@@ -58,24 +58,22 @@ const Calendar = () => {
         if (timelineRef.current && displayedPathways.current) {
           const items2 = displayedPathways.current
             .flatMap((procedure: RunningPathway) =>
-              procedure.stages.map((stage) => ({
+              procedure.stages.map((stage: RunningStage) => ({
                 ...stage,
                 patient: procedure.patient,
               })),
             )
             .flatMap((stage) => {
               console.log('stage', stage);
-              const template = getStageTemplate(stage.template);
-              console.log('template', template);
               const color =
-                nodeColors[template?.type ? template.type : 'default'];
+                nodeColors[stage.template.type ? stage.template.type : 'default'];
               return [
                 {
                   id: stage.id,
                   start: stage.date,
-                  title: template?.name ? template.name : 'No Name',
-                  end: add(stage.date, { minutes: template?.durationEstimate }),
-                  content: template?.name ? template.name : 'No Name',
+                  title: stage.template?.name ? stage.template.name : 'No Name',
+                  end: add(stage.date, { minutes: stage.template?.durationEstimate }),
+                  content: stage.template?.name ? stage.template.name : 'No Name',
                   group: stage.patient,
                   selectable: false,
                   type: 'box',
@@ -85,7 +83,7 @@ const Calendar = () => {
                   id: stage.id + '-background',
                   start: stage.date,
                   title: '',
-                  end: add(stage.date, { minutes: template?.durationEstimate }),
+                  end: add(stage.date, { minutes: stage.template?.durationEstimate }),
                   content: '',
                   group: stage.patient,
                   selectable: false,

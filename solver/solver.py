@@ -8,7 +8,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
 
     # Adjusting the person available hours to span multiple days
     min_start_time = 0
-    max_end_time = 600000
+    max_end_time = 24 * 60 * 7  # 7 days
 
     # Task variables
     task_starts = {}
@@ -46,12 +46,15 @@ def solve_scheduling(tasks, people, unavailable_periods):
 
         # person usage tracking
     person_tasks = {m_id: [] for m_id in people}
+    #last_end_var = {m_id: model.NewIntVar(0, max_end_time, f'init_end_{m_id}') for m_id in people}
 
     for task in tasks:
         for req in task['required_people']:
             if 'id' in req:
                 # Specific person by ID
-                person_tasks[req['id']].append(intervals[task['name']])
+                person_tasks[req['id']].append({task['name']: intervals[task['name']]})
+                #model.Add(task_starts[task['name']] >= last_end_var[req['id']])
+                #last_end_var[req['id']] = task_ends[task['name']]
             elif 'type' in req:
                 # Any person of a specific type, create a temporary list for possible person IDs
                 possible_people = [m_id for m_id, m in people.items() if m['type'] == req['type']]
@@ -59,30 +62,43 @@ def solve_scheduling(tasks, people, unavailable_periods):
                 for m_id in possible_people:
                     bvar = model.NewBoolVar(f'use_{m_id}_{task["name"]}')
                     bvars.append(bvar)
+                    person_tasks[m_id].append({task['name']: intervals[task['name']]})
+
+                    # model.Add(task_starts[task['name']] >= last_end_var[m_id]).OnlyEnforceIf(bvar)
+                    # # Update the last task end time for this person conditionally
+                    # end_var_conditional = model.NewIntVar(0, max_end_time, f'cond_end_{task["name"]}_{m_id}')
+                    # model.Add(end_var_conditional == task_ends[task['name']]).OnlyEnforceIf(bvar)
+                    # model.Add(end_var_conditional == last_end_var[m_id]).OnlyEnforceIf(bvar.Not())
+                    # last_end_var[m_id] = end_var_conditional
+
                     # Enforcing availability hours per person
                     # model.Add(intervals[task['name']].StartExpr() >= people[m_id]['available_hours'][0]).OnlyEnforceIf(bvar)
                     # model.Add(intervals[task['name']].EndExpr() <= people[m_id]['available_hours'][1]).OnlyEnforceIf(bvar)
-                    # person_tasks[m_id].append(intervals[task['name']])
                 # Require that exactly `req['count']` people of the specified type are used
                 model.Add(sum(bvars) == req['count'])
+
+    # Ensure that people are not double-booked
+    for m_id, task_list in person_tasks.items():
+        if task_list:
+            intervals = [list(item.values())[0] for item in task_list]
+            model.AddNoOverlap(intervals)
 
     max_end_time = model.NewIntVar(0, max_end_time, 'max_end_time')
 
     for task_name, end_var in task_ends.items():
         model.Add(max_end_time >= end_var)
 
-    # Ensure people are not double-booked
-    for m_id, intervals in person_tasks.items():
-        model.AddNoOverlap(intervals)
-
     model.Minimize(max_end_time)
 
     solver = cp_model.CpSolver()
+    solver.parameters.log_search_progress = True  # Enables detailed logging of the search progress
     status = solver.Solve(model)
 
     if status == cp_model.OPTIMAL:
         result = {task['name']: {'start': solver.Value(start), 'end': solver.Value(end)} for task, start, end in zip(tasks, task_starts.values(), task_ends.values())}
-        return result
+        result2 = {m_id: [{'task' : key, 'start': solver.Value(task_starts[key]), 'end': solver.Value(task_ends[key])} for key in list(task.keys())] for task in person_tasks[m_id] for m_id in person_tasks}
+        print(result2)
+        return {'tasks': result, 'person_tasks': result2}
     else:
         return None
 

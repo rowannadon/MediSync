@@ -88,12 +88,15 @@ export type NextType = {
   [K in OutputType]?: string;
 };
 
-export interface RunningStage extends PathwayStage {
+export interface RunningStage {
+  id: string;
+  template: StageTemplate;
   assigned_staff: string[];
   assigned_room: string;
   date: Date;
   completed: boolean;
   progress: number;
+  next: NextType[];
 }
 
 export interface PathwayTemplate {
@@ -103,7 +106,10 @@ export interface PathwayTemplate {
   stages: PathwayStage[];
 }
 
-export interface RunningPathway extends PathwayTemplate {
+export interface RunningPathway {
+  id: string;
+  title: string;
+  desc: string;
   patient: string;
   startDate: Date;
   notes: string;
