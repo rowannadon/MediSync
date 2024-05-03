@@ -27,17 +27,32 @@ const App = () => {
             <Route path="/" component={LoginPage}></Route>
             <PrivateRoute path="/tasks" component={TaskPage}></PrivateRoute>
             <Route path="/login" component={LoginPage}></Route>
-            <PrivateRoute path="/pathway-editor" component={PathwayEditor}></PrivateRoute>
+            <PrivateRoute
+              path="/pathway-editor"
+              component={PathwayEditor}
+            ></PrivateRoute>
             <PrivateRoute
               path="/launch-pathway"
               component={PathwayLaunchEditor}
             ></PrivateRoute>
-            <PrivateRoute path="/stage-editor" component={StageEditor}></PrivateRoute>
+            <PrivateRoute
+              path="/stage-editor"
+              component={StageEditor}
+            ></PrivateRoute>
             <PrivateRoute path="/calendar" component={Calendar}></PrivateRoute>
-            <PrivateRoute path="/conflict" component={ConflictManager}></PrivateRoute>
+            <PrivateRoute
+              path="/conflict"
+              component={ConflictManager}
+            ></PrivateRoute>
             <PrivateRoute path="/rooms" component={Rooms}></PrivateRoute>
-            <PrivateRoute path="/personnel" component={Personnel}></PrivateRoute>
-            <PrivateRoute path="/account" component={AccountPage}></PrivateRoute>
+            <PrivateRoute
+              path="/personnel"
+              component={Personnel}
+            ></PrivateRoute>
+            <PrivateRoute
+              path="/account"
+              component={AccountPage}
+            ></PrivateRoute>
           </SocketProvider>
         </AuthProvider>
       </div>
