@@ -77,21 +77,21 @@ const Calendar = () => {
                   stage.template.type ? stage.template.type : 'default'
                 ];
               return [
-                {
-                  id: stage.id,
-                  start: stage.date,
-                  title: stage.template?.name ? stage.template.name : 'No Name',
-                  end: add(stage.date, {
-                    minutes: stage.template?.durationEstimate,
-                  }),
-                  content: stage.template?.name
-                    ? stage.template.name
-                    : 'No Name',
-                  group: stage.patient,
-                  selectable: false,
-                  type: 'box',
-                  style: `background-color: ${color}; border: 1px solid #999`,
-                },
+                // {
+                //   id: stage.id,
+                //   start: stage.date,
+                //   title: stage.template?.name ? stage.template.name : 'No Name',
+                //   end: add(stage.date, {
+                //     minutes: stage.template?.durationEstimate,
+                //   }),
+                //   content: stage.template?.name
+                //     ? stage.template.name
+                //     : 'No Name',
+                //   group: stage.patient,
+                //   selectable: false,
+                //   type: 'box',
+                //   style: `background-color: ${color}; border: 1px solid #999`,
+                // },
                 {
                   id: stage.id + '-background',
                   start: stage.date,
@@ -99,7 +99,9 @@ const Calendar = () => {
                   end: add(stage.date, {
                     minutes: stage.template?.durationEstimate,
                   }),
-                  content: '',
+                  content: stage.template?.name
+                    ? stage.template.name
+                    : 'No Name',
                   group: stage.patient,
                   selectable: false,
                   type: 'background',

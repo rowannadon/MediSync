@@ -196,10 +196,12 @@ export function PathwayLaunchEditorForm({
       };
     });
     const d = { form: data, stages: m, pathway: pathway };
-    console.log(d);
+    console.log('sending data', d);
 
     axios.post('/api/runningPathways', d).then((res) => {
       console.log(res);
+    }).catch((err) => {
+      console.log(err);
     });
   }
 

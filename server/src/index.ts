@@ -13,7 +13,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { User } from './models/user';
 import axios from 'axios';
-import { RunningPathway } from './DataTypes';
+import { RunningPathway, RunningStage } from './DataTypes';
 import { v4 as uuid } from 'uuid';
 
 dotenv.config({ path: __dirname + '/../../.env' });
@@ -235,15 +235,15 @@ app.get('/health', (req: any, res: any) => {
 
 app.post('/runningPathways', async (req: any, res: any) => {
   console.log('creating new running pathway from: ', req.body);
-  const timePadding = 0;
   const runningStages = runningPathways.flatMap((p) => p.stages);
   console.log(runningStages);
   console.log(req.body.stages);
 
+  const newId = uuid();
+
   const staff = req.body.form.staff;
-  const stages = [...req.body.stages, ...runningStages];
   const tasks = [];
-  for (const stage of stages) {
+  for (const stage of req.body.stages) {
     const stageStaff = staff
       .filter((s: any) => s.stageId === stage.template.id)
       .map((s: any) => ({ type: s.staff, count: 1 }));
@@ -251,14 +251,32 @@ app.post('/runningPathways', async (req: any, res: any) => {
     const next = stage.next
       .filter((n: any) => n['Next Available'])
       .map((n: any) => n['Next Available']);
-    //console.log(next);
+
     const task = {
-      name: stage.id,
-      duration: stage.template.durationEstimate + timePadding,
+      name: stage.template.name,
+      id: stage.id + '-' + req.body.form.patient,
+      duration: stage.template.durationEstimate,
       required_people: stageStaff,
-      next: next,
+      next: next.map((n: any) => n + '-' + req.body.form.patient),
     };
-    //console.log(task);
+    tasks.push(task);
+  }
+
+  for (const stage of runningStages.filter((s) => !s.completed)) {
+    const stageStaff = stage.assigned_staff.map((s: any) => ({ id: Number.parseInt(s) }));
+
+    const next = stage.next
+      .filter((n: any) => n['Next Available'])
+      .map((n: any) => n['Next Available']);
+
+    const task = {
+      name: stage.template.name,
+      id: stage.id,
+      duration: stage.template.durationEstimate,
+      required_people: stageStaff,
+      next: next.map((n: any) => n+'-'+stage.id.split('-')[stage.id.split('-').length-1]),
+    };
+    
     tasks.push(task);
   }
 
@@ -285,19 +303,19 @@ app.post('/runningPathways', async (req: any, res: any) => {
     //console.log(e);
     return res.status(500).json({ error: 'Error scheduling pathway' });
   }
-  console.log(result.data);
+  //console.log(result.data);
 
   const tasksData = result.data.tasks;
-  const personTasks = result.data.person_tasks;
-  console.log(personTasks);
-  Object.keys(personTasks).forEach((key: any) => {
-    const person = p.find((p) => p.id == key);
-    console.log(person?.name, personTasks[key]);
+
+  const assignments = Object.keys(result.data.assignments).map((key) => {
+    return {
+      task: key,
+      person: Object.keys(result.data.assignments[key]),
+    };
   });
+  console.log(assignments);
 
-  const startDate = new Date();
-
-  const newId = uuid();
+  const startDate = new Date(req.body.form.startDate);
 
   const newRunningPathway: RunningPathway = {
     id: newId,
@@ -306,15 +324,15 @@ app.post('/runningPathways', async (req: any, res: any) => {
     notes: req.body.form.notes,
     title: req.body.pathway.title,
     desc: req.body.pathway.desc,
-    stages: req.body.stages.map((stage: any) => {
+    stages: req.body.stages.map((stage: RunningStage) => {
       return {
         ...stage,
-        id: stage.id + '-' + newId,
+        id: stage.id + '-' + req.body.form.patient,
         template: stage.template,
-        assigned_staff: [],
+        assigned_staff: assignments.find((a) => a.task === stage.id + '-' + req.body.form.patient)?.person,
         assigned_room: '',
         date: new Date(
-          startDate.valueOf() + tasksData[stage.id]['start'] * 60000,
+          startDate.valueOf() + tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
         ),
         completed: false,
         progress: 0,
