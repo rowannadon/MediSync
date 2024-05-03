@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { instance, setAuthToken } from './AxiosInstance';
 
 interface LoginContextType {
   login: (username: string, password: string) => any;
@@ -13,13 +14,17 @@ const AuthContext = createContext<LoginContextType | null>(null);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = (props: any) => {
-  const [refreshToken, setRefreshToken] = useState('');
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem('accessToken'),
   );
 
+  useEffect(() => {
+    setAuthToken(accessToken);
+  }, [accessToken]);
+
   const login = async (username: string, password: string) => {
-    const res = await axios.post('/api/login', { username, password });
+    const res = await instance.post('/api/login', { username, password });
     if (res.status === 200) {
       localStorage.setItem('accessToken', res.data.accessToken);
       setRefreshToken(res.data.refreshToken);
@@ -31,10 +36,10 @@ export const AuthProvider = (props: any) => {
   };
 
   const logout = () => {
-    axios.post('/api/logout');
+    instance.delete('/api/logout');
     localStorage.removeItem('accessToken');
-    setAccessToken('');
-    setRefreshToken('');
+    setAccessToken(null);
+    setRefreshToken(null);
   };
 
   const getAccessToken = () => {

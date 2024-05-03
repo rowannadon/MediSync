@@ -120,17 +120,6 @@ const NavMenu: React.FC = () => {
                 <p>Conflict Manager</p>
               </TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger>
-                <StyledLink href="/test">
-                  <TestTube className="h-7 w-7" />
-                </StyledLink>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={5}>
-                <p>Test</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip></Tooltip>
           </div>
           <div className="flex flex-col items-center space-y-4 pb-3">
             <Tooltip>

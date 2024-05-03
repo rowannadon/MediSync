@@ -10,6 +10,7 @@ import {
 } from '../components/ui/popover';
 import { Card } from '../components/ui/card';
 import { Redirect, Link } from 'wouter';
+import { useAuth } from '@/AuthProvider';
 
 const AccountPage = () => {
   // Replace these values with the actual user's information
@@ -21,6 +22,8 @@ const AccountPage = () => {
     department: 'Orthopedics',
     isAdmin: true,
   };
+
+  const auth = useAuth();
 
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
@@ -38,8 +41,10 @@ const AccountPage = () => {
             department={user.department}
             isAdmin={user.isAdmin}
           />
-          <Button className="ml-10 rounded border-2 border-gray-400 p-[5px]">
-            <Link href="/login"> Log In (test) </Link>
+          <Button className="ml-10 rounded border-2 border-gray-400 p-[5px]" onClick={() => {
+            auth?.logout();
+          }}>
+            Log Out
           </Button>
         </div>
         <div className="flex flex-col space-y-4 pl-5 pt-7">

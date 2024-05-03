@@ -138,6 +138,26 @@ interface RequestWithUser extends Request {
   user?: any;
 }
 
+const authenticateToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  // allow login and token requests without token
+  if (req.path === '/login' || req.path === '/token') return next();
+
+  if (token == null) return res.sendStatus(401); // No token provided
+
+  const secret = process.env.ACCESS_TOKEN_SECRET;
+
+  jwt.verify(token, secret ? secret : '', (err: any, data: any) => {
+    if (err) return res.sendStatus(403); // Invalid token
+    req.username = data.username;
+    next();
+  });
+};
+
+app.use(authenticateToken);
+
 app.get('/test', async (req: any, res: any) => {
   return res.send('API response: This is a response from the server!');
 });
@@ -426,7 +446,9 @@ app.post('/token', async (req, res) => {
 // delete refresh token
 app.delete('/logout', async (req: any, res: any) => {
   const refreshToken = req.body.token;
-  const username = req.body.username;
+  const username = req.username;
+
+  console.log('logging out', username);
 
   const dbUser = await User.findOne({ username: username });
   if (!dbUser) {
