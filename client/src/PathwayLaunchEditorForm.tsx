@@ -198,11 +198,14 @@ export function PathwayLaunchEditorForm({
     const d = { form: data, stages: m, pathway: pathway };
     console.log('sending data', d);
 
-    axios.post('/api/runningPathways', d).then((res) => {
-      console.log(res);
-    }).catch((err) => {
-      console.log(err);
-    });
+    axios
+      .post('/api/runningPathways', d)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function updateStaff(
@@ -262,6 +265,8 @@ export function PathwayLaunchEditorForm({
     }, {});
   }
 
+  const [open, setOpen] = useState(false);
+
   return (
     <div className="ml-4 mr-4 flex flex-grow flex-col">
       {pathway && (
@@ -276,7 +281,6 @@ export function PathwayLaunchEditorForm({
                   control={form.control}
                   name="patient"
                   render={({ field }) => {
-                    const [open, setOpen] = useState(false);
                     return (
                       <FormItem className="flex flex-col">
                         <FormLabel>Patient</FormLabel>

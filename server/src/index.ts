@@ -263,7 +263,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
   }
 
   for (const stage of runningStages.filter((s) => !s.completed)) {
-    const stageStaff = stage.assigned_staff.map((s: any) => ({ id: Number.parseInt(s) }));
+    const stageStaff = stage.assigned_staff.map((s: any) => ({
+      id: Number.parseInt(s),
+    }));
 
     const next = stage.next
       .filter((n: any) => n['Next Available'])
@@ -274,9 +276,12 @@ app.post('/runningPathways', async (req: any, res: any) => {
       id: stage.id,
       duration: stage.template.durationEstimate,
       required_people: stageStaff,
-      next: next.map((n: any) => n+'-'+stage.id.split('-')[stage.id.split('-').length-1]),
+      next: next.map(
+        (n: any) =>
+          n + '-' + stage.id.split('-')[stage.id.split('-').length - 1],
+      ),
     };
-    
+
     tasks.push(task);
   }
 
@@ -329,10 +334,13 @@ app.post('/runningPathways', async (req: any, res: any) => {
         ...stage,
         id: stage.id + '-' + req.body.form.patient,
         template: stage.template,
-        assigned_staff: assignments.find((a) => a.task === stage.id + '-' + req.body.form.patient)?.person,
+        assigned_staff: assignments.find(
+          (a) => a.task === stage.id + '-' + req.body.form.patient,
+        )?.person,
         assigned_room: '',
         date: new Date(
-          startDate.valueOf() + tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
+          startDate.valueOf() +
+            tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
         ),
         completed: false,
         progress: 0,
