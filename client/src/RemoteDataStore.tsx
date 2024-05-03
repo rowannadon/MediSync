@@ -238,7 +238,10 @@ export const useRemoteDataStore = create(
       );
       if (index !== -1) {
         get().stages[index] = stage;
-        const res = await instance.put('/api/stageTemplates/' + stage.id, stage);
+        const res = await instance.put(
+          '/api/stageTemplates/' + stage.id,
+          stage,
+        );
         if (res.status !== 200) {
           console.error('Failed to remove stage template');
         } else {

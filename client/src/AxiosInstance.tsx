@@ -12,9 +12,12 @@ export function setAuthToken(token: string | null) {
 }
 
 // Add a request interceptor
-instance.interceptors.request.use((config) => {
-  return config;
-}, (error) => {
-  // Do something with request error
-  return Promise.reject(error);
-});
+instance.interceptors.request.use(
+  (config) => {
+    return config;
+  },
+  (error) => {
+    // Do something with request error
+    return Promise.reject(error);
+  },
+);

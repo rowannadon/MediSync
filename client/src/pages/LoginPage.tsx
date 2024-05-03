@@ -23,7 +23,7 @@ const LoginPage = () => {
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
       <div className="flex h-screen w-screen flex-col items-center justify-center">
-        <Card className="flex flex-col space-y-4 w-[400px]">
+        <Card className="flex w-[400px] flex-col space-y-4">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Login</CardTitle>
           </CardHeader>
@@ -60,7 +60,7 @@ const LoginPage = () => {
                     console.log('logged in');
                     setTimeout(() => {
                       navigate('/tasks');
-                    }, 500)
+                    }, 500);
                   })
                   .catch((err: any) => {
                     console.error(err);

@@ -41,9 +41,12 @@ const AccountPage = () => {
             department={user.department}
             isAdmin={user.isAdmin}
           />
-          <Button className="ml-10 rounded border-2 border-gray-400 p-[5px]" onClick={() => {
-            auth?.logout();
-          }}>
+          <Button
+            className="ml-10 rounded border-2 border-gray-400 p-[5px]"
+            onClick={() => {
+              auth?.logout();
+            }}
+          >
             Log Out
           </Button>
         </div>
