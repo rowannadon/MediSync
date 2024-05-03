@@ -46,6 +46,7 @@ import { Input } from './components/ui/input';
 import { parseAbsolute, getLocalTimeZone } from '@internationalized/date';
 import axios from 'axios';
 import { template } from 'lodash';
+import { instance } from './AxiosInstance';
 
 const pathwayFormSchema = z.object({
   patient: z.string({
@@ -198,7 +199,7 @@ export function PathwayLaunchEditorForm({
     const d = { form: data, stages: m, pathway: pathway };
     console.log('sending data', d);
 
-    axios
+    instance
       .post('/api/runningPathways', d)
       .then((res) => {
         console.log(res);

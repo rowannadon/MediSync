@@ -126,6 +126,26 @@ io.on('connection', async (socket: any) => {
     socket.emit('pathwayTemplates', await PathwayTemplate.find());
   });
 
+  socket.on('getPeople', async () => {
+    console.log('sending people');
+    socket.emit('people', await Person.find());
+  });
+
+  socket.on('getRooms', async () => {
+    console.log('sending rooms');
+    socket.emit('rooms', await HospitalRoom.find());
+  });
+
+  socket.on('getStageTemplates', async () => {
+    console.log('sending stage templates');
+    socket.emit('stageTemplates', await StageTemplate.find());
+  });
+
+  socket.on('getRunningPathways', async () => {
+    console.log('sending running pathways');
+    socket.emit('runningPathways', runningPathways);
+  });
+
   console.log('sending all data');
   socket.emit('pathwayTemplates', await PathwayTemplate.find());
   socket.emit('people', await Person.find());
