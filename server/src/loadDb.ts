@@ -14,15 +14,6 @@ export const loadDb = async (connection: Connection) => {
   console.log('Clearing database');
   await connection.db.dropDatabase();
 
-  if ((await PathwayTemplate.find()).length) {
-    console.log('Database not cleared');
-    return;
-  }
-  await PathwayTemplate.insertMany(procedures);
-  await StageTemplate.insertMany(stageTemplates);
-  await HospitalRoom.insertMany(displayedRooms);
-  await Person.insertMany(displayedPeople);
-
   // creates a test user if it doesn't yet exist
   // username/password: test/test
   User.findOne({ username: 'test' }).then(async (existingUser) => {
@@ -82,6 +73,15 @@ export const loadDb = async (connection: Connection) => {
       console.log('User 2 already exists');
     }
   });
+
+  if ((await PathwayTemplate.find()).length > 0 || (await StageTemplate.find()).length > 0 || (await HospitalRoom.find()).length > 0 || (await Person.find()).length > 0 ) {
+    console.log('Database not cleared');
+    return;
+  }
+  await PathwayTemplate.insertMany(procedures);
+  await StageTemplate.insertMany(stageTemplates);
+  await HospitalRoom.insertMany(displayedRooms);
+  await Person.insertMany(displayedPeople);
 
   console.log('Database loaded');
 };
