@@ -85,8 +85,9 @@ const AccountPage = () => {
             department={user.department}
             isAdmin={user.isAdmin}
           />
+          
           <Button
-            className="ml-10 rounded border-2 border-gray-400 p-[5px]"
+            variant="outline" className="ml-10 bg-black text-white"
             onClick={() => {
               auth?.logout();
             }}
@@ -295,7 +296,7 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-            <Button variant="outline" className={isTuesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+              <Button variant="outline" className={isTuesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
                 Tuesday: {tuesdayStart === 'None' ? 'Not scheduled' : `${tuesdayStart} - ${tuesdayEnd}`}
               </Button>
             </PopoverTrigger>
@@ -390,7 +391,7 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-            <Button variant="outline" className={isWednesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+              <Button variant="outline" className={isWednesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
                 Wednesday: {wednesdayStart === 'None' ? 'Not scheduled' : `${wednesdayStart} - ${wednesdayEnd}`}
               </Button>
             </PopoverTrigger>
@@ -485,7 +486,7 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-            <Button variant="outline" className={isThursdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+              <Button variant="outline" className={isThursdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
                 Thursday: {thursdayStart === 'None' ? 'Not scheduled' : `${thursdayStart} - ${thursdayEnd}`}
               </Button>
             </PopoverTrigger>
@@ -580,7 +581,7 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-            <Button variant="outline" className={isFridayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+              <Button variant="outline" className={isFridayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
                 Friday: {fridayStart === 'None' ? 'Not scheduled' : `${fridayStart} - ${fridayEnd}`}
               </Button>
             </PopoverTrigger>
@@ -675,7 +676,7 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-            <Button variant="outline" className={isSaturdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+              <Button variant="outline" className={isSaturdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
                 Saturday: {saturdayStart === 'None' ? 'Not scheduled' : `${saturdayStart} - ${saturdayEnd}`}
               </Button>
             </PopoverTrigger>
@@ -768,6 +769,9 @@ const AccountPage = () => {
               </div>
             </PopoverContent>
           </Popover>
+          <Button variant="outline" className="mt-4 bg-black text-white">
+            Save Changes
+          </Button>
         </div>
       </Card>
     </div>
