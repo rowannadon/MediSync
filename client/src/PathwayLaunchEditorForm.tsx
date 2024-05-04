@@ -44,16 +44,12 @@ import {
 } from './components/ui/select';
 import { Input } from './components/ui/input';
 import { parseAbsolute, getLocalTimeZone } from '@internationalized/date';
-import axios from 'axios';
-import { template } from 'lodash';
 import { instance } from './AxiosInstance';
 
 const pathwayFormSchema = z.object({
-  patient: z.string({
-    required_error: 'Please select a patient.',
-  }),
+  patient: z.string().min(1, 'Please select a patient.'),
   notes: z.string(),
-  startDate: z.string(),
+  startDate: z.string().min(1, 'Please select a start date.'),
   staff: z.array(
     z.object({
       staff: z.string(),
@@ -307,12 +303,12 @@ export function PathwayLaunchEditorForm({
                           >
                             <Command>
                               <CommandInput
-                                placeholder={`Search for ${name}`}
+                                placeholder={`Search for patients`}
                               />
                               <CommandList>
                                 <CommandEmpty>No results found.</CommandEmpty>
                                 <CommandGroup>
-                                  {people.map((person) => {
+                                  {people.filter((p: Person) => p.role === 'Patient').map((person) => {
                                     return (
                                       <CommandItem
                                         key={person.name}
@@ -431,7 +427,7 @@ export function PathwayLaunchEditorForm({
                                                   }}
                                                   types={Array.from(
                                                     new Set(
-                                                      people.map(
+                                                      people.filter((p: Person) => p.role === staff.staff).map(
                                                         (p: Person) => p.name,
                                                       ),
                                                     ),

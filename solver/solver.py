@@ -8,7 +8,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
 
     # Adjusting the person available hours to span multiple days
     min_start_time = 0
-    max_end_time = 24 * 60 * 7  # 7 days
+    max_end_time = 24 * 60 * 7 * 10  # 7 days
 
     # Task variables
     task_starts = {}
@@ -16,7 +16,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
     task_intervals = {}
     person_tasks = {m_id: [] for m_id in people}
     assignments = {}  # Store which person is assigned to which task
-
+    group_ends = {}
 
     # Create the task variables
     for task in tasks:
@@ -30,6 +30,9 @@ def solve_scheduling(tasks, people, unavailable_periods):
         task_intervals[task['id']] = interval_var
         assignments[task['id']] = {}
 
+        if task['patient'] not in group_ends:
+            group_ends[task['patient']] = model.NewIntVar(min_start_time, max_end_time, f"group_end_{task['patient']}")
+            model.Add(group_ends[task['patient']] >= end_var)
 
         for req in task['required_people']:
             if 'id' in req:
@@ -60,7 +63,8 @@ def solve_scheduling(tasks, people, unavailable_periods):
 
     # Task dependencies
     for task in tasks:
-        #model.AddNoOverlap([task_intervals[task['id']] for task in tasks if task['id'] != task['id']])
+        model.Add(task_starts[task['id']] >= int(task['offset']))
+
         for subsequent_task_name in task['next']:
             model.Add(task_ends[task['id']] <= task_starts[subsequent_task_name])
 
@@ -69,12 +73,15 @@ def solve_scheduling(tasks, people, unavailable_periods):
         if len(intervals) > 0:
             model.AddNoOverlap(intervals)
 
-    max_end_time = model.NewIntVar(0, max_end_time, 'max_end_time')
+    max_group_end_time = model.NewIntVar(0, max_end_time, 'max_group_end_time')
 
-    for task_name, end_var in task_ends.items():
-        model.Add(max_end_time >= end_var)
+    for group_end in group_ends.values():
+        model.Add(max_group_end_time >= group_end)
 
-    model.Minimize(max_end_time)
+    # for task_name, end_var in task_ends.items():
+    #     model.Add(max_end_time >= end_var)
+
+    model.Minimize(max_group_end_time)
 
     solver = cp_model.CpSolver()
     solver.parameters.log_search_progress = True  # Enables detailed logging of the search progress

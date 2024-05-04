@@ -130,6 +130,8 @@ let lockedPathways: { user: string; pathway: string }[] = [];
 let lockedStages: { user: string; stage: string }[] = [];
 const sockets: Socket[] = [];
 
+const serverStartDate = new Date();
+
 io.on('connection', async (socket: any) => {
   console.log('a new user connected:', socket.handshake.auth.username);
   sockets.push(socket);
@@ -339,10 +341,17 @@ app.get('/health', (req: any, res: any) => {
 app.post('/runningPathways', async (req: any, res: any) => {
   console.log('creating new running pathway from: ', req.body);
   const runningStages = runningPathways.flatMap((p) => p.stages);
-  console.log(runningStages);
-  console.log(req.body.stages);
 
   const newId = uuid();
+
+  const pathwayStartDate = new Date(req.body.form.startDate);
+  const dateOffsetMinutes = Math.abs(pathwayStartDate.valueOf() - serverStartDate.valueOf()) / 60000;
+
+  console.log(req.body.stages)
+
+  console.log('pathway start date', pathwayStartDate, pathwayStartDate.valueOf())
+  console.log('server start date', serverStartDate, serverStartDate.valueOf())
+  console.log('date offset', dateOffsetMinutes);
 
   const staff = req.body.form.staff;
   const tasks = [];
@@ -358,7 +367,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
     const task = {
       name: stage.template.name,
       id: stage.id + '-' + req.body.form.patient,
+      patient: req.body.form.patient,
       duration: stage.template.durationEstimate,
+      offset: dateOffsetMinutes,
       required_people: stageStaff,
       next: next.map((n: any) => n + '-' + req.body.form.patient),
     };
@@ -377,7 +388,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
     const task = {
       name: stage.template.name,
       id: stage.id,
+      patient: stage.id.split('-')[stage.id.split('-').length - 1],
       duration: stage.template.durationEstimate,
+      offset: stage.timeOffset,
       required_people: stageStaff,
       next: next.map(
         (n: any) =>
@@ -387,8 +400,6 @@ app.post('/runningPathways', async (req: any, res: any) => {
 
     tasks.push(task);
   }
-
-  const unavailable_periods: any = [];
 
   const people = await Person.find();
   const p = people.map((person: any, index: number) => ({
@@ -405,7 +416,6 @@ app.post('/runningPathways', async (req: any, res: any) => {
     result = await axios.post(solverDomain + '/schedule', {
       tasks: tasks,
       people: p,
-      unavailable_periods: unavailable_periods,
     });
   } catch (e) {
     //console.log(e);
@@ -423,12 +433,10 @@ app.post('/runningPathways', async (req: any, res: any) => {
   });
   console.log(assignments);
 
-  const startDate = new Date(req.body.form.startDate);
-
   const newRunningPathway: RunningPathway = {
     id: newId,
     patient: req.body.form.patient,
-    startDate: startDate,
+    startDate: pathwayStartDate,
     notes: req.body.form.notes,
     title: req.body.pathway.title,
     desc: req.body.pathway.desc,
@@ -437,12 +445,13 @@ app.post('/runningPathways', async (req: any, res: any) => {
         ...stage,
         id: stage.id + '-' + req.body.form.patient,
         template: stage.template,
+        timeOffset: dateOffsetMinutes,
         assigned_staff: assignments.find(
           (a) => a.task === stage.id + '-' + req.body.form.patient,
         )?.person,
         assigned_room: '',
         date: new Date(
-          startDate.valueOf() +
+          serverStartDate.valueOf() +
             tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
         ),
         completed: false,
@@ -458,7 +467,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
       }
       if (tasksData[stage.id]['start'])
         stage.date = new Date(
-          startDate.valueOf() + tasksData[stage.id]['start'] * 60000,
+          serverStartDate.valueOf() + tasksData[stage.id]['start'] * 60000,
         );
     }
   }
@@ -470,6 +479,32 @@ app.post('/runningPathways', async (req: any, res: any) => {
     io.emit('runningPathways', runningPathways);
   }
 });
+
+// 5 second loop
+// const completedStages: RunningStage[] = []
+// const currentStages: RunningStage[] = []
+// setInterval(() => {
+//   const now = new Date();
+//   for (const pathway of runningPathways) {
+//     for (const stage of pathway.stages) {
+//       if (stage.date < now) {
+//         if (!completedStages.includes(stage)) {
+//           completedStages.push(stage);
+//           console.log('completed stage', stage);
+//         }
+//         console.log('entered stage', stage.id);
+//       }
+//       if (stage.date + stage.template.durationEstimate * 60000 > now) {
+//         if (!currentStages.includes(stage)) {
+//           currentStages.push(stage);
+//           console.log('entered stage', stage);
+//         }
+//       }
+      
+//     }
+//   }
+//   io.emit('runningPathways', runningPathways);
+// }, 5000);
 
 // authenticate and assign access token to user
 app.post('/login', async (req, res) => {

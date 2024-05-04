@@ -94,6 +94,7 @@ export interface RunningStage {
   assigned_staff: string[];
   assigned_room: string;
   date: Date;
+  timeOffset: number;
   completed: boolean;
   progress: number;
   next: NextType[];
