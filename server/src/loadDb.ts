@@ -74,7 +74,12 @@ export const loadDb = async (connection: Connection) => {
     }
   });
 
-  if ((await PathwayTemplate.find()).length > 0 || (await StageTemplate.find()).length > 0 || (await HospitalRoom.find()).length > 0 || (await Person.find()).length > 0 ) {
+  if (
+    (await PathwayTemplate.find()).length > 0 ||
+    (await StageTemplate.find()).length > 0 ||
+    (await HospitalRoom.find()).length > 0 ||
+    (await Person.find()).length > 0
+  ) {
     console.log('Database not cleared');
     return;
   }
