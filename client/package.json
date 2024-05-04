@@ -30,6 +30,7 @@
     "cmdk": "1.0.0",
     "dagre": "0.8.5",
     "date-fns": "3.6.0",
+    "dotenv": "16.4.5",
     "embla-carousel-react": "8.0.1",
     "lucide-react": "0.363.0",
     "mdb-react-ui-kit": "7.2.0",

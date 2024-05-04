@@ -1,5 +1,6 @@
 describe('Tests View of Home Screen', () => {
    it('Visit Webpage', () => {
+    cy.login('test','test')  
     cy.visit('http://localhost:5173/tasks')  
     cy.get('button').contains('Next slide').click({ force: true })
     cy.get('div').contains('Details: X-Ray: Left Elbow')
