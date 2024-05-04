@@ -17,7 +17,6 @@ import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import DatabaseTest from './models/databaseTest';
 
-
 const httpPort = 3001;
 const socketIOPort = 3002;
 
@@ -26,8 +25,10 @@ export const app = express();
 app.use(express.json());
 
 const stage = process.env.STAGE;
-const refreshTokenS = '4b72570e57bb34840214b7ae80834e656e57a6b548f1744ee56cd2774d7836f3af41666e88ad3ef1e60bfa42bcf9613c00b4e7ab8a51e67f1f772c2df020276c';
-const accessTokenS = '03eafd45afce7087a8f49620c0655fea0103bd9df6bf7b1829bb42a72b7501153ee4cf70648c1b2aceefa36d5bc57028f2859e3dc25aca1379c1dbb83df26ff3';
+const refreshTokenS =
+  '4b72570e57bb34840214b7ae80834e656e57a6b548f1744ee56cd2774d7836f3af41666e88ad3ef1e60bfa42bcf9613c00b4e7ab8a51e67f1f772c2df020276c';
+const accessTokenS =
+  '03eafd45afce7087a8f49620c0655fea0103bd9df6bf7b1829bb42a72b7501153ee4cf70648c1b2aceefa36d5bc57028f2859e3dc25aca1379c1dbb83df26ff3';
 
 let mongoDomain = '';
 let solverDomain = '';
