@@ -9,21 +9,45 @@ import {
   PopoverTrigger,
 } from '../components/ui/popover';
 import { Card } from '../components/ui/card';
-import { Redirect, Link } from 'wouter';
 import { useAuth } from '@/AuthProvider';
+import { useState, useEffect } from 'react';
 
 const AccountPage = () => {
   // Replace these values with the actual user's information
-  const user = {
-    name: 'John Doe',
-    phone: '123-456-7890',
-    email: 'john.doe@example.com',
-    role: 'Nurse',
-    department: 'Orthopedics',
-    isAdmin: true,
-  };
+  // const user = {
+  //   name: 'John Doe',
+  //   phone: '123-456-7890',
+  //   email: 'john.doe@example.com',
+  //   role: 'Nurse',
+  //   department: 'Orthopedics',
+  //   isAdmin: true,
+  // };
 
   const auth = useAuth();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const accessToken = auth?.getAccessToken();
+      const response = await fetch('/api/user', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      }
+    };
+
+    fetchUser();
+  }, [auth]);
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
 
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
