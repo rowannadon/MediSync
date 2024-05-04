@@ -16,19 +16,19 @@ export const loadDb = async (connection: Connection) => {
 
   // creates a test user if it doesn't yet exist
   // username/password: test/test
-  User.findOne({ username: 'test' }).then(async (existingUser) => {
+  User.findOne({ id: 2222 }).then(async (existingUser) => {
     if (!existingUser) {
-      const hashedPassword = await bcrypt.hash('test', 10);
+      const hashedPassword = await bcrypt.hash('test4', 10);
       const user = new User({
         id: 9999,
-        name: 'Test User',
-        role: 'Admin',
-        department: 'Administrator',
+        name: 'Test User 4',
+        role: 'Physician',
+        department: 'Cardiology',
         phone: '1234567890',
-        email: 'admin@example.com',
-        admin: true,
-        location: 'Room 9999',
-        username: 'test',
+        email: 'testExample4@gmail.com',
+        admin: false,
+        location: 'Room 1',
+        username: 'test4',
         password: hashedPassword,
       });
 
@@ -50,7 +50,7 @@ export const loadDb = async (connection: Connection) => {
       const hashedPassword = await bcrypt.hash('test3', 10);
       const user = new User({
         id: 8888,
-        name: 'Test User 2',
+        name: 'Test User 3',
         role: 'Admin',
         department: 'Administrator',
         phone: '1234567890',
