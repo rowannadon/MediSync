@@ -23,14 +23,14 @@ const LoginPage = () => {
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
       <div className="flex h-screen w-screen flex-col items-center justify-center">
-        <Card className="flex w-[400px] flex-col space-y-4">
+        <Card className="flex w-[400px] flex-col space-y-4" data-cy = 'LoginForm'>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Login</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="username">Email</Label>
-              <Input
+              <Input data-cy = 'LoginUsername'
                 id="username"
                 type="text"
                 placeholder=" Username"
@@ -40,7 +40,7 @@ const LoginPage = () => {
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
+              <Input  data-cy = 'LoginPassword'
                 id="password"
                 type="password"
                 placeholder=" Password"
