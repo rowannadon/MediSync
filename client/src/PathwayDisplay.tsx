@@ -43,7 +43,12 @@ const Display = (props: {
           backgroundColor: nodeColors['pathway'],
         }}
         className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center border-[2px] border-transparent p-2 hover:brightness-95 hover:filter
-        ${lockedPathways.includes(props.pathway.id) && selectedPathway?.id != props.pathway.id ? 'opacity-30 pointer-events-none' : ''} 
+        ${
+          lockedPathways.includes(props.pathway.id) &&
+          selectedPathway?.id != props.pathway.id
+            ? 'pointer-events-none opacity-30'
+            : ''
+        } 
         ${props.selected ? 'border-[#888]' : ''}`}
       >
         <h1 className="text-center text-base">{props.pathway.title}</h1>

@@ -126,15 +126,17 @@ io.use((socket, next) => {
 });
 
 const runningPathways: RunningPathway[] = [];
-var lockedPathways: {user: string, pathway: string}[] = [];
-var lockedStages: {user: string, stage: string}[] = [];
+let lockedPathways: { user: string; pathway: string }[] = [];
+let lockedStages: { user: string; stage: string }[] = [];
 const sockets: Socket[] = [];
 
 io.on('connection', async (socket: any) => {
   console.log('a new user connected:', socket.handshake.auth.username);
   sockets.push(socket);
   socket.on('disconnect', () => {
-    lockedPathways = lockedPathways.filter((p) => p.user !== socket.handshake.auth.username);
+    lockedPathways = lockedPathways.filter(
+      (p) => p.user !== socket.handshake.auth.username,
+    );
     sockets.splice(sockets.indexOf(socket), 1);
     console.log('a user disconnected:', socket.handshake.auth.username);
   });
@@ -166,28 +168,48 @@ io.on('connection', async (socket: any) => {
 
   socket.on('lockPathway', (id: string) => {
     console.log('locking pathway', id);
-    lockedPathways = lockedPathways.filter((p) => p.user !== socket.handshake.auth.username);
+    lockedPathways = lockedPathways.filter(
+      (p) => p.user !== socket.handshake.auth.username,
+    );
     lockedPathways.push({ user: socket.handshake.auth.username, pathway: id });
-    io.emit('lockedPathways', lockedPathways.map(s => s.pathway));
+    io.emit(
+      'lockedPathways',
+      lockedPathways.map((s) => s.pathway),
+    );
   });
 
   socket.on('unlockPathway', () => {
     console.log('unlocking pathway');
-    lockedPathways = lockedPathways.filter((p) => p.user !== socket.handshake.auth.username);
-    io.emit('lockedPathways', lockedPathways.map(s => s.pathway));
+    lockedPathways = lockedPathways.filter(
+      (p) => p.user !== socket.handshake.auth.username,
+    );
+    io.emit(
+      'lockedPathways',
+      lockedPathways.map((s) => s.pathway),
+    );
   });
 
   socket.on('lockStage', (id: string) => {
     console.log('locking stage', id);
-    lockedStages = lockedStages.filter((p) => p.user !== socket.handshake.auth.username);
+    lockedStages = lockedStages.filter(
+      (p) => p.user !== socket.handshake.auth.username,
+    );
     lockedStages.push({ user: socket.handshake.auth.username, stage: id });
-    io.emit('lockedStages', lockedStages.map(s => s.stage));
+    io.emit(
+      'lockedStages',
+      lockedStages.map((s) => s.stage),
+    );
   });
 
   socket.on('unlockStage', () => {
     console.log('unlocking stage');
-    lockedStages = lockedStages.filter((s) => s.user !== socket.handshake.auth.username);
-    io.emit('lockedStages', lockedStages.map(s => s.stage));
+    lockedStages = lockedStages.filter(
+      (s) => s.user !== socket.handshake.auth.username,
+    );
+    io.emit(
+      'lockedStages',
+      lockedStages.map((s) => s.stage),
+    );
   });
 
   console.log('sending all data');
@@ -203,7 +225,8 @@ const authenticateToken = (req: any, res: any, next: any) => {
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
   // allow login and token requests without token
-  if (req.path === '/login' || req.path === '/token' || req.path === '/logout') return next();
+  if (req.path === '/login' || req.path === '/token' || req.path === '/logout')
+    return next();
 
   if (token == null) return res.sendStatus(401); // No token provided
 

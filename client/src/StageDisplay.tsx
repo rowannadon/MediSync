@@ -43,7 +43,12 @@ const Display = (props: {
           backgroundColor: nodeColors[props.stage.type],
         }}
         className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center border-[2px] border-transparent p-2 hover:brightness-95 hover:filter
-        ${lockedStages.includes(props.stage.id) && selectedStage?.id != props.stage.id ? 'opacity-30 pointer-events-none' : ''}
+        ${
+          lockedStages.includes(props.stage.id) &&
+          selectedStage?.id != props.stage.id
+            ? 'pointer-events-none opacity-30'
+            : ''
+        }
         ${nodeColors[props.stage.type]}
          ${props.selected ? 'border-[#888]' : ''}
         `}

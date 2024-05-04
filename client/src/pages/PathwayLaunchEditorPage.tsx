@@ -59,7 +59,7 @@ const PathwayLaunchEditor = () => {
 
   useEffect(() => {
     setPathwayPageFocused(true);
-    
+
     return () => {
       setPathwayPageFocused(false);
     };

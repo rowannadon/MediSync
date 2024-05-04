@@ -46,7 +46,7 @@ const StageEditor = () => {
 
   useEffect(() => {
     setStagePageFocused(true);
-    
+
     return () => {
       setStagePageFocused(false);
     };

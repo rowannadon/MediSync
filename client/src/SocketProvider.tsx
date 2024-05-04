@@ -39,38 +39,39 @@ export const SocketProvider = (props: any) => {
     (state) => state.setRunningPathways,
   );
 
-  const setLockedPathways = useRemoteDataStore((state) => state.setLockedPathways);
+  const setLockedPathways = useRemoteDataStore(
+    (state) => state.setLockedPathways,
+  );
   const setLockedStages = useRemoteDataStore((state) => state.setLockedStages);
 
   const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
-  const pathwayPageFocused = useLocalDataStore((state) => state.pathwayPageFocused);
+  const pathwayPageFocused = useLocalDataStore(
+    (state) => state.pathwayPageFocused,
+  );
   const stagePageFocused = useLocalDataStore((state) => state.stagePageFocused);
   const selectedStage = useLocalDataStore((state) => state.selectedStage);
-
-
 
   useEffect(() => {
     if (!socket) return;
 
     if (selectedPathway && pathwayPageFocused) {
-      console.log('locking pathway', selectedPathway)
+      console.log('locking pathway', selectedPathway);
       socket.emit('lockPathway', selectedPathway.id);
     } else {
-      console.log('unlocking pathway')
+      console.log('unlocking pathway');
       socket.emit('unlockPathway');
     }
-
   }, [selectedPathway, pathwayPageFocused]);
 
   useEffect(() => {
     if (!socket) return;
 
     if (selectedStage && stagePageFocused) {
-      console.log('locking stage', selectedStage)
+      console.log('locking stage', selectedStage);
       socket.emit('lockStage', selectedStage.id);
     } else {
       if (selectedStage) {
-        console.log('unlocking stage')
+        console.log('unlocking stage');
         socket.emit('unlockStage');
       }
     }
@@ -83,15 +84,15 @@ export const SocketProvider = (props: any) => {
       console.log('Connected to server');
     });
 
-    socket.on('lockedPathways', (lockedPathways : string[]) => {
+    socket.on('lockedPathways', (lockedPathways: string[]) => {
       setLockedPathways(lockedPathways);
       console.log('locked pathways', lockedPathways);
-    })
+    });
 
-    socket.on('lockedStages', (lockedStages : string[]) => {
+    socket.on('lockedStages', (lockedStages: string[]) => {
       setLockedStages(lockedStages);
       console.log('locked stages', lockedStages);
-    })
+    });
 
     socket.on('pathwayTemplates', (pathwayTemplates) => {
       console.log('setting pathway templates');

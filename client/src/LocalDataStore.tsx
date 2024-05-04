@@ -24,11 +24,11 @@ export const useLocalDataStore = create<LocalDataStore>((set, get) => ({
   selectedStage: null,
   setSelectedStage: (stage: StageTemplate | null) => {
     // console.log(stage);
-    set(() => ({ selectedStage: stage }))
+    set(() => ({ selectedStage: stage }));
   },
   clearSelectedStage: () => {
     // console.log('clearing selected stage');
-    set(() => ({ selectedStage: null }))
+    set(() => ({ selectedStage: null }));
   },
   hasStageChanges: false,
   setHasStageChanges: (hasStageChanges: boolean) =>
@@ -40,20 +40,20 @@ export const useLocalDataStore = create<LocalDataStore>((set, get) => ({
   selectedPathway: null,
   setSelectedPathway: (pathway: PathwayTemplate) => {
     // console.log(pathway);
-    set(() => ({ selectedPathway: pathway }))
+    set(() => ({ selectedPathway: pathway }));
   },
   clearSelectedPathway: () => {
     // console.log('clearing selected pathway');
-    set(() => ({ selectedPathway: null }))
+    set(() => ({ selectedPathway: null }));
   },
   stagePageFocused: false,
   setStagePageFocused: (focused: boolean) => {
     // console.log('setting stage page focused', focused);
-    set(() => ({ stagePageFocused: focused }))
+    set(() => ({ stagePageFocused: focused }));
   },
   pathwayPageFocused: false,
   setPathwayPageFocused: (focused: boolean) => {
     // console.log('setting pathway page focused', focused);
-    set(() => ({ pathwayPageFocused: focused }))
-  }
+    set(() => ({ pathwayPageFocused: focused }));
+  },
 }));
