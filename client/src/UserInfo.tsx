@@ -33,7 +33,7 @@ const UserInfo: React.FC<UserInfoProps> = ({
         <strong>Department:</strong> {department}
       </p>
       <p className="mb-2 border p-2">
-        <strong>Admin Status:</strong> {isAdmin ? 'Admin' : 'User'}
+        <strong>Account Type:</strong> {isAdmin ? 'Admin' : 'User'}
       </p>
     </div>
   );

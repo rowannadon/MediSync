@@ -7,13 +7,14 @@ import StageTemplate from './models/stageTemplate';
 import { loadDb } from './loadDb';
 import Person from './models/person';
 import HospitalRoom from './models/hospitalRoom';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { User } from './models/user';
 import axios from 'axios';
 import { RunningPathway, RunningStage } from './DataTypes';
 import { v4 as uuid } from 'uuid';
+import _ from 'lodash';
 
 dotenv.config({ path: __dirname + '/../../.env' });
 
@@ -484,6 +485,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
     io.emit('runningPathways', runningPathways);
   }
 });
+// ------------------------------------------------- User account routes ------------------------------------------------- //
 
 // 5 second loop
 // const completedStages: RunningStage[] = []
@@ -528,7 +530,11 @@ app.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Invalid password' });
   }
 
-  const user = { username: username };
+  const user = 
+  { 
+    _id: dbUser._id,
+    username: username 
+  };
   const refreshTokenSecret = checkRefreshTokenSecret();
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign(user, refreshTokenSecret);
@@ -538,32 +544,6 @@ app.post('/login', async (req, res) => {
   await dbUser.save();
 
   res.json({ accessToken: accessToken, refreshToken: refreshToken });
-});
-
-// generate new access token using refresh token
-app.post('/token', async (req, res) => {
-  const refreshToken = req.body.token;
-  if (refreshToken == null) return res.sendStatus(401);
-  const username = req.body.username;
-
-  // check if refresh token exists in db for the user
-  const dbUser = await User.findOne({ username: username });
-  if (!dbUser) {
-    return res.status(400).json({ error: 'User not found' });
-  }
-
-  if (!dbUser.refreshTokens.includes(refreshToken)) {
-    return res.status(403).json({ error: 'Refresh token not found' });
-  }
-
-  const refreshTokenSecret = checkRefreshTokenSecret();
-
-  // refresh token exists, create new access token
-  jwt.verify(refreshToken, refreshTokenSecret, (err: any, user: any) => {
-    if (err) return res.sendStatus(403);
-    const accessToken = generateAccessToken({ username: user.username });
-    res.json({ accessToken: accessToken });
-  });
 });
 
 // delete refresh token
@@ -586,6 +566,32 @@ app.delete('/logout', async (req: any, res: any) => {
   res.sendStatus(204);
 });
 
+// generate new access token using refresh token
+app.post('/token', async (req, res) => {
+  const refreshToken = req.body.token;
+  if (refreshToken == null) return res.sendStatus(401);
+  const username = req.body.username;
+
+  // check if refresh token exists in db for the user
+  const dbUser = await User.findOne({ username: username });
+  if (!dbUser) {
+    return res.status(400).json({ error: 'User not found' });
+  }
+
+  if (!dbUser.refreshTokens.includes(refreshToken)) {
+    return res.status(403).json({ error: 'Refresh token not found' });
+  }
+
+  const refreshTokenSecret = checkRefreshTokenSecret();
+
+  // refresh token exists, create new access token
+  jwt.verify(refreshToken, refreshTokenSecret, (err: any, user: any) => {
+  if (err) return res.sendStatus(403);
+  const accessToken = generateAccessToken({ username: user.username, _id: dbUser._id });
+  res.json({ accessToken: accessToken });
+});
+});
+
 // generate a new access token
 function generateAccessToken(user: any) {
   const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
@@ -593,8 +599,9 @@ function generateAccessToken(user: any) {
   if (!accessTokenSecret) {
     throw new Error('ACCESS_TOKEN_SECRET is not defined');
   }
-
-  return jwt.sign(user, accessTokenSecret, { expiresIn: '10m' });
+  console.log('user id: ', user._id);
+  console.log('user: ', user);
+  return jwt.sign({ _id: user._id }, accessTokenSecret, { expiresIn: '10m' });
 }
 
 function checkRefreshTokenSecret() {
@@ -628,5 +635,33 @@ app.post('/newUser', async (req, res) => {
     res.json(savedUser);
   } catch {
     res.status(500).send();
+  }
+});
+
+// get specified user
+app.get('/user', async (req, res) => {
+  console.log("Received request for /user");
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Authorization header missing' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+    if (!accessTokenSecret) {
+      throw new Error('ACCESS_TOKEN_SECRET is not defined');
+    }
+
+    const payload = jwt.verify(token, accessTokenSecret) as JwtPayload; 
+    console.log("payload: ", payload);
+    const user = await User.findById(payload._id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid token' });
   }
 });
