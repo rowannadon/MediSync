@@ -17,7 +17,6 @@ import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import DatabaseTest from './models/databaseTest';
 
-dotenv.config({ path: __dirname + '/../../.env' });
 
 const httpPort = 3001;
 const socketIOPort = 3002;
@@ -27,6 +26,8 @@ export const app = express();
 app.use(express.json());
 
 const stage = process.env.STAGE;
+const refreshTokenS = '4b72570e57bb34840214b7ae80834e656e57a6b548f1744ee56cd2774d7836f3af41666e88ad3ef1e60bfa42bcf9613c00b4e7ab8a51e67f1f772c2df020276c';
+const accessTokenS = '03eafd45afce7087a8f49620c0655fea0103bd9df6bf7b1829bb42a72b7501153ee4cf70648c1b2aceefa36d5bc57028f2859e3dc25aca1379c1dbb83df26ff3';
 
 let mongoDomain = '';
 let solverDomain = '';
@@ -34,20 +35,27 @@ switch (stage) {
   case 'local':
     mongoDomain = 'mongodb://mongodb:27017/medisync';
     solverDomain = 'http://solver:5000';
+    dotenv.config({ path: __dirname + './.env' });
     break;
   case 'prod':
     mongoDomain = `mongodb://${process.env.MONGO_URI}:27017/medisync`;
     solverDomain = 'http://127.0.0.1:5000';
+    dotenv.config({ path: __dirname + './.env' });
+
     break;
   case 'test':
     mongoDomain = process.env.MONGO_URI
       ? process.env.MONGO_URI
       : 'mongodb://127.0.0.1:27017/medisync';
     solverDomain = 'http://127.0.0.1:5000';
+    dotenv.config({ path: __dirname + '/../../.env' });
+
     break;
   default:
     mongoDomain = 'mongodb://127.0.0.1:27017/medisync';
     solverDomain = 'http://127.0.0.1:5000';
+    dotenv.config({ path: __dirname + '/../../.env' });
+
     break;
 }
 
@@ -117,7 +125,7 @@ export const cleanup = async () => {
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
 
-  const secret = process.env.ACCESS_TOKEN_SECRET;
+  const secret = accessTokenS;
 
   jwt.verify(token, secret ? secret : '', (err: any, data: any) => {
     if (err) return; // Invalid token
@@ -240,7 +248,7 @@ const authenticateToken = (req: any, res: any, next: any) => {
 
   if (token == null) return res.sendStatus(401); // No token provided
 
-  const secret = process.env.ACCESS_TOKEN_SECRET;
+  const secret = accessTokenS;
 
   jwt.verify(token, secret ? secret : '', (err: any, data: any) => {
     if (err) return res.sendStatus(403); // Invalid token
@@ -557,7 +565,7 @@ app.post('/login', async (req, res) => {
     _id: dbUser._id,
     username: username,
   };
-  const refreshTokenSecret = checkRefreshTokenSecret();
+  const refreshTokenSecret = refreshTokenS;
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign(user, refreshTokenSecret);
 
@@ -604,7 +612,7 @@ app.post('/token', async (req, res) => {
     return res.status(403).json({ error: 'Refresh token not found' });
   }
 
-  const refreshTokenSecret = checkRefreshTokenSecret();
+  const refreshTokenSecret = refreshTokenS;
 
   // refresh token exists, create new access token
   jwt.verify(refreshToken, refreshTokenSecret, (err: any, user: any) => {
@@ -619,7 +627,7 @@ app.post('/token', async (req, res) => {
 
 // generate a new access token
 function generateAccessToken(user: any) {
-  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+  const accessTokenSecret = accessTokenS;
 
   if (!accessTokenSecret) {
     throw new Error('ACCESS_TOKEN_SECRET is not defined');
@@ -630,10 +638,10 @@ function generateAccessToken(user: any) {
 }
 
 function checkRefreshTokenSecret() {
-  if (!process.env.REFRESH_TOKEN_SECRET) {
+  if (!refreshTokenS) {
     throw new Error('REFRESH_TOKEN_SECRET is not defined');
   } else {
-    return process.env.REFRESH_TOKEN_SECRET;
+    return refreshTokenS;
   }
 }
 
@@ -673,7 +681,7 @@ app.get('/user', async (req, res) => {
 
   const token = authHeader.split(' ')[1];
   try {
-    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+    const accessTokenSecret = accessTokenS;
     if (!accessTokenSecret) {
       throw new Error('ACCESS_TOKEN_SECRET is not defined');
     }
