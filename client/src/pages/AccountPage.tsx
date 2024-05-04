@@ -12,16 +12,36 @@ import { Card } from '../components/ui/card';
 import { useAuth } from '@/AuthProvider';
 import { useState, useEffect } from 'react';
 
+
 const AccountPage = () => {
-  // Replace these values with the actual user's information
-  // const user = {
-  //   name: 'John Doe',
-  //   phone: '123-456-7890',
-  //   email: 'john.doe@example.com',
-  //   role: 'Nurse',
-  //   department: 'Orthopedics',
-  //   isAdmin: true,
-  // };
+
+  const [sundayStart, setSundayStart] = useState('None');
+  const [sundayEnd, setSundayEnd] = useState('None');
+  const [isSundayScheduled, setIsSundayScheduled] = useState(false);
+
+  const [mondayStart, setMondayStart] = useState('None');
+  const [mondayEnd, setMondayEnd] = useState('None');
+  const [isMondayScheduled, setIsMondayScheduled] = useState(false);
+
+  const [tuesdayStart, setTuesdayStart] = useState('None');
+  const [tuesdayEnd, setTuesdayEnd] = useState('None');
+  const [isTuesdayScheduled, setIsTuesdayScheduled] = useState(false);
+
+  const [wednesdayStart, setWednesdayStart] = useState('None');
+  const [wednesdayEnd, setWednesdayEnd] = useState('None');
+  const [isWednesdayScheduled, setIsWednesdayScheduled] = useState(false);
+
+  const [thursdayStart, setThursdayStart] = useState('None');
+  const [thursdayEnd, setThursdayEnd] = useState('None');
+  const [isThursdayScheduled, setIsThursdayScheduled] = useState(false);
+
+  const [fridayStart, setFridayStart] = useState('None');
+  const [fridayEnd, setFridayEnd] = useState('None');
+  const [isFridayScheduled, setIsFridayScheduled] = useState(false);
+
+  const [saturdayStart, setSaturdayStart] = useState('None');
+  const [saturdayEnd, setSaturdayEnd] = useState('None');
+  const [isSaturdayScheduled, setIsSaturdayScheduled] = useState(false);
 
   const auth = useAuth();
   const [user, setUser] = useState<any>(null);
@@ -65,8 +85,9 @@ const AccountPage = () => {
             department={user.department}
             isAdmin={user.isAdmin}
           />
+          
           <Button
-            className="ml-10 rounded border-2 border-gray-400 p-[5px]"
+            variant="outline" className="ml-10 bg-black text-white"
             onClick={() => {
               auth?.logout();
             }}
@@ -80,8 +101,8 @@ const AccountPage = () => {
           </p>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded bg-red-400">
-                Sunday: Not scheduled
+              <Button variant="outline" className={isSundayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+                Sunday: {sundayStart === 'None' ? 'Not scheduled' : `${sundayStart} - ${sundayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -95,28 +116,91 @@ const AccountPage = () => {
                 <div className="grid gap-2">
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="sundayStart">Start</Label>
-                    <Input
+                    <select
                       id="sundayStart"
-                      defaultValue="N/A"
+                      value={sundayStart}
+                      onChange={(e) => {
+                        setSundayStart(e.target.value);
+                        setIsSundayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+
+                    </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="sundayEnd">End</Label>
-                    <Input
+                    <select
                       id="sundayEnd"
-                      defaultValue="N/A"
+                      value={sundayEnd}
+                      onChange={(e) => {
+                        setSundayEnd(e.target.value);
+                        setIsSundayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+
+                    </select>
                   </div>
                 </div>
               </div>
             </PopoverContent>
           </Popover>
+
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded bg-blue-300">
-                Monday: 7:00AM - 7:00PM
+              <Button variant="outline" className={isMondayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+                Monday: {mondayStart === 'None' ? 'Not scheduled' : `${mondayStart} - ${mondayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -130,19 +214,81 @@ const AccountPage = () => {
                 <div className="grid gap-2">
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="mondayStart">Start</Label>
-                    <Input
+                    <select
                       id="mondayStart"
-                      defaultValue="7:00 AM"
+                      value={mondayStart}
+                      onChange={(e) => {
+                        setMondayStart(e.target.value);
+                        setIsMondayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+
+                    </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="mondayEnd">End</Label>
-                    <Input
+                    <select
                       id="mondayEnd"
-                      defaultValue="7:00 PM"
+                      value={mondayEnd}
+                      onChange={(e) => {
+                        setMondayEnd(e.target.value);
+                        setIsMondayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+
+                    </select>
                   </div>
                 </div>
               </div>
@@ -150,8 +296,8 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded bg-blue-300">
-                Tuesday: 7:00AM - 7:00PM
+              <Button variant="outline" className={isTuesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+                Tuesday: {tuesdayStart === 'None' ? 'Not scheduled' : `${tuesdayStart} - ${tuesdayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -165,19 +311,79 @@ const AccountPage = () => {
                 <div className="grid gap-2">
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="tuesdayStart">Start</Label>
-                    <Input
+                    <select
                       id="tuesdayStart"
-                      defaultValue="7:00 AM"
+                      value={tuesdayStart}
+                      onChange={(e) => {
+                        setTuesdayStart(e.target.value);
+                        setIsTuesdayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="tuesdayEnd">End</Label>
-                    <Input
+                    <select
                       id="tuesdayEnd"
-                      defaultValue="7:00 PM"
+                      value={tuesdayEnd}
+                      onChange={(e) => {
+                        setTuesdayEnd(e.target.value);
+                        setIsTuesdayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -185,8 +391,8 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded bg-blue-300">
-                Wednesday: 7:00AM - 7:00PM
+              <Button variant="outline" className={isWednesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+                Wednesday: {wednesdayStart === 'None' ? 'Not scheduled' : `${wednesdayStart} - ${wednesdayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -200,19 +406,79 @@ const AccountPage = () => {
                 <div className="grid gap-2">
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="wednesdayStart">Start</Label>
-                    <Input
+                    <select
                       id="wednesdayStart"
-                      defaultValue="7:00 AM"
+                      value={wednesdayStart}
+                      onChange={(e) => {
+                        setWednesdayStart(e.target.value);
+                        setIsWednesdayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="wednesdayEnd">End</Label>
-                    <Input
+                    <select
                       id="wednesdayEnd"
-                      defaultValue="7:00 PM"
+                      value={wednesdayEnd}
+                      onChange={(e) => {
+                        setWednesdayEnd(e.target.value);
+                        setIsWednesdayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -220,8 +486,8 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded bg-blue-300">
-                Thursday: 7:00AM - 7:00PM
+              <Button variant="outline" className={isThursdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+                Thursday: {thursdayStart === 'None' ? 'Not scheduled' : `${thursdayStart} - ${thursdayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -235,19 +501,79 @@ const AccountPage = () => {
                 <div className="grid gap-2">
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="thursdayStart">Start</Label>
-                    <Input
+                    <select
                       id="thursdayStart"
-                      defaultValue="7:00 AM"
+                      value={thursdayStart}
+                      onChange={(e) => {
+                        setThursdayStart(e.target.value);
+                        setIsThursdayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="thursdayEnd">End</Label>
-                    <Input
+                    <select
                       id="thursdayEnd"
-                      defaultValue="7:00 PM"
+                      value={thursdayEnd}
+                      onChange={(e) => {
+                        setThursdayEnd(e.target.value);
+                        setIsThursdayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -255,8 +581,8 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded bg-blue-300">
-                Friday: 7:00AM - 7:00PM
+              <Button variant="outline" className={isFridayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+                Friday: {fridayStart === 'None' ? 'Not scheduled' : `${fridayStart} - ${fridayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -270,19 +596,79 @@ const AccountPage = () => {
                 <div className="grid gap-2">
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="fridayStart">Start</Label>
-                    <Input
+                    <select
                       id="fridayStart"
-                      defaultValue="7:00 AM"
+                      value={fridayStart}
+                      onChange={(e) => {
+                        setFridayStart(e.target.value);
+                        setIsFridayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="fridayEnd">End</Label>
-                    <Input
+                    <select
                       id="fridayEnd"
-                      defaultValue="7:00 PM"
+                      value={fridayEnd}
+                      onChange={(e) => {
+                        setFridayEnd(e.target.value);
+                        setIsFridayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -290,8 +676,8 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded bg-red-400">
-                Saturday: Not scheduled
+              <Button variant="outline" className={isSaturdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
+                Saturday: {saturdayStart === 'None' ? 'Not scheduled' : `${saturdayStart} - ${saturdayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -305,24 +691,87 @@ const AccountPage = () => {
                 <div className="grid gap-2">
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="saturdayStart">Start</Label>
-                    <Input
+                    <select
                       id="saturdayStart"
-                      defaultValue="N/A"
+                      value={saturdayStart}
+                      onChange={(e) => {
+                        setSaturdayStart(e.target.value);
+                        setIsSaturdayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
                     <Label htmlFor="saturdayEnd">End</Label>
-                    <Input
+                    <select
                       id="saturdayEnd"
-                      defaultValue="N/A"
+                      value={saturdayEnd}
+                      onChange={(e) => {
+                        setSaturdayEnd(e.target.value);
+                        setIsSaturdayScheduled(e.target.value !== 'None');
+                      }}
                       className="col-span-2 h-8"
-                    />
+                    >
+                      <option value="None">None</option>
+                      <option value="12:00 AM">12:00 AM</option>
+                      <option value="1:00 AM">1:00 AM</option>
+                      <option value="2:00 AM">2:00 AM</option>
+                      <option value="3:00 AM">3:00 AM</option>
+                      <option value="4:00 AM">4:00 AM</option>
+                      <option value="5:00 AM">5:00 AM</option>
+                      <option value="6:00 AM">6:00 AM</option>
+                      <option value="7:00 AM">7:00 AM</option>
+                      <option value="8:00 AM">8:00 AM</option>
+                      <option value="9:00 AM">9:00 AM</option>
+                      <option value="10:00 AM">10:00 AM</option>
+                      <option value="11:00 AM">11:00 AM</option>
+                      <option value="12:00 PM">12:00 PM</option>
+                      <option value="1:00 PM">1:00 PM</option>
+                      <option value="2:00 PM">2:00 PM</option>
+                      <option value="3:00 PM">3:00 PM</option>
+                      <option value="4:00 PM">4:00 PM</option>
+                      <option value="5:00 PM">5:00 PM</option>
+                      <option value="6:00 PM">6:00 PM</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:00 PM">8:00 PM</option>
+                      <option value="9:00 PM">9:00 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                      <option value="11:00 PM">11:00 PM</option>
+                    </select>
                   </div>
                 </div>
               </div>
             </PopoverContent>
           </Popover>
+          <Button variant="outline" className="mt-4 bg-black text-white">
+            Save Changes
+          </Button>
         </div>
       </Card>
     </div>
