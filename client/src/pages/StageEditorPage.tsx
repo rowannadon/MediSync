@@ -3,7 +3,7 @@ import NavMenu from '../NavMenu';
 
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -39,6 +39,18 @@ const StageEditor = () => {
   const removeStageTemplate = useRemoteDataStore(
     (state) => state.removeStageTemplate,
   );
+
+  const setStagePageFocused = useLocalDataStore(
+    (state) => state.setStagePageFocused,
+  );
+
+  useEffect(() => {
+    setStagePageFocused(true);
+
+    return () => {
+      setStagePageFocused(false);
+    };
+  }, []);
 
   const stagePropertyTypes = [
     { title: 'Information', id: 'information' },

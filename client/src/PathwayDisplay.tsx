@@ -1,6 +1,8 @@
 import { Card } from './components/ui/card';
 import { nodeColors, PathwayTemplate } from './DataTypes';
 import { useDrag } from 'react-dnd';
+import { useRemoteDataStore } from './RemoteDataStore';
+import { useLocalDataStore } from './LocalDataStore';
 
 interface PathwayProps {
   pathway: PathwayTemplate;
@@ -24,6 +26,9 @@ const Display = (props: {
     }),
   }));
 
+  const lockedPathways = useRemoteDataStore((state) => state.lockedPathways);
+  const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
+
   return (
     <div
       ref={dragPreview}
@@ -38,7 +43,13 @@ const Display = (props: {
           backgroundColor: nodeColors['pathway'],
         }}
         className={`m-0 flex min-h-[70px] min-w-[260px] max-w-[260px] cursor-pointer flex-col items-center justify-center border-[2px] border-transparent p-2 hover:brightness-95 hover:filter
-         ${props.selected ? 'border-[#888]' : ''}`}
+        ${
+          lockedPathways.includes(props.pathway.id) &&
+          selectedPathway?.id != props.pathway.id
+            ? 'pointer-events-none opacity-30'
+            : ''
+        } 
+        ${props.selected ? 'border-[#888]' : ''}`}
       >
         <h1 className="text-center text-base">{props.pathway.title}</h1>
         <p className="text-center text-xs text-muted-foreground">

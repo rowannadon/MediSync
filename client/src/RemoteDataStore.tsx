@@ -55,6 +55,10 @@ export interface RemoteDataStore {
   setRooms: (rooms: HospitalRoom[]) => void;
   setRunningPathways: (runningPathways: RunningPathway[]) => void;
   addConflict: (conflict: Conflict) => void;
+  lockedPathways: string[];
+  lockedStages: string[];
+  setLockedPathways: (lockedPathways: string[]) => void;
+  setLockedStages: (lockedStages: string[]) => void;
 }
 
 export const useRemoteDataStore = create(
@@ -308,6 +312,18 @@ export const useRemoteDataStore = create(
     addConflict: (conflict: Conflict) => {
       set((state) => ({
         conflicts: [...state.conflicts, conflict],
+      }));
+    },
+    lockedPathways: [],
+    lockedStages: [],
+    setLockedPathways: (lockedPathways: string[]) => {
+      set(() => ({
+        lockedPathways,
+      }));
+    },
+    setLockedStages: (lockedStages: string[]) => {
+      set(() => ({
+        lockedStages,
       }));
     },
   })),

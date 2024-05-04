@@ -1,11 +1,10 @@
 import { MongooseError } from 'mongoose';
 import express from 'express';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import mongoose from 'mongoose';
 import PathwayTemplate from './models/pathwayTemplate';
 import StageTemplate from './models/stageTemplate';
 import { loadDb } from './loadDb';
-import { Request } from 'express';
 import Person from './models/person';
 import HospitalRoom from './models/hospitalRoom';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -114,12 +113,33 @@ export const cleanup = async () => {
   await mongoose.connection.close();
 };
 
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+
+  const secret = process.env.ACCESS_TOKEN_SECRET;
+
+  jwt.verify(token, secret ? secret : '', (err: any, data: any) => {
+    if (err) return; // Invalid token
+    console.log('socket authenticated for', data.username);
+    socket.handshake.auth.username = data.username;
+    next();
+  });
+});
+
 const runningPathways: RunningPathway[] = [];
+let lockedPathways: { user: string; pathway: string }[] = [];
+let lockedStages: { user: string; stage: string }[] = [];
+const sockets: Socket[] = [];
 
 io.on('connection', async (socket: any) => {
-  console.log('a user connected');
+  console.log('a new user connected:', socket.handshake.auth.username);
+  sockets.push(socket);
   socket.on('disconnect', () => {
-    console.log('a user disconnected');
+    lockedPathways = lockedPathways.filter(
+      (p) => p.user !== socket.handshake.auth.username,
+    );
+    sockets.splice(sockets.indexOf(socket), 1);
+    console.log('a user disconnected:', socket.handshake.auth.username);
   });
 
   socket.on('getPathwayTemplates', async () => {
@@ -147,6 +167,52 @@ io.on('connection', async (socket: any) => {
     socket.emit('runningPathways', runningPathways);
   });
 
+  socket.on('lockPathway', (id: string) => {
+    console.log('locking pathway', id);
+    lockedPathways = lockedPathways.filter(
+      (p) => p.user !== socket.handshake.auth.username,
+    );
+    lockedPathways.push({ user: socket.handshake.auth.username, pathway: id });
+    io.emit(
+      'lockedPathways',
+      lockedPathways.map((s) => s.pathway),
+    );
+  });
+
+  socket.on('unlockPathway', () => {
+    console.log('unlocking pathway');
+    lockedPathways = lockedPathways.filter(
+      (p) => p.user !== socket.handshake.auth.username,
+    );
+    io.emit(
+      'lockedPathways',
+      lockedPathways.map((s) => s.pathway),
+    );
+  });
+
+  socket.on('lockStage', (id: string) => {
+    console.log('locking stage', id);
+    lockedStages = lockedStages.filter(
+      (p) => p.user !== socket.handshake.auth.username,
+    );
+    lockedStages.push({ user: socket.handshake.auth.username, stage: id });
+    io.emit(
+      'lockedStages',
+      lockedStages.map((s) => s.stage),
+    );
+  });
+
+  socket.on('unlockStage', () => {
+    console.log('unlocking stage');
+    lockedStages = lockedStages.filter(
+      (s) => s.user !== socket.handshake.auth.username,
+    );
+    io.emit(
+      'lockedStages',
+      lockedStages.map((s) => s.stage),
+    );
+  });
+
   console.log('sending all data');
   socket.emit('pathwayTemplates', await PathwayTemplate.find());
   socket.emit('people', await Person.find());
@@ -155,16 +221,13 @@ io.on('connection', async (socket: any) => {
   socket.emit('runningPathways', runningPathways);
 });
 
-interface RequestWithUser extends Request {
-  user?: any;
-}
-
 const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
   // allow login and token requests without token
-  if (req.path === '/login' || req.path === '/token') return next();
+  if (req.path === '/login' || req.path === '/token' || req.path === '/logout')
+    return next();
 
   if (token == null) return res.sendStatus(401); // No token provided
 

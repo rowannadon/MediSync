@@ -1,5 +1,6 @@
 describe('getlast Button', () => {
   it('Visit Webpage', () => {
+    cy.login('test','test')  
     cy.visit('http://localhost:5173/test')
     cy.get('button').contains('Get saved times from database').click()
     cy.get('button').contains('Write current time to database').click()
