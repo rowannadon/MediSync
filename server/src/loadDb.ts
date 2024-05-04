@@ -25,7 +25,7 @@ export const loadDb = async (connection: Connection) => {
 
   // creates a test user if it doesn't yet exist
   // username/password: test/test
-  User.findOne({ id: 9999 }).then(async (existingUser) => {
+  User.findOne({ username: 'test' }).then(async (existingUser) => {
     if (!existingUser) {
       const hashedPassword = await bcrypt.hash('test', 10);
       const user = new User({

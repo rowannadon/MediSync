@@ -471,7 +471,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
   }
 });
 
-// login and assign access token to user
+// authenticate and assign access token to user
 app.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -529,7 +529,7 @@ app.post('/token', async (req, res) => {
 // delete refresh token
 app.delete('/logout', async (req: any, res: any) => {
   const refreshToken = req.body.token;
-  const username = req.username;
+  const username = req.body.username;
 
   console.log('logging out', username);
 
@@ -566,7 +566,7 @@ function checkRefreshTokenSecret() {
 }
 
 // add a new user and store password hash
-app.post('/users', async (req, res) => {
+app.post('/newUser', async (req, res) => {
   try {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
