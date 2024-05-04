@@ -227,9 +227,15 @@ io.on('connection', async (socket: any) => {
 const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-  console.log(req.path)
+  console.log(req.path);
   // allow login and token requests without token
-  if (req.path === '/login' || req.path === '/token' || req.path === '/logout' || req.path === '/time' || req.path === '/health')
+  if (
+    req.path === '/login' ||
+    req.path === '/token' ||
+    req.path === '/logout' ||
+    req.path === '/time' ||
+    req.path === '/health'
+  )
     return next();
 
   if (token == null) return res.sendStatus(401); // No token provided
@@ -348,7 +354,7 @@ app.post('/time', async (req: any, res: any) => {
     id: uuid(),
   });
   await dbTest.save();
-res.json(dbTest);
+  res.json(dbTest);
 });
 
 app.get('/time', async (req: any, res: any) => {
@@ -475,7 +481,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
         assigned_room: '',
         date: new Date(
           serverStartDate.valueOf() +
-          tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
+            tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
         ),
         completed: false,
         progress: 0,
@@ -547,10 +553,9 @@ app.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Invalid password' });
   }
 
-  const user =
-  {
+  const user = {
     _id: dbUser._id,
-    username: username
+    username: username,
   };
   const refreshTokenSecret = checkRefreshTokenSecret();
   const accessToken = generateAccessToken(user);
@@ -604,7 +609,10 @@ app.post('/token', async (req, res) => {
   // refresh token exists, create new access token
   jwt.verify(refreshToken, refreshTokenSecret, (err: any, user: any) => {
     if (err) return res.sendStatus(403);
-    const accessToken = generateAccessToken({ username: user.username, _id: dbUser._id });
+    const accessToken = generateAccessToken({
+      username: user.username,
+      _id: dbUser._id,
+    });
     res.json({ accessToken: accessToken });
   });
 });
@@ -657,7 +665,7 @@ app.post('/newUser', async (req, res) => {
 
 // get specified user
 app.get('/user', async (req, res) => {
-  console.log("Received request for /user");
+  console.log('Received request for /user');
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(401).json({ error: 'Authorization header missing' });
@@ -671,7 +679,7 @@ app.get('/user', async (req, res) => {
     }
 
     const payload = jwt.verify(token, accessTokenSecret) as JwtPayload;
-    console.log("payload: ", payload);
+    console.log('payload: ', payload);
     const user = await User.findById(payload._id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });

@@ -12,9 +12,7 @@ import { Card } from '../components/ui/card';
 import { useAuth } from '@/AuthProvider';
 import { useState, useEffect } from 'react';
 
-
 const AccountPage = () => {
-
   const [sundayStart, setSundayStart] = useState('None');
   const [sundayEnd, setSundayEnd] = useState('None');
   const [isSundayScheduled, setIsSundayScheduled] = useState(false);
@@ -68,7 +66,6 @@ const AccountPage = () => {
     return <div>Loading...</div>;
   }
 
-
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -85,9 +82,10 @@ const AccountPage = () => {
             department={user.department}
             isAdmin={user.isAdmin}
           />
-          
+
           <Button
-            variant="outline" className="ml-10 bg-black text-white"
+            variant="outline"
+            className="ml-10 bg-black text-white"
             onClick={() => {
               auth?.logout();
             }}
@@ -101,8 +99,14 @@ const AccountPage = () => {
           </p>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={isSundayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
-                Sunday: {sundayStart === 'None' ? 'Not scheduled' : `${sundayStart} - ${sundayEnd}`}
+              <Button
+                variant="outline"
+                className={isSundayScheduled ? 'bg-blue-400' : 'bg-red-400'}
+              >
+                Sunday:{' '}
+                {sundayStart === 'None'
+                  ? 'Not scheduled'
+                  : `${sundayStart} - ${sundayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -150,7 +154,6 @@ const AccountPage = () => {
                       <option value="9:00 PM">9:00 PM</option>
                       <option value="10:00 PM">10:00 PM</option>
                       <option value="11:00 PM">11:00 PM</option>
-
                     </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
@@ -189,7 +192,6 @@ const AccountPage = () => {
                       <option value="9:00 PM">9:00 PM</option>
                       <option value="10:00 PM">10:00 PM</option>
                       <option value="11:00 PM">11:00 PM</option>
-
                     </select>
                   </div>
                 </div>
@@ -199,8 +201,14 @@ const AccountPage = () => {
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={isMondayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
-                Monday: {mondayStart === 'None' ? 'Not scheduled' : `${mondayStart} - ${mondayEnd}`}
+              <Button
+                variant="outline"
+                className={isMondayScheduled ? 'bg-blue-400' : 'bg-red-400'}
+              >
+                Monday:{' '}
+                {mondayStart === 'None'
+                  ? 'Not scheduled'
+                  : `${mondayStart} - ${mondayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -248,7 +256,6 @@ const AccountPage = () => {
                       <option value="9:00 PM">9:00 PM</option>
                       <option value="10:00 PM">10:00 PM</option>
                       <option value="11:00 PM">11:00 PM</option>
-
                     </select>
                   </div>
                   <div className="grid grid-cols-3 items-center gap-4">
@@ -287,7 +294,6 @@ const AccountPage = () => {
                       <option value="9:00 PM">9:00 PM</option>
                       <option value="10:00 PM">10:00 PM</option>
                       <option value="11:00 PM">11:00 PM</option>
-
                     </select>
                   </div>
                 </div>
@@ -296,8 +302,14 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={isTuesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
-                Tuesday: {tuesdayStart === 'None' ? 'Not scheduled' : `${tuesdayStart} - ${tuesdayEnd}`}
+              <Button
+                variant="outline"
+                className={isTuesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}
+              >
+                Tuesday:{' '}
+                {tuesdayStart === 'None'
+                  ? 'Not scheduled'
+                  : `${tuesdayStart} - ${tuesdayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -391,8 +403,14 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={isWednesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
-                Wednesday: {wednesdayStart === 'None' ? 'Not scheduled' : `${wednesdayStart} - ${wednesdayEnd}`}
+              <Button
+                variant="outline"
+                className={isWednesdayScheduled ? 'bg-blue-400' : 'bg-red-400'}
+              >
+                Wednesday:{' '}
+                {wednesdayStart === 'None'
+                  ? 'Not scheduled'
+                  : `${wednesdayStart} - ${wednesdayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -486,8 +504,14 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={isThursdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
-                Thursday: {thursdayStart === 'None' ? 'Not scheduled' : `${thursdayStart} - ${thursdayEnd}`}
+              <Button
+                variant="outline"
+                className={isThursdayScheduled ? 'bg-blue-400' : 'bg-red-400'}
+              >
+                Thursday:{' '}
+                {thursdayStart === 'None'
+                  ? 'Not scheduled'
+                  : `${thursdayStart} - ${thursdayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -581,8 +605,14 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={isFridayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
-                Friday: {fridayStart === 'None' ? 'Not scheduled' : `${fridayStart} - ${fridayEnd}`}
+              <Button
+                variant="outline"
+                className={isFridayScheduled ? 'bg-blue-400' : 'bg-red-400'}
+              >
+                Friday:{' '}
+                {fridayStart === 'None'
+                  ? 'Not scheduled'
+                  : `${fridayStart} - ${fridayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
@@ -676,8 +706,14 @@ const AccountPage = () => {
           </Popover>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={isSaturdayScheduled ? 'bg-blue-400' : 'bg-red-400'}>
-                Saturday: {saturdayStart === 'None' ? 'Not scheduled' : `${saturdayStart} - ${saturdayEnd}`}
+              <Button
+                variant="outline"
+                className={isSaturdayScheduled ? 'bg-blue-400' : 'bg-red-400'}
+              >
+                Saturday:{' '}
+                {saturdayStart === 'None'
+                  ? 'Not scheduled'
+                  : `${saturdayStart} - ${saturdayEnd}`}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-200">
