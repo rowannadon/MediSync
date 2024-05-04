@@ -3,7 +3,7 @@ import NavMenu from '../NavMenu';
 
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -30,6 +30,10 @@ const PathwayLaunchEditor = () => {
     (state) => state.clearSelectedPathway,
   );
 
+  const setPathwayPageFocused = useLocalDataStore(
+    (state) => state.setPathwayPageFocused,
+  );
+
   const stagePropertyTypes = [
     { title: 'Information', id: 'information' },
     { title: 'Resources', id: 'resources' },
@@ -52,6 +56,14 @@ const PathwayLaunchEditor = () => {
       canDrop: monitor.canDrop(),
     }),
   }));
+
+  useEffect(() => {
+    setPathwayPageFocused(true);
+    
+    return () => {
+      setPathwayPageFocused(false);
+    };
+  }, []);
 
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">

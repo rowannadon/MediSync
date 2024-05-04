@@ -145,7 +145,6 @@ export function StageEditorForm({
     };
 
     const changed = !isEqual(newStageTemplate, stage);
-    console.log('changed', changed);
     setHasChanges(changed);
   };
 

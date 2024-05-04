@@ -3,7 +3,7 @@ import NavMenu from '../NavMenu';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import 'reactflow/dist/style.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -40,6 +40,18 @@ const PathwayEditor = () => {
   const removePathwayTemplate = useRemoteDataStore(
     (state) => state.removePathwayTemplate,
   );
+
+  const setPathwayPageFocused = useLocalDataStore(
+    (state) => state.setPathwayPageFocused,
+  );
+
+  useEffect(() => {
+    setPathwayPageFocused(true);
+    
+    return () => {
+      setPathwayPageFocused(false);
+    };
+  }, []);
 
   const [newPathwayName, setNewPathwayName] = useState('');
   const [newPathwayDesc, setNewPathwayDesc] = useState('');

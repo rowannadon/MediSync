@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { instance, setAuthToken } from './AxiosInstance';
+import { useSocket } from './SocketProvider';
 
 interface LoginContextType {
   login: (username: string, password: string) => any;
@@ -19,6 +19,8 @@ export const AuthProvider = (props: any) => {
     localStorage.getItem('accessToken'),
   );
 
+  const socket = useSocket();
+
   useEffect(() => {
     setAuthToken(accessToken);
   }, [accessToken]);
@@ -36,6 +38,7 @@ export const AuthProvider = (props: any) => {
   };
 
   const logout = () => {
+    socket?.disconnect();
     instance.delete('/api/logout');
     localStorage.removeItem('accessToken');
     setAccessToken(null);
