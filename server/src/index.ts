@@ -345,12 +345,17 @@ app.post('/runningPathways', async (req: any, res: any) => {
   const newId = uuid();
 
   const pathwayStartDate = new Date(req.body.form.startDate);
-  const dateOffsetMinutes = Math.abs(pathwayStartDate.valueOf() - serverStartDate.valueOf()) / 60000;
+  const dateOffsetMinutes =
+    Math.abs(pathwayStartDate.valueOf() - serverStartDate.valueOf()) / 60000;
 
-  console.log(req.body.stages)
+  console.log(req.body.stages);
 
-  console.log('pathway start date', pathwayStartDate, pathwayStartDate.valueOf())
-  console.log('server start date', serverStartDate, serverStartDate.valueOf())
+  console.log(
+    'pathway start date',
+    pathwayStartDate,
+    pathwayStartDate.valueOf(),
+  );
+  console.log('server start date', serverStartDate, serverStartDate.valueOf());
   console.log('date offset', dateOffsetMinutes);
 
   const staff = req.body.form.staff;
@@ -500,7 +505,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
 //           console.log('entered stage', stage);
 //         }
 //       }
-      
+
 //     }
 //   }
 //   io.emit('runningPathways', runningPathways);

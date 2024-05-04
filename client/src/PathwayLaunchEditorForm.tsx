@@ -308,19 +308,21 @@ export function PathwayLaunchEditorForm({
                               <CommandList>
                                 <CommandEmpty>No results found.</CommandEmpty>
                                 <CommandGroup>
-                                  {people.filter((p: Person) => p.role === 'Patient').map((person) => {
-                                    return (
-                                      <CommandItem
-                                        key={person.name}
-                                        onSelect={() => {
-                                          setOpen(false);
-                                          field.onChange(person.name);
-                                        }}
-                                      >
-                                        <span>{person.name}</span>
-                                      </CommandItem>
-                                    );
-                                  })}
+                                  {people
+                                    .filter((p: Person) => p.role === 'Patient')
+                                    .map((person) => {
+                                      return (
+                                        <CommandItem
+                                          key={person.name}
+                                          onSelect={() => {
+                                            setOpen(false);
+                                            field.onChange(person.name);
+                                          }}
+                                        >
+                                          <span>{person.name}</span>
+                                        </CommandItem>
+                                      );
+                                    })}
                                 </CommandGroup>
                               </CommandList>
                             </Command>
@@ -427,9 +429,15 @@ export function PathwayLaunchEditorForm({
                                                   }}
                                                   types={Array.from(
                                                     new Set(
-                                                      people.filter((p: Person) => p.role === staff.staff).map(
-                                                        (p: Person) => p.name,
-                                                      ),
+                                                      people
+                                                        .filter(
+                                                          (p: Person) =>
+                                                            p.role ===
+                                                            staff.staff,
+                                                        )
+                                                        .map(
+                                                          (p: Person) => p.name,
+                                                        ),
                                                     ),
                                                   )}
                                                   options={['Automatic']}
