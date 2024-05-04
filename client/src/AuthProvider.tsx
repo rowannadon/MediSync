@@ -43,7 +43,9 @@ export const AuthProvider = (props: any) => {
     const currentUsername = getUsername();
     const currentRefreshToken = getRefreshToken();
     socket?.disconnect();
-    instance.delete('/api/logout', { data: { token: currentRefreshToken, username: currentUsername } });
+    instance.delete('/api/logout', {
+      data: { token: currentRefreshToken, username: currentUsername },
+    });
     localStorage.removeItem('accessToken');
     setUsername(null);
     setAccessToken(null);

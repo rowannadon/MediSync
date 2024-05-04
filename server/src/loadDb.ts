@@ -54,7 +54,7 @@ export const loadDb = async (connection: Connection) => {
     }
   });
 
-  User.findOne({ id: 8888 }).then(async (existingUser) => {
+  User.findOne({ username: 'test2' }).then(async (existingUser) => {
     if (!existingUser) {
       const hashedPassword = await bcrypt.hash('test2', 10);
       const user = new User({
