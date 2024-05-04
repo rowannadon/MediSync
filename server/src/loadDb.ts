@@ -45,11 +45,11 @@ export const loadDb = async (connection: Connection) => {
     }
   });
 
-  User.findOne({ username: 'test2' }).then(async (existingUser) => {
+  User.findOne({ id: 8888 }).then(async (existingUser) => {
     if (!existingUser) {
-      const hashedPassword = await bcrypt.hash('test2', 10);
+      const hashedPassword = await bcrypt.hash('test3', 10);
       const user = new User({
-        id: 9999,
+        id: 8888,
         name: 'Test User 2',
         role: 'Admin',
         department: 'Administrator',
@@ -57,20 +57,20 @@ export const loadDb = async (connection: Connection) => {
         email: 'admin2@example.com',
         admin: true,
         location: 'Room 9999',
-        username: 'test2',
+        username: 'test3',
         password: hashedPassword,
       });
 
       user
         .save()
         .then(() => {
-          console.log('Test user 2 created');
+          console.log('Test user 3 created');
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      console.log('User 2 already exists');
+      console.log('User 3 already exists');
     }
   });
 
