@@ -20,7 +20,7 @@ export interface LocalDataStore {
   setPathwayPageFocused: (focused: boolean) => void;
 }
 
-export const useLocalDataStore = create<LocalDataStore>((set, get) => ({
+export const useLocalDataStore = create<LocalDataStore>((set) => ({
   selectedStage: null,
   setSelectedStage: (stage: StageTemplate | null) => {
     // console.log(stage);
