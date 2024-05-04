@@ -47,8 +47,8 @@ const TestPage = () => {
                 onClick={() => {
                   axios.get('/api/time').then((res) => {
                     console.log(res.data);
-                    if (res.data.time.length > 0) {
-                      setSavedTime(res.data.time);
+                    if (res.data.length > 0) {
+                      setSavedTime(res.data);
                     }
                   });
                 }}

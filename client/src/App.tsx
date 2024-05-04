@@ -53,6 +53,7 @@ const App = () => {
               path="/account"
               component={AccountPage}
             ></PrivateRoute>
+            <Route path="/test" component={TestPage}></Route>
           </SocketProvider>
         </AuthProvider>
       </div>

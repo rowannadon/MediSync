@@ -6,6 +6,6 @@ const databaseTestSchema = new mongoose.Schema({
   msg: { type: String, required: true },
 });
 
-const databaseTest: any = mongoose.model('databaseTest', databaseTestSchema);
+const DatabaseTest = mongoose.model('databaseTest', databaseTestSchema);
 
-export { databaseTest };
+export default DatabaseTest;

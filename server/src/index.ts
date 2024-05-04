@@ -15,6 +15,7 @@ import axios from 'axios';
 import { RunningPathway, RunningStage } from './DataTypes';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
+import DatabaseTest from './models/databaseTest';
 
 dotenv.config({ path: __dirname + '/../../.env' });
 
@@ -226,9 +227,9 @@ io.on('connection', async (socket: any) => {
 const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-
+  console.log(req.path)
   // allow login and token requests without token
-  if (req.path === '/login' || req.path === '/token' || req.path === '/logout')
+  if (req.path === '/login' || req.path === '/token' || req.path === '/logout' || req.path === '/time' || req.path === '/health')
     return next();
 
   if (token == null) return res.sendStatus(401); // No token provided
@@ -337,6 +338,22 @@ app.put('/stageTemplates/:id', async (req: any, res: any) => {
 
 app.get('/health', (req: any, res: any) => {
   return res.json({ status: 'healthy' });
+});
+
+app.post('/time', async (req: any, res: any) => {
+  const time = req.body.time;
+  console.log('setting time to', time);
+  const dbTest = new DatabaseTest({
+    msg: time,
+    id: uuid(),
+  });
+  await dbTest.save();
+res.json(dbTest);
+});
+
+app.get('/time', async (req: any, res: any) => {
+  const dbTest = await DatabaseTest.find();
+  res.json(dbTest);
 });
 
 app.post('/runningPathways', async (req: any, res: any) => {
@@ -458,7 +475,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
         assigned_room: '',
         date: new Date(
           serverStartDate.valueOf() +
-            tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
+          tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
         ),
         completed: false,
         progress: 0,
@@ -530,10 +547,10 @@ app.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Invalid password' });
   }
 
-  const user = 
-  { 
+  const user =
+  {
     _id: dbUser._id,
-    username: username 
+    username: username
   };
   const refreshTokenSecret = checkRefreshTokenSecret();
   const accessToken = generateAccessToken(user);
@@ -586,10 +603,10 @@ app.post('/token', async (req, res) => {
 
   // refresh token exists, create new access token
   jwt.verify(refreshToken, refreshTokenSecret, (err: any, user: any) => {
-  if (err) return res.sendStatus(403);
-  const accessToken = generateAccessToken({ username: user.username, _id: dbUser._id });
-  res.json({ accessToken: accessToken });
-});
+    if (err) return res.sendStatus(403);
+    const accessToken = generateAccessToken({ username: user.username, _id: dbUser._id });
+    res.json({ accessToken: accessToken });
+  });
 });
 
 // generate a new access token
@@ -653,7 +670,7 @@ app.get('/user', async (req, res) => {
       throw new Error('ACCESS_TOKEN_SECRET is not defined');
     }
 
-    const payload = jwt.verify(token, accessTokenSecret) as JwtPayload; 
+    const payload = jwt.verify(token, accessTokenSecret) as JwtPayload;
     console.log("payload: ", payload);
     const user = await User.findById(payload._id);
     if (!user) {
