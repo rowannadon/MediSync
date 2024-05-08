@@ -13,12 +13,13 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { navigate } from 'wouter/use-browser-location';
-import { X } from 'lucide-react';
+import { LoaderCircle, X } from 'lucide-react';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const loginFunctions = useAuth();
 
   return (
@@ -55,7 +56,7 @@ const LoginPage = () => {
           </CardContent>
           <CardFooter className="flex flex-col">
             {errorMessage && (
-              <div className="mb-4 flex w-full flex-row justify-between rounded-lg bg-[#ff5555] p-3">
+              <div className="mb-4 flex w-full flex-row justify-between rounded-lg bg-red-400 p-3">
                 {errorMessage}
                 <X
                   className="text-white"
@@ -70,11 +71,14 @@ const LoginPage = () => {
               className="w-full rounded bg-primary p-2 text-white"
               onClick={() => {
                 console.log('login');
+                if (!username && !password) return;
                 loginFunctions
                   ?.login(username, password)
                   .then(() => {
                     console.log('logged in');
+                    setLoading(true);
                     setTimeout(() => {
+                      setLoading(false);
                       navigate('/tasks');
                     }, 500);
                   })
@@ -82,8 +86,11 @@ const LoginPage = () => {
                     setErrorMessage('Invalid username or password');
                   });
               }}
+              disabled={loading}
             >
               Login
+              {loading && <LoaderCircle className='animate-spin w-5 h-5' />}
+              
             </Button>
           </CardFooter>
         </Card>
