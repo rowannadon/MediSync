@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { instance, setAuthToken } from './AxiosInstance';
 import { useSocket } from './SocketProvider';
-
+import { instance, setAuthToken } from './AxiosInstance';
 interface LoginContextType {
   login: (username: string, password: string) => any;
   logout: () => void;
@@ -23,7 +22,9 @@ export const AuthProvider = (props: any) => {
   const socket = useSocket();
 
   useEffect(() => {
-    setAuthToken(accessToken);
+    if (accessToken) {
+      setAuthToken(accessToken);
+    }
   }, [accessToken]);
 
   const login = async (username: string, password: string) => {
@@ -31,6 +32,7 @@ export const AuthProvider = (props: any) => {
     if (res.status === 200) {
       localStorage.setItem('accessToken', res.data.accessToken);
       setUsername(username);
+
       setRefreshToken(res.data.refreshToken);
       setAccessToken(res.data.accessToken);
       return res.data;
@@ -40,13 +42,12 @@ export const AuthProvider = (props: any) => {
   };
 
   const logout = () => {
-    const currentUsername = getUsername();
     const currentRefreshToken = getRefreshToken();
-    socket?.disconnect();
     instance.delete('/api/logout', {
-      data: { token: currentRefreshToken, username: currentUsername },
+      data: { token: currentRefreshToken },
     });
     localStorage.removeItem('accessToken');
+    socket?.disconnect();
     setUsername(null);
     setAccessToken(null);
     setRefreshToken(null);

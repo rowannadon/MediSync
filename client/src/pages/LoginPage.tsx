@@ -72,11 +72,11 @@ const LoginPage = () => {
               onClick={() => {
                 console.log('login');
                 if (!username && !password) return;
+                setLoading(true);
                 loginFunctions
                   ?.login(username, password)
                   .then(() => {
                     console.log('logged in');
-                    setLoading(true);
                     setTimeout(() => {
                       setLoading(false);
                       navigate('/tasks');
@@ -84,13 +84,13 @@ const LoginPage = () => {
                   })
                   .catch((err: any) => {
                     setErrorMessage('Invalid username or password');
+                    setLoading(false);
                   });
               }}
               disabled={loading}
             >
               Login
-              {loading && <LoaderCircle className='animate-spin w-5 h-5' />}
-              
+              {loading && <LoaderCircle className="h-5 w-5 animate-spin" />}
             </Button>
           </CardFooter>
         </Card>

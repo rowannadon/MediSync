@@ -25,9 +25,9 @@ export const app = express();
 app.use(express.json());
 
 const stage = process.env.STAGE;
-const refreshTokenS =
+const refreshTokenSecret =
   '4b72570e57bb34840214b7ae80834e656e57a6b548f1744ee56cd2774d7836f3af41666e88ad3ef1e60bfa42bcf9613c00b4e7ab8a51e67f1f772c2df020276c';
-const accessTokenS =
+const accessTokenSecret =
   '03eafd45afce7087a8f49620c0655fea0103bd9df6bf7b1829bb42a72b7501153ee4cf70648c1b2aceefa36d5bc57028f2859e3dc25aca1379c1dbb83df26ff3';
 
 let mongoDomain = '';
@@ -36,27 +36,20 @@ switch (stage) {
   case 'local':
     mongoDomain = 'mongodb://mongodb:27017/medisync';
     solverDomain = 'http://solver:5000';
-    dotenv.config({ path: __dirname + './.env' });
     break;
   case 'prod':
     mongoDomain = `mongodb://${process.env.MONGO_URI}:27017/medisync`;
     solverDomain = 'http://127.0.0.1:5000';
-    dotenv.config({ path: __dirname + './.env' });
-
     break;
   case 'test':
     mongoDomain = process.env.MONGO_URI
       ? process.env.MONGO_URI
       : 'mongodb://127.0.0.1:27017/medisync';
     solverDomain = 'http://127.0.0.1:5000';
-    dotenv.config({ path: __dirname + '/../../.env' });
-
     break;
   default:
     mongoDomain = 'mongodb://127.0.0.1:27017/medisync';
     solverDomain = 'http://127.0.0.1:5000';
-    dotenv.config({ path: __dirname + '/../../.env' });
-
     break;
 }
 
@@ -100,57 +93,54 @@ mongoose.connection.once('open', async () => {
   });
 });
 
-export const cleanup = async () => {
-  console.log('Cleaning up');
-  await new Promise((resolve, reject) => {
-    io.close((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve('closed io server');
-      }
-    });
-  });
-  await new Promise((resolve, reject) => {
-    (server as Server).close((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve('closed http server');
-      }
-    });
-  });
-  await mongoose.connection.close();
-};
-
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
+  console.log('socket token:', token);
+  if (!token) return; // No token provided
 
-  const secret = accessTokenS;
-
-  jwt.verify(token, secret ? secret : '', (err: any, data: any) => {
+  jwt.verify(token, accessTokenSecret, (err: any, data: any) => {
     if (err) return; // Invalid token
-    console.log('socket authenticated for', data.username);
+    console.log('socket authenticated for', data);
     socket.handshake.auth.username = data.username;
     next();
   });
 });
 
+const authenticateToken = (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  // allow login and token requests without token
+  if (req.path === '/login' || req.path === '/token') return next();
+
+  console.log('path:', req.path);
+  console.log('token:', token);
+
+  if (token == null) return res.sendStatus(401); // No token provided
+
+  jwt.verify(token, accessTokenSecret, (err: any, data: any) => {
+    if (err) return res.sendStatus(403); // Invalid token
+    req.username = data.username;
+    next();
+  });
+};
+
+app.use(authenticateToken);
+
 const runningPathways: RunningPathway[] = [];
 let lockedPathways: { user: string; pathway: string }[] = [];
 let lockedStages: { user: string; stage: string }[] = [];
-const sockets: Socket[] = [];
+//const sockets: Socket[] = [];
 
-const serverStartDate = new Date();
+const serverStartDate = new Date().setSeconds(0, 0);
 
 io.on('connection', async (socket: any) => {
   console.log('a new user connected:', socket.handshake.auth.username);
-  sockets.push(socket);
+  //sockets.push(socket);
   socket.on('disconnect', () => {
     lockedPathways = lockedPathways.filter(
       (p) => p.user !== socket.handshake.auth.username,
     );
-    sockets.splice(sockets.indexOf(socket), 1);
+    //sockets.splice(sockets.indexOf(socket), 1);
     console.log('a user disconnected:', socket.handshake.auth.username);
   });
 
@@ -232,33 +222,6 @@ io.on('connection', async (socket: any) => {
   socket.emit('stageTemplates', await StageTemplate.find());
   socket.emit('runningPathways', runningPathways);
 });
-
-const authenticateToken = (req: any, res: any, next: any) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
-  console.log(req.path);
-  // allow login and token requests without token
-  if (
-    req.path === '/login' ||
-    req.path === '/token' ||
-    req.path === '/logout' ||
-    req.path === '/time' ||
-    req.path === '/health'
-  )
-    return next();
-
-  if (token == null) return res.sendStatus(401); // No token provided
-
-  const secret = accessTokenS;
-
-  jwt.verify(token, secret ? secret : '', (err: any, data: any) => {
-    if (err) return res.sendStatus(403); // Invalid token
-    req.username = data.username;
-    next();
-  });
-};
-
-app.use(authenticateToken);
 
 app.get('/test', async (req: any, res: any) => {
   return res.send('API response: This is a response from the server!');
@@ -373,8 +336,6 @@ app.get('/time', async (req: any, res: any) => {
 
 app.post('/runningPathways', async (req: any, res: any) => {
   console.log('creating new running pathway from: ', req.body);
-  const runningStages = runningPathways.flatMap((p) => p.stages);
-
   const newId = uuid();
 
   const pathwayStartDate = new Date(req.body.form.startDate);
@@ -414,29 +375,31 @@ app.post('/runningPathways', async (req: any, res: any) => {
     tasks.push(task);
   }
 
-  for (const stage of runningStages.filter((s) => !s.completed)) {
-    const stageStaff = stage.assigned_staff.map((s: any) => ({
-      id: Number.parseInt(s),
-    }));
+  for (const pathway of runningPathways) {
+    for (const stage of pathway.stages.filter((s) => !s.completed)) {
+      const stageStaff = stage.assigned_staff.map((s: any) => ({
+        id: Number.parseInt(s),
+      }));
 
-    const next = stage.next
-      .filter((n: any) => n['Next Available'])
-      .map((n: any) => n['Next Available']);
+      const next = stage.next
+        .filter((n: any) => n['Next Available'])
+        .map((n: any) => n['Next Available']);
 
-    const task = {
-      name: stage.template.name,
-      id: stage.id,
-      patient: stage.id.split('-')[stage.id.split('-').length - 1],
-      duration: stage.template.durationEstimate,
-      offset: stage.timeOffset,
-      required_people: stageStaff,
-      next: next.map(
-        (n: any) =>
-          n + '-' + stage.id.split('-')[stage.id.split('-').length - 1],
-      ),
-    };
+      const task = {
+        name: stage.template.name,
+        id: stage.id,
+        patient: stage.id.split('-')[stage.id.split('-').length - 1],
+        duration: stage.template.durationEstimate,
+        offset: stage.timeOffset,
+        required_people: stageStaff,
+        next: next.map(
+          (n: any) =>
+            n + '-' + stage.id.split('-')[stage.id.split('-').length - 1],
+        ),
+      };
 
-    tasks.push(task);
+      tasks.push(task);
+    }
   }
 
   const people = await Person.find();
@@ -566,7 +529,7 @@ app.post('/login', async (req, res) => {
     _id: dbUser._id,
     username: username,
   };
-  const refreshTokenSecret = refreshTokenS;
+  // const refreshTokenSecret = refreshTokenS;
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign(user, refreshTokenSecret);
 
@@ -580,7 +543,7 @@ app.post('/login', async (req, res) => {
 // delete refresh token
 app.delete('/logout', async (req: any, res: any) => {
   const refreshToken = req.body.token;
-  const username = req.body.username;
+  const username = req.username;
 
   console.log('logging out', username);
 
@@ -613,8 +576,6 @@ app.post('/token', async (req, res) => {
     return res.status(403).json({ error: 'Refresh token not found' });
   }
 
-  const refreshTokenSecret = refreshTokenS;
-
   // refresh token exists, create new access token
   jwt.verify(refreshToken, refreshTokenSecret, (err: any, user: any) => {
     if (err) return res.sendStatus(403);
@@ -628,22 +589,16 @@ app.post('/token', async (req, res) => {
 
 // generate a new access token
 function generateAccessToken(user: any) {
-  const accessTokenSecret = accessTokenS;
-
   if (!accessTokenSecret) {
     throw new Error('ACCESS_TOKEN_SECRET is not defined');
   }
   console.log('user id: ', user._id);
   console.log('user: ', user);
-  return jwt.sign({ _id: user._id }, accessTokenSecret, { expiresIn: '10m' });
-}
-
-function checkRefreshTokenSecret() {
-  if (!refreshTokenS) {
-    throw new Error('REFRESH_TOKEN_SECRET is not defined');
-  } else {
-    return refreshTokenS;
-  }
+  return jwt.sign(
+    { _id: user._id, username: user.username },
+    accessTokenSecret,
+    { expiresIn: '1h' },
+  );
 }
 
 // add a new user and store password hash
@@ -672,30 +627,36 @@ app.post('/newUser', async (req, res) => {
   }
 });
 
-// get specified user
-app.get('/user', async (req, res) => {
-  console.log('Received request for /user');
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: 'Authorization header missing' });
+// get user data for currently logged in user
+app.get('/user', async (req: any, res) => {
+  console.log('Received request for user data for', req.username);
+  const user = await User.find({ username: req.username });
+  if (!user[0]) {
+    return res.status(404).json({ error: 'User not found' });
   }
-
-  const token = authHeader.split(' ')[1];
-  try {
-    const accessTokenSecret = accessTokenS;
-    if (!accessTokenSecret) {
-      throw new Error('ACCESS_TOKEN_SECRET is not defined');
-    }
-
-    const payload = jwt.verify(token, accessTokenSecret) as JwtPayload;
-    console.log('payload: ', payload);
-    const user = await User.findById(payload._id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json(user);
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
+  console.log('User data:', user[0]);
+  res.json(user[0]);
 });
+
+export const cleanup = async () => {
+  console.log('Cleaning up');
+  await new Promise((resolve, reject) => {
+    io.close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve('closed io server');
+      }
+    });
+  });
+  await new Promise((resolve, reject) => {
+    (server as Server).close((err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve('closed http server');
+      }
+    });
+  });
+  await mongoose.connection.close();
+};

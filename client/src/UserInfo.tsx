@@ -1,10 +1,10 @@
 interface UserInfoProps {
-  name: string;
-  phone: string;
-  email: string;
-  role: string;
-  department: string;
-  isAdmin: boolean;
+  name: string | undefined;
+  phone: string | undefined;
+  email: string | undefined;
+  role: string | undefined;
+  department: string | undefined;
+  isAdmin: boolean | undefined;
 }
 
 const UserInfo: React.FC<UserInfoProps> = ({

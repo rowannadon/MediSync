@@ -11,8 +11,10 @@ import { User } from './models/user';
 import bcrypt from 'bcrypt';
 
 export const loadDb = async (connection: Connection) => {
-  console.log('Clearing database');
-  await connection.db.dropDatabase();
+  console.log('Clearing database...');
+  await connection.db.dropDatabase().then(() => {
+    console.log('Database cleared');
+  });
 
   // creates a test user if it doesn't yet exist
   // username/password: test/test
@@ -20,7 +22,7 @@ export const loadDb = async (connection: Connection) => {
     if (!existingUser) {
       const hashedPassword = await bcrypt.hash('test4', 10);
       const user = new User({
-        id: 9999,
+        id: 2222,
         name: 'Test User 4',
         role: 'Physician',
         department: 'Cardiology',
@@ -35,13 +37,13 @@ export const loadDb = async (connection: Connection) => {
       user
         .save()
         .then(() => {
-          console.log('Test user created');
+          console.log('Test user 4 created');
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      console.log('User already exists');
+      console.log('Test user 4 already exists');
     }
   });
 
@@ -54,7 +56,7 @@ export const loadDb = async (connection: Connection) => {
         role: 'Admin',
         department: 'Administrator',
         phone: '1234567890',
-        email: 'admin2@example.com',
+        email: 'admin3@example.com',
         admin: true,
         location: 'Room 9999',
         username: 'test3',
@@ -70,7 +72,7 @@ export const loadDb = async (connection: Connection) => {
           console.log(err);
         });
     } else {
-      console.log('User 3 already exists');
+      console.log('Test user 3 already exists');
     }
   });
 
