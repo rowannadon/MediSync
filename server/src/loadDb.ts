@@ -28,7 +28,7 @@ export const loadDb = async (connection: Connection) => {
         department: 'Cardiology',
         phone: '1234567890',
         email: 'testExample4@gmail.com',
-        admin: false,
+        admin: true,
         location: 'Room 1',
         username: 'test4',
         password: hashedPassword,

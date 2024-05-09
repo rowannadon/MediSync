@@ -82,7 +82,7 @@ const LoginPage = () => {
                       navigate('/tasks');
                     }, 500);
                   })
-                  .catch((err: any) => {
+                  .catch((_: any) => {
                     setErrorMessage('Invalid username or password');
                     setLoading(false);
                   });

@@ -186,13 +186,7 @@ const AccountPage = () => {
           <p className="text-xl">
             <strong>Schedule</strong>
           </p>
-          <ScheduleItem day="Sunday" setSchedule={setSchedule} />
-          <ScheduleItem day="Monday" setSchedule={setSchedule} />
-          <ScheduleItem day="Tuesday" setSchedule={setSchedule} />
-          <ScheduleItem day="Wednesday" setSchedule={setSchedule} />
-          <ScheduleItem day="Thursday" setSchedule={setSchedule} />
-          <ScheduleItem day="Friday" setSchedule={setSchedule} />
-          <ScheduleItem day="Saturday" setSchedule={setSchedule} />
+          {Object.keys(schedule).map((day) => <ScheduleItem key={day} day={day} setSchedule={setSchedule} />)}
 
           <Button variant="outline" className="mt-4 bg-black text-white">
             Save Changes

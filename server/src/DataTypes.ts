@@ -96,7 +96,7 @@ export interface RunningStage {
   date: Date;
   timeOffset: number;
   completed: boolean;
-  progress: number;
+  runnable: boolean;
   next: NextType[];
 }
 
