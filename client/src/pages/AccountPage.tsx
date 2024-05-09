@@ -186,7 +186,9 @@ const AccountPage = () => {
           <p className="text-xl">
             <strong>Schedule</strong>
           </p>
-          {Object.keys(schedule).map((day) => <ScheduleItem key={day} day={day} setSchedule={setSchedule} />)}
+          {Object.keys(schedule).map((day) => (
+            <ScheduleItem key={day} day={day} setSchedule={setSchedule} />
+          ))}
 
           <Button variant="outline" className="mt-4 bg-black text-white">
             Save Changes

@@ -376,7 +376,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
   }
 
   for (const pathway of runningPathways) {
-    for (const stage of pathway.stages.filter((s) => !s.completed || s.runnable)) {
+    for (const stage of pathway.stages.filter(
+      (s) => !s.completed || s.runnable,
+    )) {
       const stageStaff = stage.assigned_staff.map((s: any) => ({
         id: Number.parseInt(s),
       }));
@@ -392,10 +394,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
         duration: stage.template.durationEstimate,
         offset: stage.timeOffset,
         required_people: stageStaff,
-        next: next.map(
-          (n: any) =>
-            n + '-' + pathway.patient,
-        ),
+        next: next.map((n: any) => n + '-' + pathway.patient),
       };
 
       tasks.push(task);
