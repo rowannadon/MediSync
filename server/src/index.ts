@@ -13,6 +13,7 @@ import dotenv from 'dotenv';
 import { User } from './models/user';
 import axios from 'axios';
 import {
+  Assignments,
   NextType,
   PathwayStage,
   RunningPathway,
@@ -154,6 +155,10 @@ let lockedStages: { user: string; stage: string }[] = [];
 
 const serverStartDate = getMostRecentMonday();
 
+let fastForwardTime = new Date();
+let fastForwardTimeEnabled = false;
+let fastForwardTimePaused = false; 
+
 io.on('connection', async (socket: any) => {
   console.log('a new user connected:', socket.handshake.auth.username);
   //sockets.push(socket);
@@ -163,6 +168,33 @@ io.on('connection', async (socket: any) => {
     );
     //sockets.splice(sockets.indexOf(socket), 1);
     console.log('a user disconnected:', socket.handshake.auth.username);
+  });
+
+  let ffInterval: NodeJS.Timeout;
+
+  socket.on('enableFastForward', () => {
+    fastForwardTimeEnabled = true;
+    ffInterval = setInterval(() => {
+      if (fastForwardTimeEnabled && !fastForwardTimePaused) {
+        fastForwardTime.setMinutes(fastForwardTime.getMinutes() + 1);
+        socket.emit('timeUpdate', fastForwardTime);
+      }
+    }, 100);
+  });
+
+  socket.on('disableFastForward', () => {
+    fastForwardTimeEnabled = false;
+    fastForwardTime = new Date();
+    if (ffInterval)
+      clearInterval(ffInterval);
+  });
+
+  socket.on('pauseFastForward', () => {
+    fastForwardTimePaused = true;
+  });
+
+  socket.on('resumeFastForward', () => {
+    fastForwardTimePaused = false;
   });
 
   socket.on('getPathwayTemplates', async () => {
@@ -389,23 +421,14 @@ app.post('/runningPathways', async (req: any, res: any) => {
   const dateOffsetMinutes =
     Math.abs(pathwayStartDate.valueOf() - serverStartDate.valueOf()) / 60000;
 
-  // console.log(req.body.stages);
-
-  // console.log(
-  //   'pathway start date',
-  //   pathwayStartDate,
-  //   pathwayStartDate.valueOf(),
-  // );
-  // console.log('server start date', serverStartDate, serverStartDate.valueOf());
-  // console.log('date offset', dateOffsetMinutes);
-
-  const runnableStages = findRunnableStages(req.body.stages);
+  const runnableStageIds = findRunnableStages(req.body.stages);
+  const runnableStages = req.body.stages.filter((s: PathwayStage) =>
+    runnableStageIds.includes(s.id),
+  );
 
   const staff = req.body.form.staff;
   const tasks = [];
-  for (const stage of req.body.stages.filter((s: PathwayStage) =>
-    runnableStages.includes(s.id),
-  )) {
+  for (const stage of runnableStages) {
     const stageStaff = staff
       .filter((s: any) => s.stageId === stage.template.id)
       .map((s: any) => ({ type: s.staff, count: 1 }));
@@ -413,7 +436,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
     const output = req.body.form.outputs.find(
       (o: any) => o.stageId === stage.template.id,
     );
-    console.log('output', output);
+    console.log(stage)
 
     let delay = 0;
     if (output && output.type === 'Delay') {
@@ -430,6 +453,8 @@ app.post('/runningPathways', async (req: any, res: any) => {
 
     const offset = timeOffset > 0 ? timeOffset : dateOffsetMinutes;
 
+    const next = stage.next.length > 1 ? [] : stage.next.map((n: any) => n.next + '-' + req.body.form.patient);
+
     const task = {
       name: stage.template.name,
       id: stage.id + '-' + req.body.form.patient,
@@ -438,7 +463,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
       offset: offset,
       delay: delay,
       required_people: stageStaff,
-      next: stage.next.map((n: any) => n.next + '-' + req.body.form.patient),
+      next: next,
     };
     tasks.push(task);
   }
@@ -462,7 +487,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
         offset: offset,
         delay: stage.delay,
         required_people: stageStaff,
-        next: stage.next.map((n: any) => n.next + '-' + pathway.patient),
+        next: stage.next.length > 1 ? [] : stage.next.map((n: any) => n.next + '-' + pathway.patient),
       };
 
       tasks.push(task);
@@ -477,7 +502,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
     available_hours: [8 * 60, 16 * 60],
   }));
 
-  //console.log('tasks', tasks);
+  console.log('tasks', tasks);
 
   let result;
   try {
@@ -492,14 +517,27 @@ app.post('/runningPathways', async (req: any, res: any) => {
   //console.log(result.data);
 
   const tasksData = result.data.tasks;
+  const assignmentData: Assignments = result.data.assignments;
 
-  const assignments = Object.keys(result.data.assignments).map((key) => {
-    return {
-      task: key,
-      person: Object.keys(result.data.assignments[key]),
-    };
-  });
-  //console.log(assignments);
+  const assignments = new Map<string, string[]>();
+
+  // Iterate over each user and their tasks
+  for (const [tasks, peopleIds] of Object.entries(assignmentData)) {
+    for (const personId of Object.keys(peopleIds)) {
+      console.log('personId', personId)
+      console.log('person', people[Number.parseInt(personId) + 1]);
+      const name = people[Number.parseInt(personId) + 1].name;
+
+      const n = name ? name : 'Unknown';
+      
+      if (!assignments.has(n)) {
+        assignments.set(n, []);
+      }
+      assignments.get(n)?.push(tasks);
+    }
+  }
+
+  console.log(assignments);
 
   const newRunningPathway: RunningPathway = {
     id: newId,
@@ -508,25 +546,25 @@ app.post('/runningPathways', async (req: any, res: any) => {
     notes: req.body.form.notes,
     title: req.body.pathway.title,
     desc: req.body.pathway.desc,
-    stages: req.body.stages.map((stage: RunningStage) => {
+    stages: runnableStages.map((stage: RunningStage) => {
       const output = req.body.form.outputs.find(
         (o: any) => o.stageId === stage.template.id,
       );
+      const assigned = result.data.assignments[stage.id + '-' + req.body.form.patient];
+      const ms_offset = tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000;
       return {
         ...stage,
-        id: stage.id + '-' + req.body.form.patient,
         template: stage.template,
+        id: stage.id + '-' + req.body.form.patient,
         timeOffset: dateOffsetMinutes,
-        assigned_staff: assignments.find(
-          (a) => a.task === stage.id + '-' + req.body.form.patient,
-        )?.person,
+        assigned_staff: assigned ? Object.keys(assigned) : [],
         assigned_room: '',
         date: new Date(
           serverStartDate.valueOf() +
-            tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
+            ms_offset,
         ),
         completed: false,
-        runnable: runnableStages.includes(stage.id),
+        runnable: runnableStageIds.includes(stage.id),
         delay:
           output && output.type === 'Delay' ? Number.parseInt(output.value) : 0,
         scheduleOffset:
@@ -557,33 +595,29 @@ app.post('/runningPathways', async (req: any, res: any) => {
     io.emit('runningPathways', runningPathways);
   }
 });
+
+const completedStages: RunningStage[] = []
+const currentStages: RunningStage[] = []
+
+const mainInterval = setInterval(() => {
+  const time = fastForwardTimeEnabled ? fastForwardTime : new Date();
+  // find stages that are currently running
+  for (const pathway of runningPathways) {
+    for (const stage of pathway.stages) {
+      if (stage.completed) {
+        continue;
+      }
+      if (stage.date <= time && stage.date) {
+        if (!currentStages.includes(stage)) {
+          currentStages.push(stage);
+          console.log('current stage', stage)
+        }
+      }
+    }
+  }
+}, 500);
+
 // ------------------------------------------------- User account routes ------------------------------------------------- //
-
-// 5 second loop
-// const completedStages: RunningStage[] = []
-// const currentStages: RunningStage[] = []
-// setInterval(() => {
-//   const now = new Date();
-//   for (const pathway of runningPathways) {
-//     for (const stage of pathway.stages) {
-//       if (stage.date < now) {
-//         if (!completedStages.includes(stage)) {
-//           completedStages.push(stage);
-//           console.log('completed stage', stage);
-//         }
-//         console.log('entered stage', stage.id);
-//       }
-//       if (stage.date + stage.template.durationEstimate * 60000 > now) {
-//         if (!currentStages.includes(stage)) {
-//           currentStages.push(stage);
-//           console.log('entered stage', stage);
-//         }
-//       }
-
-//     }
-//   }
-//   io.emit('runningPathways', runningPathways);
-// }, 5000);
 
 // authenticate and assign access token to user
 app.post('/login', async (req, res) => {

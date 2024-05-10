@@ -66,6 +66,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
         model.Add(task_starts[task['id']] >= int(task['offset']))
 
         for subsequent_task_name in task['next']:
+            #if (task['next'] in [t['id'] for t in tasks]):
             model.Add(task_ends[task['id']] + task['delay'] <= task_starts[subsequent_task_name])
 
     #  Ensure that people are not double-booked

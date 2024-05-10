@@ -90,6 +90,10 @@ export type NextType = {
   value?: string;
 };
 
+export interface Assignments {
+  [key: number]: string[];
+}
+
 export interface RunningStage {
   id: string;
   template: StageTemplate;

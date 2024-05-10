@@ -25,7 +25,7 @@ export const stageTemplates: StageTemplate[] = [
     required_staff: ['Surgeon', 'Nurse'],
     required_room: 'Operating Room',
     required_equipment: [],
-    outputs: ['Scheduled', 'Scheduled'],
+    outputs: ['Next Available', 'Next Available'],
     durationEstimate: 60,
   },
   {
@@ -42,7 +42,7 @@ export const stageTemplates: StageTemplate[] = [
         desc: 'Set of surgical instruments',
       },
     ],
-    outputs: ['Scheduled'],
+    outputs: ['Next Available'],
     durationEstimate: 240,
   },
   {
@@ -59,7 +59,7 @@ export const stageTemplates: StageTemplate[] = [
         desc: 'Laparoscopic tower',
       },
     ],
-    outputs: ['Scheduled'],
+    outputs: ['Next Available'],
     durationEstimate: 180,
   },
   {
@@ -70,7 +70,7 @@ export const stageTemplates: StageTemplate[] = [
     required_staff: ['Nurse'],
     required_room: 'Recovery Room',
     required_equipment: [],
-    outputs: ['Scheduled'],
+    outputs: ['Next Available'],
     durationEstimate: 120,
   },
   {
@@ -92,7 +92,7 @@ export const stageTemplates: StageTemplate[] = [
     required_staff: ['Oncologist', 'Nurse'],
     required_room: 'Consultation Room',
     required_equipment: [],
-    outputs: ['Scheduled', 'Scheduled', 'Scheduled'],
+    outputs: ['Next Available', 'Next Available', 'Next Available'],
     durationEstimate: 30,
   },
   {
@@ -105,7 +105,7 @@ export const stageTemplates: StageTemplate[] = [
     required_equipment: [
       { type: 'Chemotherapy Drugs', count: 1, desc: 'Chemotherapy drugs' },
     ],
-    outputs: ['Scheduled'],
+    outputs: ['Next Available'],
     durationEstimate: 120,
   },
   {
@@ -118,7 +118,7 @@ export const stageTemplates: StageTemplate[] = [
     required_equipment: [
       { type: 'Radiation Machine', count: 1, desc: 'Linear accelerator' },
     ],
-    outputs: ['Scheduled'],
+    outputs: ['Next Available'],
     durationEstimate: 60,
   },
   {
@@ -135,7 +135,7 @@ export const stageTemplates: StageTemplate[] = [
         desc: 'Set of surgical instruments',
       },
     ],
-    outputs: ['Scheduled'],
+    outputs: ['Next Available'],
     durationEstimate: 120,
   },
   {
@@ -368,12 +368,12 @@ export const procedures: PathwayTemplate[] = [
         template: '604af59f-14e0-422b-a9d7-3c27b51d8430',
         next: [
           {
-            type: 'Scheduled',
+            type: 'Next Available',
             next: '5c877e3f-7d01-446e-b159-eddc3c73f658',
             value: '',
           },
           {
-            type: 'Scheduled',
+            type: 'Next Available',
             next: 'b9c098da-a6b4-4784-b751-8c768faacc7e',
             value: '',
           },
@@ -384,7 +384,7 @@ export const procedures: PathwayTemplate[] = [
         template: '8f5548b0-d8e0-4858-8f42-fafec12c8038',
         next: [
           {
-            type: 'Scheduled',
+            type: 'Next Available',
             next: '6b3839ae-bbf5-4b7c-9569-b7ea646338ea',
             value: '',
           },
@@ -395,7 +395,7 @@ export const procedures: PathwayTemplate[] = [
         template: '940c55da-54f0-49ee-88e9-278c7e1c09c8',
         next: [
           {
-            type: 'Scheduled',
+            type: 'Next Available',
             next: '6b3839ae-bbf5-4b7c-9569-b7ea646338ea',
             value: '',
           },
@@ -429,17 +429,17 @@ export const procedures: PathwayTemplate[] = [
         template: '06b492c2-e439-4d50-8a85-008409ff6d46',
         next: [
           {
-            type: 'Scheduled',
+            type: 'Next Available',
             next: '3dd65179-0989-40aa-85d5-f937f3dab4a2',
             value: '',
           },
           {
-            type: 'Scheduled',
+            type: 'Next Available',
             next: '19bb7dee-496c-4437-b4f7-46445913c1d8',
             value: '',
           },
           {
-            type: 'Scheduled',
+            type: 'Next Available',
             next: '4f2d1e9d-4bce-41e5-a565-2c7e29bc3e99',
             value: '',
           },
@@ -2164,53 +2164,24 @@ export const displayedPeople = [
     admin: false,
     location: 'Laboratory',
   },
-  // {
-  //   name: 'Ryan Baker',
-  //   role: 'Cardiologist',
-  //   department: 'Cardiology',
-  //   phone: '555-234-5678',
-  //   email: 'ryan.b@hospital.org',
-  //   admin: false,
-  //   location: 'Cardiology Clinic',
-  // },
-  // {
-  //   name: 'Lauren White',
-  //   role: 'Neurologist',
-  //   department: 'Neurology',
-  //   phone: '555-345-6789',
-  //   email: 'lauren.w@hospital.org',
-  //   admin: false,
-  //   location: 'Neurology Department',
-  // },
-
-  // {
-  //   name: 'Olivia Johnson',
-  //   role: 'Nurse',
-  //   department: 'Pediatrics',
-  //   phone: '555-987-6543',
-  //   email: 'olivia.j@hospital.org',
-  //   admin: false,
-  //   location: 'Pediatrics Wing',
-  // },
-
-  // {
-  //   name: 'Daniel Scott',
-  //   role: 'Medical Social Worker',
-  //   department: 'Social Services',
-  //   phone: '555-456-7890',
-  //   email: 'daniel.s@hospital.org',
-  //   admin: false,
-  //   location: 'Social Services Office',
-  // },
-  // {
-  //   name: 'Olivia Wilson',
-  //   role: 'Registered Nurse',
-  //   department: 'Pediatrics',
-  //   phone: '555-567-8901',
-  //   email: 'olivia.w@hospital.org',
-  //   admin: false,
-  //   location: 'Pediatric Ward',
-  // },
+  {
+    name: 'Ryan Baker',
+    role: 'Radiologist',
+    department: 'Radiology',
+    phone: '555-234-5678',
+    email: 'ryan.b@hospital.org',
+    admin: false,
+    location: 'Imaging Suite',
+  },
+  {
+    name: 'Lauren White',
+    role: 'Oncologist',
+    department: 'Oncology',
+    phone: '555-345-6789',
+    email: 'lauren.w@hospital.org',
+    admin: false,
+    location: 'Oncology Department',
+  },
   {
     name: 'Ethan Thomas',
     role: 'Nurse',

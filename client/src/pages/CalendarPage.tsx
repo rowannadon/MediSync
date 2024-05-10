@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 import { Button } from '../components/ui/button';
-import { Pin, PinOff, Plus, Trash } from 'lucide-react';
+import { FastForward, Pause, Pin, PinOff, Play, Plus, Trash } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,6 +25,7 @@ import { BeatLoader } from 'react-spinners';
 import { debounce } from 'lodash';
 import { add, parse } from 'date-fns';
 import { useRemoteDataStore } from '@/RemoteDataStore';
+import { useSocket } from '@/SocketProvider';
 
 const Calendar = () => {
   const timelineRef = useRef<Timeline>(null);
@@ -32,11 +33,45 @@ const Calendar = () => {
   const displayedPathways = useRef<RunningPathway[]>([]);
   const [calendarLoading, setCalendarLoading] = useState<boolean>(false);
   const [pinnedPatients, setPinnedPatients] = useState<string[]>([]);
+  const [fastForwardMode, setFastForwardMode] = useState<boolean>(false);
+  const [fastForwardPaused, setFastForwardPaused] = useState<boolean>(false);
 
   const pathways = useRemoteDataStore((state) => state.runningPathways);
   const getStageTemplate = useRemoteDataStore(
     (state) => state.getStageTemplate,
   );
+
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (fastForwardMode) {
+      timelineRef.current?.timeline.addCustomTime(new Date(), 'fastForward');
+      socket?.emit('enableFastForward');
+      socket?.on('timeUpdate', (time: Date) => {
+        if (fastForwardMode)
+          timelineRef.current?.timeline.setCustomTime(time, 'fastForward');
+      });
+    } else {
+      socket?.emit('disableFastForward');
+      try {
+        timelineRef.current?.timeline.removeCustomTime('fastForward');
+      } catch (e) {
+        ;
+      }
+    }
+
+    return () => {
+      socket?.off('timeUpdate');
+    };
+  }, [fastForwardMode]);
+
+  useEffect(() => {
+    if (fastForwardPaused) {
+      socket?.emit('pauseFastForward');
+    } else {
+      socket?.emit('resumeFastForward');
+    }
+  }, [fastForwardPaused]);
 
   useEffect(() => {
     if (timelineRef.current) {
@@ -100,7 +135,7 @@ const Calendar = () => {
                     minutes: stage.template?.durationEstimate,
                   }),
                   content: stage.template?.name
-                    ? stage.template.name
+                    ? stage.template.name + '$' + stage.id
                     : 'No Name',
                   group: stage.patient,
                   selectable: false,
@@ -125,6 +160,7 @@ const Calendar = () => {
             items: items2,
             groups: groups2,
           });
+          timelineRef.current.timeline.fit({ animation: false});
           setCalendarLoading(false);
         }
       },
@@ -201,7 +237,7 @@ const Calendar = () => {
       const root = createRoot(element as HTMLElement);
       root.render(<CalendarItemTemplate item={item} />);
       return '';
-    },
+    }
   };
 
   return (
@@ -210,7 +246,7 @@ const Calendar = () => {
       <Card className="mb-2 mr-2 mt-2 flex flex-grow flex-col p-4">
         <TooltipProvider>
           <div className="flex flex-row justify-between pb-4">
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center space-x-4">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Input
@@ -224,6 +260,31 @@ const Calendar = () => {
                   <p>Filter patients by name</p>
                 </TooltipContent>
               </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant={fastForwardMode ? "default" : "outline"} size="icon" onClick={() => {
+                    setFastForwardMode(!fastForwardMode);
+                    setFastForwardPaused(false);
+                  }}>
+                    <FastForward className="h-6 w-6" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={5}>
+                  <p>Fast Forward</p>
+                </TooltipContent>
+              </Tooltip>
+              {fastForwardMode && <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant={fastForwardPaused ? "default" : "outline"} size="icon" onClick={() => {
+                    setFastForwardPaused(!fastForwardPaused);
+                  }}>
+                    {fastForwardPaused ? <Play className="h-6 w-6" /> : <Pause className="h-6 w-6" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={5}>
+                  <p>Pause</p>
+                </TooltipContent>
+              </Tooltip>}
             </div>
             <div className="flex flex-row space-x-2">
               <Tooltip>
