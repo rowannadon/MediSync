@@ -157,7 +157,7 @@ const serverStartDate = getMostRecentMonday();
 
 let fastForwardTime = new Date();
 let fastForwardTimeEnabled = false;
-let fastForwardTimePaused = false; 
+let fastForwardTimePaused = false;
 
 io.on('connection', async (socket: any) => {
   console.log('a new user connected:', socket.handshake.auth.username);
@@ -185,8 +185,7 @@ io.on('connection', async (socket: any) => {
   socket.on('disableFastForward', () => {
     fastForwardTimeEnabled = false;
     fastForwardTime = new Date();
-    if (ffInterval)
-      clearInterval(ffInterval);
+    if (ffInterval) clearInterval(ffInterval);
   });
 
   socket.on('pauseFastForward', () => {
@@ -436,7 +435,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
     const output = req.body.form.outputs.find(
       (o: any) => o.stageId === stage.template.id,
     );
-    console.log(stage)
+    console.log(stage);
 
     let delay = 0;
     if (output && output.type === 'Delay') {
@@ -453,7 +452,10 @@ app.post('/runningPathways', async (req: any, res: any) => {
 
     const offset = timeOffset > 0 ? timeOffset : dateOffsetMinutes;
 
-    const next = stage.next.length > 1 ? [] : stage.next.map((n: any) => n.next + '-' + req.body.form.patient);
+    const next =
+      stage.next.length > 1
+        ? []
+        : stage.next.map((n: any) => n.next + '-' + req.body.form.patient);
 
     const task = {
       name: stage.template.name,
@@ -487,7 +489,10 @@ app.post('/runningPathways', async (req: any, res: any) => {
         offset: offset,
         delay: stage.delay,
         required_people: stageStaff,
-        next: stage.next.length > 1 ? [] : stage.next.map((n: any) => n.next + '-' + pathway.patient),
+        next:
+          stage.next.length > 1
+            ? []
+            : stage.next.map((n: any) => n.next + '-' + pathway.patient),
       };
 
       tasks.push(task);
@@ -524,12 +529,12 @@ app.post('/runningPathways', async (req: any, res: any) => {
   // Iterate over each user and their tasks
   for (const [tasks, peopleIds] of Object.entries(assignmentData)) {
     for (const personId of Object.keys(peopleIds)) {
-      console.log('personId', personId)
+      console.log('personId', personId);
       console.log('person', people[Number.parseInt(personId) + 1]);
       const name = people[Number.parseInt(personId) + 1].name;
 
       const n = name ? name : 'Unknown';
-      
+
       if (!assignments.has(n)) {
         assignments.set(n, []);
       }
@@ -550,8 +555,10 @@ app.post('/runningPathways', async (req: any, res: any) => {
       const output = req.body.form.outputs.find(
         (o: any) => o.stageId === stage.template.id,
       );
-      const assigned = result.data.assignments[stage.id + '-' + req.body.form.patient];
-      const ms_offset = tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000;
+      const assigned =
+        result.data.assignments[stage.id + '-' + req.body.form.patient];
+      const ms_offset =
+        tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000;
       return {
         ...stage,
         template: stage.template,
@@ -559,10 +566,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
         timeOffset: dateOffsetMinutes,
         assigned_staff: assigned ? Object.keys(assigned) : [],
         assigned_room: '',
-        date: new Date(
-          serverStartDate.valueOf() +
-            ms_offset,
-        ),
+        date: new Date(serverStartDate.valueOf() + ms_offset),
         completed: false,
         runnable: runnableStageIds.includes(stage.id),
         delay:
@@ -596,8 +600,8 @@ app.post('/runningPathways', async (req: any, res: any) => {
   }
 });
 
-const completedStages: RunningStage[] = []
-const currentStages: RunningStage[] = []
+const completedStages: RunningStage[] = [];
+const currentStages: RunningStage[] = [];
 
 const mainInterval = setInterval(() => {
   const time = fastForwardTimeEnabled ? fastForwardTime : new Date();
@@ -610,7 +614,7 @@ const mainInterval = setInterval(() => {
       if (stage.date <= time && stage.date) {
         if (!currentStages.includes(stage)) {
           currentStages.push(stage);
-          console.log('current stage', stage)
+          console.log('current stage', stage);
         }
       }
     }

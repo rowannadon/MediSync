@@ -9,7 +9,15 @@ import {
   TooltipTrigger,
 } from '../components/ui/tooltip';
 import { Button } from '../components/ui/button';
-import { FastForward, Pause, Pin, PinOff, Play, Plus, Trash } from 'lucide-react';
+import {
+  FastForward,
+  Pause,
+  Pin,
+  PinOff,
+  Play,
+  Plus,
+  Trash,
+} from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { createRoot } from 'react-dom/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -55,9 +63,7 @@ const Calendar = () => {
       socket?.emit('disableFastForward');
       try {
         timelineRef.current?.timeline.removeCustomTime('fastForward');
-      } catch (e) {
-        ;
-      }
+      } catch (e) {}
     }
 
     return () => {
@@ -160,7 +166,7 @@ const Calendar = () => {
             items: items2,
             groups: groups2,
           });
-          timelineRef.current.timeline.fit({ animation: false});
+          timelineRef.current.timeline.fit({ animation: false });
           setCalendarLoading(false);
         }
       },
@@ -237,7 +243,7 @@ const Calendar = () => {
       const root = createRoot(element as HTMLElement);
       root.render(<CalendarItemTemplate item={item} />);
       return '';
-    }
+    },
   };
 
   return (
@@ -262,10 +268,14 @@ const Calendar = () => {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant={fastForwardMode ? "default" : "outline"} size="icon" onClick={() => {
-                    setFastForwardMode(!fastForwardMode);
-                    setFastForwardPaused(false);
-                  }}>
+                  <Button
+                    variant={fastForwardMode ? 'default' : 'outline'}
+                    size="icon"
+                    onClick={() => {
+                      setFastForwardMode(!fastForwardMode);
+                      setFastForwardPaused(false);
+                    }}
+                  >
                     <FastForward className="h-6 w-6" />
                   </Button>
                 </TooltipTrigger>
@@ -273,18 +283,28 @@ const Calendar = () => {
                   <p>Fast Forward</p>
                 </TooltipContent>
               </Tooltip>
-              {fastForwardMode && <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant={fastForwardPaused ? "default" : "outline"} size="icon" onClick={() => {
-                    setFastForwardPaused(!fastForwardPaused);
-                  }}>
-                    {fastForwardPaused ? <Play className="h-6 w-6" /> : <Pause className="h-6 w-6" />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" sideOffset={5}>
-                  <p>Pause</p>
-                </TooltipContent>
-              </Tooltip>}
+              {fastForwardMode && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={fastForwardPaused ? 'default' : 'outline'}
+                      size="icon"
+                      onClick={() => {
+                        setFastForwardPaused(!fastForwardPaused);
+                      }}
+                    >
+                      {fastForwardPaused ? (
+                        <Play className="h-6 w-6" />
+                      ) : (
+                        <Pause className="h-6 w-6" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={5}>
+                    <p>Pause</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
             <div className="flex flex-row space-x-2">
               <Tooltip>
