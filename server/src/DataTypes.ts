@@ -85,7 +85,9 @@ export interface PathwayStage {
 }
 
 export type NextType = {
-  [K in OutputType]?: string;
+  next: string;
+  type: OutputType;
+  value?: string;
 };
 
 export interface RunningStage {
@@ -98,6 +100,8 @@ export interface RunningStage {
   completed: boolean;
   runnable: boolean;
   next: NextType[];
+  delay: number;
+  scheduleOffset: number;
 }
 
 export interface PathwayTemplate {

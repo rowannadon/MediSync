@@ -66,7 +66,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
         model.Add(task_starts[task['id']] >= int(task['offset']))
 
         for subsequent_task_name in task['next']:
-            model.Add(task_ends[task['id']] <= task_starts[subsequent_task_name])
+            model.Add(task_ends[task['id']] + task['delay'] <= task_starts[subsequent_task_name])
 
     #  Ensure that people are not double-booked
     for m_id, intervals in person_tasks.items():
@@ -78,13 +78,10 @@ def solve_scheduling(tasks, people, unavailable_periods):
     for group_end in group_ends.values():
         model.Add(max_group_end_time >= group_end)
 
-    # for task_name, end_var in task_ends.items():
-    #     model.Add(max_end_time >= end_var)
-
     model.Minimize(max_group_end_time)
 
     solver = cp_model.CpSolver()
-    solver.parameters.log_search_progress = True  # Enables detailed logging of the search progress
+    solver.parameters.log_search_progress = True
     status = solver.Solve(model)
 
     if status == cp_model.OPTIMAL:
@@ -103,9 +100,9 @@ app = Flask(__name__)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO) 
-app.logger.setLevel(logging.INFO)  # or app.logger.setLevel(logging.INFO)
+app.logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
-handler.setLevel(logging.INFO)  # or handler.setLevel(logging.INFO)
+handler.setLevel(logging.INFO)
 app.logger.addHandler(handler)
 
 @app.route('/health', methods=['GET'])

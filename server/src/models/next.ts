@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 export const nextSchema = new mongoose.Schema({
-  Scheduled: { type: String },
-  'Next Available': { type: String },
-  Delay: { type: String },
+  next: { type: String },
+  type: { type: String },
+  value: { type: String, required: false },
 });
 
 const Next = mongoose.model('Next', nextSchema);

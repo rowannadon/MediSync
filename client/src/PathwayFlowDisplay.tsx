@@ -13,7 +13,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PathwayStage, PathwayTemplate } from './DataTypes';
+import { NextType, PathwayStage, PathwayTemplate } from './DataTypes';
 import { StageNode } from './StageNode';
 import { useDrop } from 'react-dnd';
 import { v4 as uuid } from 'uuid';
@@ -40,14 +40,13 @@ const convertToNodesAndEdges = (
 
     if (stage.next) {
       for (let i = 0; i < stage.next.length; i++) {
-        const val = Object.values(stage.next[i])[0];
-        const key = Object.keys(stage.next[i])[0];
+        console.log(stage.next)
         edges.push({
-          id: `${stage.id}=${val}`,
+          id: `${stage.id}=${stage.next[i].next}`,
           source: stage.id,
-          target: val,
+          target: stage.next[i].next,
           type: 'default',
-          sourceHandle: `${key}$${i}`,
+          sourceHandle: `${stage.next[i].type}$${i}`,
         });
       }
     }

@@ -7,6 +7,7 @@ import {
   RunningPathway,
   PathwayStage,
   Conflict,
+  OutputType,
 } from './DataTypes';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { instance } from './AxiosInstance';
@@ -190,7 +191,7 @@ export const useRemoteDataStore = create(
           (stage) => stage.id === stageId,
         );
         if (stage) {
-          stage.next.push({ [outputType]: nextId });
+          stage.next.push({ type: outputType as OutputType, next: nextId, value: ''});
 
           const res = await instance.put(
             '/api/pathwayTemplates/' + pathwayTemplateId,

@@ -3,6 +3,7 @@ import io, { Socket } from 'socket.io-client';
 import { useRemoteDataStore } from './RemoteDataStore';
 import { useLocalDataStore } from './LocalDataStore';
 import { useAuth } from './AuthProvider';
+import { navigate } from 'wouter/use-browser-location';
 
 const SocketContext = createContext<Socket | null>(null);
 
@@ -84,6 +85,11 @@ export const SocketProvider = (props: any) => {
       console.log('Connected to server');
     });
 
+    socket.on('connect_error', () => {
+      console.log('Disconnected from server');
+      navigate('/login');
+    });
+
     socket.on('lockedPathways', (lockedPathways: string[]) => {
       setLockedPathways(lockedPathways);
       console.log('locked pathways', lockedPathways);
@@ -117,6 +123,12 @@ export const SocketProvider = (props: any) => {
     socket.on('runningPathways', (runningPathways) => {
       console.log('setting running pathways');
       setRunningPathways(runningPathways);
+    });
+
+    socket.on('Unauthorized', () => {
+      console.log('Unauthorized socket.io request');
+      auth?.logout();
+      navigate('/login');
     });
 
     return () => {

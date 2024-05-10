@@ -160,13 +160,12 @@ export function PathwayLaunchEditorForm({
       );
       form.setValue(
         'outputs',
-        pathway?.stages.flatMap((stage, index) => {
+        pathway?.stages.flatMap((stage) => {
           const template = getStageTemplate(stage.template);
           if (!template) return [];
-          const ind =
-            template.outputs[index] in outputTypes
-              ? template.outputs[index]
-              : 'Scheduled';
+
+          console.log(stage.next)
+
           return stage.next.map((nextStage, index) => ({
             type: template.outputs[index],
             value: '',
@@ -175,10 +174,10 @@ export function PathwayLaunchEditorForm({
             next:
               getStageTemplate(
                 pathway?.stages.find(
-                  (s) => s.id === nextStage[template.outputs[index]],
+                  (s) => s.id === nextStage.next,
                 )?.template || '',
               )?.name || '',
-            nextId: nextStage[ind] || '',
+            nextId: nextStage.next || '',
           }));
         }),
       );

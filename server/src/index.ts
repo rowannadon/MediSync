@@ -12,7 +12,7 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { User } from './models/user';
 import axios from 'axios';
-import { RunningPathway, RunningStage } from './DataTypes';
+import { NextType, PathwayStage, RunningPathway, RunningStage } from './DataTypes';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import DatabaseTest from './models/databaseTest';
@@ -96,10 +96,16 @@ mongoose.connection.once('open', async () => {
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
   console.log('socket token:', token);
-  if (!token) return; // No token provided
+  if (!token) {
+    return;
+  } // No token provided
 
   jwt.verify(token, accessTokenSecret, (err: any, data: any) => {
-    if (err) return; // Invalid token
+    if (err) {
+      console.log('socket unauthorized');
+      next(new Error('Invalid token'));
+      return;
+    } // Invalid token
     console.log('socket authenticated for', data);
     socket.handshake.auth.username = data.username;
     next();
@@ -126,12 +132,22 @@ const authenticateToken = (req: any, res: any, next: any) => {
 
 app.use(authenticateToken);
 
+function getMostRecentMonday() {
+  const today = new Date();
+  today.setSeconds(0, 0);
+  const dayOfWeek = today.getDay(); // Sunday - 0, Monday - 1, ..., Saturday - 6
+  const distanceFromMonday = (dayOfWeek + 6) % 7; // Calculate how many days ago was the last Monday
+  const lastMonday = new Date(today);
+  lastMonday.setDate(today.getDate() - distanceFromMonday);
+  return lastMonday;
+}
+
 const runningPathways: RunningPathway[] = [];
 let lockedPathways: { user: string; pathway: string }[] = [];
 let lockedStages: { user: string; stage: string }[] = [];
 //const sockets: Socket[] = [];
 
-const serverStartDate = new Date().setSeconds(0, 0);
+const serverStartDate = getMostRecentMonday();
 
 io.on('connection', async (socket: any) => {
   console.log('a new user connected:', socket.handshake.auth.username);
@@ -334,67 +350,108 @@ app.get('/time', async (req: any, res: any) => {
   res.json(dbTest);
 });
 
+const findRunnableStages = (stages: PathwayStage[]): string[] => {
+  const allIds = stages.map((s) => s.id);
+  const nextIds = stages.map((s) => s.next.map((n) => n.next)).flat();
+  const root = _.difference(allIds, nextIds)[0];
+  const runnableStages: string[] = [];
+  
+  // traverse from root until a stage with more than one next is found
+  const findNext = (id: string) => {
+    const stage = stages.find((s) => s.id === id);
+    if (!stage) {
+      return;
+    }
+    runnableStages.push(stage.id);
+    const next = stage.next;
+    // return if there are multiple next stages or no next stages
+    if (next.length > 1 || next.length === 0) {
+      return;
+    }
+    findNext(next[0].next);
+  };
+
+  findNext(root);
+  console.log('runnable stages', runnableStages);
+  return runnableStages;
+}
+
 app.post('/runningPathways', async (req: any, res: any) => {
   console.log('creating new running pathway from: ', req.body);
   const newId = uuid();
 
   const pathwayStartDate = new Date(req.body.form.startDate);
-  const dateOffsetMinutes =
+  let dateOffsetMinutes =
     Math.abs(pathwayStartDate.valueOf() - serverStartDate.valueOf()) / 60000;
 
-  console.log(req.body.stages);
+  // console.log(req.body.stages);
 
-  console.log(
-    'pathway start date',
-    pathwayStartDate,
-    pathwayStartDate.valueOf(),
-  );
-  console.log('server start date', serverStartDate, serverStartDate.valueOf());
-  console.log('date offset', dateOffsetMinutes);
+  // console.log(
+  //   'pathway start date',
+  //   pathwayStartDate,
+  //   pathwayStartDate.valueOf(),
+  // );
+  // console.log('server start date', serverStartDate, serverStartDate.valueOf());
+  // console.log('date offset', dateOffsetMinutes);
+
+  const runnableStages = findRunnableStages(req.body.stages);
 
   const staff = req.body.form.staff;
   const tasks = [];
-  for (const stage of req.body.stages) {
+  for (const stage of req.body.stages.filter((s: PathwayStage) => runnableStages.includes(s.id))) {
     const stageStaff = staff
       .filter((s: any) => s.stageId === stage.template.id)
       .map((s: any) => ({ type: s.staff, count: 1 }));
 
-    const next = stage.next
-      .filter((n: any) => n['Next Available'])
-      .map((n: any) => n['Next Available']);
+    const output = req.body.form.outputs.find((o: any) => o.stageId === stage.template.id);
+    console.log('output', output);
+
+    let delay = 0;
+    if (output && output.type === 'Delay') {
+      delay = Number.parseInt(output.value);
+      console.log('delay', delay)
+    }
+
+    let timeOffset = 0;
+    if (output && output.type === 'Scheduled') {
+      timeOffset = (new Date(output.value).valueOf() - serverStartDate.valueOf()) / 60000;
+      console.log('delay', delay)
+    }
+
+    const offset = timeOffset > 0 ? timeOffset : dateOffsetMinutes;
 
     const task = {
       name: stage.template.name,
       id: stage.id + '-' + req.body.form.patient,
       patient: req.body.form.patient,
       duration: stage.template.durationEstimate,
-      offset: dateOffsetMinutes,
+      offset: offset,
+      delay: delay,
       required_people: stageStaff,
-      next: next.map((n: any) => n + '-' + req.body.form.patient),
+      next: stage.next.map((n: any) => n.next + '-' + req.body.form.patient),
     };
     tasks.push(task);
   }
 
   for (const pathway of runningPathways) {
     for (const stage of pathway.stages.filter(
-      (s) => !s.completed || s.runnable,
+      (s) => !s.completed && s.runnable,
     )) {
       const stageStaff = stage.assigned_staff.map((s: any) => ({
         id: Number.parseInt(s),
       }));
 
-      const next = stage.next
-        .filter((n: any) => n['Next Available'])
-        .map((n: any) => n['Next Available']);
+      const offset = stage.scheduleOffset > 0 ? stage.scheduleOffset : stage.timeOffset;
 
       const task = {
         name: stage.template.name,
         id: stage.id,
         patient: pathway.patient,
         duration: stage.template.durationEstimate,
-        offset: stage.timeOffset,
+        offset: offset,
+        delay: stage.delay,
         required_people: stageStaff,
-        next: next.map((n: any) => n + '-' + pathway.patient),
+        next: stage.next.map((n: any) => n.next + '-' + pathway.patient),
       };
 
       tasks.push(task);
@@ -409,7 +466,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
     available_hours: [8 * 60, 16 * 60],
   }));
 
-  console.log('tasks', tasks);
+  //console.log('tasks', tasks);
 
   let result;
   try {
@@ -431,7 +488,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
       person: Object.keys(result.data.assignments[key]),
     };
   });
-  console.log(assignments);
+  //console.log(assignments);
+
+
 
   const newRunningPathway: RunningPathway = {
     id: newId,
@@ -441,6 +500,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
     title: req.body.pathway.title,
     desc: req.body.pathway.desc,
     stages: req.body.stages.map((stage: RunningStage) => {
+      const output = req.body.form.outputs.find((o: any) => o.stageId === stage.template.id);
       return {
         ...stage,
         id: stage.id + '-' + req.body.form.patient,
@@ -455,7 +515,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
             tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000,
         ),
         completed: false,
-        runnable: true,
+        runnable: runnableStages.includes(stage.id),
+        delay: output && output.type === 'Delay' ? Number.parseInt(output.value) : 0,
+        scheduleOffset: output && output.type === 'Scheduled' ? (new Date(output.value).valueOf() - serverStartDate.valueOf()) / 60000 : 0,
       };
     }),
   };
@@ -472,7 +534,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
     }
   }
 
-  console.log('new running pathway', newRunningPathway);
+  //console.log('new running pathway', newRunningPathway);
 
   if (!runningPathways.some((p) => p.patient === req.body.form.patient)) {
     runningPathways.push(newRunningPathway);

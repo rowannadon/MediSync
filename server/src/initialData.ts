@@ -355,25 +355,25 @@ export const procedures: PathwayTemplate[] = [
       {
         id: 'bbab5f0c-8ed3-42ab-a079-fcca8ec4e703',
         template: 'ca2009a2-153c-4463-8d26-8f5ab10f4dbf',
-        next: [{ 'Next Available': 'e3206412-66f6-4806-8316-bc72ad1ac0a4' }],
+        next: [{ type: 'Next Available', next: 'e3206412-66f6-4806-8316-bc72ad1ac0a4', value: '' }],
       },
       {
         id: 'e3206412-66f6-4806-8316-bc72ad1ac0a4',
         template: '604af59f-14e0-422b-a9d7-3c27b51d8430',
         next: [
-          { Scheduled: '5c877e3f-7d01-446e-b159-eddc3c73f658' },
-          { Scheduled: 'b9c098da-a6b4-4784-b751-8c768faacc7e' },
+          { type: 'Scheduled', next: '5c877e3f-7d01-446e-b159-eddc3c73f658', value: '' },
+          { type: 'Scheduled', next: 'b9c098da-a6b4-4784-b751-8c768faacc7e', value: '' },
         ],
       },
       {
         id: '5c877e3f-7d01-446e-b159-eddc3c73f658',
         template: '8f5548b0-d8e0-4858-8f42-fafec12c8038',
-        next: [{ Scheduled: '6b3839ae-bbf5-4b7c-9569-b7ea646338ea' }],
+        next: [{ type: 'Scheduled', next: '6b3839ae-bbf5-4b7c-9569-b7ea646338ea', value: '' }],
       },
       {
         id: 'b9c098da-a6b4-4784-b751-8c768faacc7e',
         template: '940c55da-54f0-49ee-88e9-278c7e1c09c8',
-        next: [{ Scheduled: '6b3839ae-bbf5-4b7c-9569-b7ea646338ea' }],
+        next: [{ type: 'Scheduled', next: '6b3839ae-bbf5-4b7c-9569-b7ea646338ea', value: '' }],
       },
       {
         id: '6b3839ae-bbf5-4b7c-9569-b7ea646338ea',
@@ -390,31 +390,31 @@ export const procedures: PathwayTemplate[] = [
       {
         id: 'f7662147-a81b-403b-8c1a-245bd74a9aef',
         template: '4c670c41-1918-4943-b94f-8baebbd07aee',
-        next: [{ 'Next Available': '4db67a9b-1d56-4b54-8f09-e33c7b2a535a' }],
+        next: [{ type: 'Next Available', next: '4db67a9b-1d56-4b54-8f09-e33c7b2a535a', value: '' }],
       },
       {
         id: '4db67a9b-1d56-4b54-8f09-e33c7b2a535a',
         template: '06b492c2-e439-4d50-8a85-008409ff6d46',
         next: [
-          { Scheduled: '3dd65179-0989-40aa-85d5-f937f3dab4a2' },
-          { Scheduled: '19bb7dee-496c-4437-b4f7-46445913c1d8' },
-          { Scheduled: '4f2d1e9d-4bce-41e5-a565-2c7e29bc3e99' },
+          { type: 'Scheduled', next: '3dd65179-0989-40aa-85d5-f937f3dab4a2', value: '' },
+          { type: 'Scheduled', next: '19bb7dee-496c-4437-b4f7-46445913c1d8', value: '' },
+          { type: 'Scheduled', next: '4f2d1e9d-4bce-41e5-a565-2c7e29bc3e99', value: '' },
         ],
       },
       {
         id: '3dd65179-0989-40aa-85d5-f937f3dab4a2',
         template: 'ccdfcf5f-2257-4f98-a595-621c19ee7fdf',
-        next: [{ 'Next Available': 'efa4cad2-c2e1-47f4-ba07-82c5c1d65c03' }],
+        next: [{ type: 'Next Available', next: 'efa4cad2-c2e1-47f4-ba07-82c5c1d65c03', value: '' }],
       },
       {
         id: '19bb7dee-496c-4437-b4f7-46445913c1d8',
         template: 'a5e830d2-d7dd-4f82-af26-7d6ed69613e6',
-        next: [{ 'Next Available': 'efa4cad2-c2e1-47f4-ba07-82c5c1d65c03' }],
+        next: [{ type: 'Next Available', next: 'efa4cad2-c2e1-47f4-ba07-82c5c1d65c03', value: '' }],
       },
       {
         id: '4f2d1e9d-4bce-41e5-a565-2c7e29bc3e99',
         template: '9029ef16-efc8-43a2-b23a-2ca30d49242b',
-        next: [{ 'Next Available': 'efa4cad2-c2e1-47f4-ba07-82c5c1d65c03' }],
+        next: [{ type: 'Next Available', next: 'efa4cad2-c2e1-47f4-ba07-82c5c1d65c03', value: '' }],
       },
       {
         id: 'efa4cad2-c2e1-47f4-ba07-82c5c1d65c03',
@@ -431,37 +431,37 @@ export const procedures: PathwayTemplate[] = [
       {
         id: 'a6ee30bf-d4c8-4501-8a6b-9359f0eaadad',
         template: '0c4b2961-b310-4537-8854-b2e8b24b8136',
-        next: [{ 'Next Available': '657b5f1d-12fa-4b2f-9ea1-05732a444e06' }],
+        next: [{ type: 'Next Available', next: '657b5f1d-12fa-4b2f-9ea1-05732a444e06', value: '' }],
       },
       {
         id: '657b5f1d-12fa-4b2f-9ea1-05732a444e06',
         template: '085dbd09-31e9-481e-9ebc-18b7490fac02',
-        next: [{ 'Next Available': '8c23c5f3-c3aa-4922-bfdf-ca11840b73cf' }],
+        next: [{ type: 'Next Available', next: '8c23c5f3-c3aa-4922-bfdf-ca11840b73cf', value: '' }],
       },
       {
         id: '8c23c5f3-c3aa-4922-bfdf-ca11840b73cf',
         template: '20d1ae9f-f1c8-4835-9fff-1cc96ba3bb27',
-        next: [{ 'Next Available': '14a254fe-8ee7-4e87-81dc-8bce03ccd51e' }],
+        next: [{ type: 'Next Available', next: '14a254fe-8ee7-4e87-81dc-8bce03ccd51e', value: '' }],
       },
       {
         id: '14a254fe-8ee7-4e87-81dc-8bce03ccd51e',
         template: '6bb4d7d1-a1ed-4309-b921-4a811675869b',
-        next: [{ 'Next Available': 'add5ea8f-6f4e-486e-99ed-a68d6e2ff3fa' }],
+        next: [{ type: 'Next Available', next: 'add5ea8f-6f4e-486e-99ed-a68d6e2ff3fa', value: '' }],
       },
       {
         id: 'add5ea8f-6f4e-486e-99ed-a68d6e2ff3fa',
         template: '936f696f-b36e-48b6-94d3-b753994fe62e',
-        next: [{ 'Next Available': 'ff9f3958-321c-440f-b3f3-f115b0adf6be' }],
+        next: [{ type: 'Next Available', next: 'ff9f3958-321c-440f-b3f3-f115b0adf6be', value: '' }],
       },
       {
         id: 'ff9f3958-321c-440f-b3f3-f115b0adf6be',
         template: '928f24ce-bf7b-4527-b558-760833ae2f39',
-        next: [{ 'Next Available': '58d08a98-b9da-495d-86e3-4686b6e400cf' }],
+        next: [{ type: 'Next Available', next: '58d08a98-b9da-495d-86e3-4686b6e400cf', value: '' }],
       },
       {
         id: '58d08a98-b9da-495d-86e3-4686b6e400cf',
         template: 'c931c66e-9fc8-40c3-bca2-07b1aafcc756',
-        next: [{ 'Next Available': '933d9ba7-b53c-4630-95ae-d35f235002d3' }],
+        next: [{ type: 'Next Available', next: '933d9ba7-b53c-4630-95ae-d35f235002d3', value: '' }],
       },
       {
         id: '933d9ba7-b53c-4630-95ae-d35f235002d3',
@@ -478,22 +478,22 @@ export const procedures: PathwayTemplate[] = [
       {
         id: '6c4d716a-4f8c-4a1d-b4a5-2304ab8f809d',
         template: '63e9c520-c5a6-4c26-9232-b00514f419f6',
-        next: [{ 'Next Available': '707c82bb-d726-45de-a2ea-73a5bafd3cdd' }],
+        next: [{ type: 'Next Available', next: '707c82bb-d726-45de-a2ea-73a5bafd3cdd', value: '' }],
       },
       {
         id: '707c82bb-d726-45de-a2ea-73a5bafd3cdd',
         template: '1e914995-58e4-4ad0-b20c-1ffdd4ebfba5',
-        next: [{ 'Next Available': 'de204be1-5bd4-4cee-8a9b-95534973a38f' }],
+        next: [{ type: 'Next Available', next: 'de204be1-5bd4-4cee-8a9b-95534973a38f', value: '' }],
       },
       {
         id: 'de204be1-5bd4-4cee-8a9b-95534973a38f',
         template: 'a7b66bd8-b0f2-4c9b-bd11-705ca38d5587',
-        next: [{ 'Next Available': 'c00fd6d8-7795-4c9c-94ba-9cf82d479930' }],
+        next: [{ type: 'Next Available', next: 'c00fd6d8-7795-4c9c-94ba-9cf82d479930', value: '' }],
       },
       {
         id: 'c00fd6d8-7795-4c9c-94ba-9cf82d479930',
         template: 'b2f17959-df79-4c47-8d9a-8763ecea367a',
-        next: [{ 'Next Available': '1def706e-91c7-4ae7-9bec-ef8b212c90a3' }],
+        next: [{ type: 'Next Available', next: '1def706e-91c7-4ae7-9bec-ef8b212c90a3', value: '' }],
       },
       {
         id: '1def706e-91c7-4ae7-9bec-ef8b212c90a3',

@@ -85,7 +85,9 @@ export interface PathwayStage {
 }
 
 export type NextType = {
-  [K in OutputType]?: string;
+  next: string;
+  type: OutputType;
+  value?: string;
 };
 
 export interface RunningStage {
