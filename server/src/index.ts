@@ -12,7 +12,12 @@ import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import { User } from './models/user';
 import axios from 'axios';
-import { NextType, PathwayStage, RunningPathway, RunningStage } from './DataTypes';
+import {
+  NextType,
+  PathwayStage,
+  RunningPathway,
+  RunningStage,
+} from './DataTypes';
 import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import DatabaseTest from './models/databaseTest';
@@ -355,7 +360,7 @@ const findRunnableStages = (stages: PathwayStage[]): string[] => {
   const nextIds = stages.map((s) => s.next.map((n) => n.next)).flat();
   const root = _.difference(allIds, nextIds)[0];
   const runnableStages: string[] = [];
-  
+
   // traverse from root until a stage with more than one next is found
   const findNext = (id: string) => {
     const stage = stages.find((s) => s.id === id);
@@ -374,14 +379,14 @@ const findRunnableStages = (stages: PathwayStage[]): string[] => {
   findNext(root);
   console.log('runnable stages', runnableStages);
   return runnableStages;
-}
+};
 
 app.post('/runningPathways', async (req: any, res: any) => {
   console.log('creating new running pathway from: ', req.body);
   const newId = uuid();
 
   const pathwayStartDate = new Date(req.body.form.startDate);
-  let dateOffsetMinutes =
+  const dateOffsetMinutes =
     Math.abs(pathwayStartDate.valueOf() - serverStartDate.valueOf()) / 60000;
 
   // console.log(req.body.stages);
@@ -398,24 +403,29 @@ app.post('/runningPathways', async (req: any, res: any) => {
 
   const staff = req.body.form.staff;
   const tasks = [];
-  for (const stage of req.body.stages.filter((s: PathwayStage) => runnableStages.includes(s.id))) {
+  for (const stage of req.body.stages.filter((s: PathwayStage) =>
+    runnableStages.includes(s.id),
+  )) {
     const stageStaff = staff
       .filter((s: any) => s.stageId === stage.template.id)
       .map((s: any) => ({ type: s.staff, count: 1 }));
 
-    const output = req.body.form.outputs.find((o: any) => o.stageId === stage.template.id);
+    const output = req.body.form.outputs.find(
+      (o: any) => o.stageId === stage.template.id,
+    );
     console.log('output', output);
 
     let delay = 0;
     if (output && output.type === 'Delay') {
       delay = Number.parseInt(output.value);
-      console.log('delay', delay)
+      console.log('delay', delay);
     }
 
     let timeOffset = 0;
     if (output && output.type === 'Scheduled') {
-      timeOffset = (new Date(output.value).valueOf() - serverStartDate.valueOf()) / 60000;
-      console.log('delay', delay)
+      timeOffset =
+        (new Date(output.value).valueOf() - serverStartDate.valueOf()) / 60000;
+      console.log('delay', delay);
     }
 
     const offset = timeOffset > 0 ? timeOffset : dateOffsetMinutes;
@@ -441,7 +451,8 @@ app.post('/runningPathways', async (req: any, res: any) => {
         id: Number.parseInt(s),
       }));
 
-      const offset = stage.scheduleOffset > 0 ? stage.scheduleOffset : stage.timeOffset;
+      const offset =
+        stage.scheduleOffset > 0 ? stage.scheduleOffset : stage.timeOffset;
 
       const task = {
         name: stage.template.name,
@@ -490,8 +501,6 @@ app.post('/runningPathways', async (req: any, res: any) => {
   });
   //console.log(assignments);
 
-
-
   const newRunningPathway: RunningPathway = {
     id: newId,
     patient: req.body.form.patient,
@@ -500,7 +509,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
     title: req.body.pathway.title,
     desc: req.body.pathway.desc,
     stages: req.body.stages.map((stage: RunningStage) => {
-      const output = req.body.form.outputs.find((o: any) => o.stageId === stage.template.id);
+      const output = req.body.form.outputs.find(
+        (o: any) => o.stageId === stage.template.id,
+      );
       return {
         ...stage,
         id: stage.id + '-' + req.body.form.patient,
@@ -516,8 +527,13 @@ app.post('/runningPathways', async (req: any, res: any) => {
         ),
         completed: false,
         runnable: runnableStages.includes(stage.id),
-        delay: output && output.type === 'Delay' ? Number.parseInt(output.value) : 0,
-        scheduleOffset: output && output.type === 'Scheduled' ? (new Date(output.value).valueOf() - serverStartDate.valueOf()) / 60000 : 0,
+        delay:
+          output && output.type === 'Delay' ? Number.parseInt(output.value) : 0,
+        scheduleOffset:
+          output && output.type === 'Scheduled'
+            ? (new Date(output.value).valueOf() - serverStartDate.valueOf()) /
+              60000
+            : 0,
       };
     }),
   };

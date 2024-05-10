@@ -164,7 +164,7 @@ export function PathwayLaunchEditorForm({
           const template = getStageTemplate(stage.template);
           if (!template) return [];
 
-          console.log(stage.next)
+          console.log(stage.next);
 
           return stage.next.map((nextStage, index) => ({
             type: template.outputs[index],
@@ -173,9 +173,8 @@ export function PathwayLaunchEditorForm({
             stageName: template.name,
             next:
               getStageTemplate(
-                pathway?.stages.find(
-                  (s) => s.id === nextStage.next,
-                )?.template || '',
+                pathway?.stages.find((s) => s.id === nextStage.next)
+                  ?.template || '',
               )?.name || '',
             nextId: nextStage.next || '',
           }));

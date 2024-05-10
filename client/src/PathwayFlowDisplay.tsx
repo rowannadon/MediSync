@@ -40,7 +40,7 @@ const convertToNodesAndEdges = (
 
     if (stage.next) {
       for (let i = 0; i < stage.next.length; i++) {
-        console.log(stage.next)
+        console.log(stage.next);
         edges.push({
           id: `${stage.id}=${stage.next[i].next}`,
           source: stage.id,

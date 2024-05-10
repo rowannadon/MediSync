@@ -191,7 +191,11 @@ export const useRemoteDataStore = create(
           (stage) => stage.id === stageId,
         );
         if (stage) {
-          stage.next.push({ type: outputType as OutputType, next: nextId, value: ''});
+          stage.next.push({
+            type: outputType as OutputType,
+            next: nextId,
+            value: '',
+          });
 
           const res = await instance.put(
             '/api/pathwayTemplates/' + pathwayTemplateId,
