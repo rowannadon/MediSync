@@ -12,13 +12,13 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   refreshTokens: { type: [String], default: [] },
   schedule: {
-    monday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
-    tuesday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
-    wednesday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
-    thursday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
-    friday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
-    saturday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
-    sunday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
+    Monday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
+    Tuesday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
+    Wednesday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
+    Thursday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
+    Friday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
+    Saturday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
+    Sunday: { start: { type: String, default: 'Off' }, end: { type: String, default: 'Off' } },
     
   },
 });

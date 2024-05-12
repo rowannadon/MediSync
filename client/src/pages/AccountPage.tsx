@@ -17,17 +17,21 @@ import { LoaderCircle } from 'lucide-react';
 
 const ScheduleItem = ({
   day,
+  start: initialStart,
+  end: initialEnd,
   setSchedule,
 }: {
   day: string;
+  start: string;
+  end: string;
   setSchedule: any;
 }) => {
-  const [start, setStart] = useState('None');
-  const [end, setEnd] = useState('None');
+  const [start, setStart] = useState(initialStart);
+  const [end, setEnd] = useState(initialEnd);
   const [isScheduled, setIsScheduled] = useState(false);
 
   useEffect(() => {
-    if (start !== 'None' || end !== 'None') {
+    if (start !== 'None' && end !== 'None') {
       setIsScheduled(true);
     } else {
       setIsScheduled(false);
@@ -49,7 +53,7 @@ const ScheduleItem = ({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className={isScheduled ? 'bg-blue-400' : 'bg-red-400'}
+          // className={isScheduled ? 'bg-blue-400' : 'bg-red-400'}
         >
           {day}: {start === 'None' ? 'Not scheduled' : `${start} - ${end}`}
         </Button>
@@ -120,26 +124,20 @@ const DateSelector = (props: any) => {
 const AccountPage = () => {
   const auth = useAuth();
   const [user, setUser] = useState<Person | null>(null);
-  const [schedule, setSchedule] = useState<any>({
-    Sunday: { start: 'None', end: 'None' },
-    Monday: { start: 'None', end: 'None' },
-    Tuesday: { start: 'None', end: 'None' },
-    Wednesday: { start: 'None', end: 'None' },
-    Thursday: { start: 'None', end: 'None' },
-    Friday: { start: 'None', end: 'None' },
-    Saturday: { start: 'None', end: 'None' },
-  });
+  const [schedule, setSchedule] = useState<any>({});
 
   useEffect(() => {
     setTimeout(() => {
       instance
         .get('/api/user')
-        .then((data) => {
-          console.log(data);
-          setUser(data.data);
+        .then((response) => {
+          const fetchedUser = response.data;
+          setUser(fetchedUser);
+          console.log('fetched user schedule: ', fetchedUser.schedule);
+          setSchedule(fetchedUser.schedule);
         })
-        .catch((err) => {
-          console.error(err);
+        .catch((error) => {
+          console.error(error);
         });
     }, 300);
   }, []);
@@ -187,7 +185,7 @@ const AccountPage = () => {
             <strong>Schedule</strong>
           </p>
           {Object.keys(schedule).map((day) => (
-            <ScheduleItem key={day} day={day} setSchedule={setSchedule} />
+            <ScheduleItem key={day} day={day} start={schedule[day].start} end={schedule[day].end} setSchedule={setSchedule} />
           ))}
 
           <Button variant="outline" className="mt-4 bg-black text-white">
