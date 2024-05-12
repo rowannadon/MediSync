@@ -8,6 +8,7 @@ import {
   PathwayStage,
   Conflict,
   OutputType,
+  Assignments,
 } from './DataTypes';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { instance } from './AxiosInstance';
@@ -18,7 +19,8 @@ export interface RemoteDataStore {
   stages: StageTemplate[];
   rooms: HospitalRoom[];
   runningPathways: RunningPathway[];
-  conflicts: Conflict[];
+  assignments: Assignments;
+  setAssignments: (assignments: Assignments) => void;
   getStageTemplate: (id: string) => StageTemplate | undefined;
   addPathwayTemplate: (pathway: PathwayTemplate) => void;
   removePathwayTemplate: (pathwayId: string) => void;
@@ -55,7 +57,6 @@ export interface RemoteDataStore {
   setStageTemplates: (stages: StageTemplate[]) => void;
   setRooms: (rooms: HospitalRoom[]) => void;
   setRunningPathways: (runningPathways: RunningPathway[]) => void;
-  addConflict: (conflict: Conflict) => void;
   lockedPathways: string[];
   lockedStages: string[];
   setLockedPathways: (lockedPathways: string[]) => void;
@@ -69,7 +70,7 @@ export const useRemoteDataStore = create(
     stages: [],
     rooms: [],
     runningPathways: [],
-    conflicts: [],
+    assignments: {},
     getStageTemplate: (id: string) => {
       return get().stages.find((template) => template.id === id);
     },
@@ -314,9 +315,9 @@ export const useRemoteDataStore = create(
         runningPathways,
       }));
     },
-    addConflict: (conflict: Conflict) => {
-      set((state) => ({
-        conflicts: [...state.conflicts, conflict],
+    setAssignments: (assignments: Assignments) => {
+      set(() => ({
+        assignments,
       }));
     },
     lockedPathways: [],

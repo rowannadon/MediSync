@@ -146,7 +146,7 @@ function getMostRecentMonday() {
 }
 
 const runningPathways: RunningPathway[] = [];
-const assignments = new Map<string, string[]>();
+let assignments = new Map<string, string[]>();
 let lockedPathways: { user: string; pathway: string }[] = [];
 let lockedStages: { user: string; stage: string }[] = [];
 const sockets: { socket: Socket; username: string }[] = [];
@@ -272,6 +272,7 @@ io.on('connection', async (socket: any) => {
     socket.emit('rooms', await HospitalRoom.find());
     socket.emit('stageTemplates', await StageTemplate.find());
     socket.emit('runningPathways', runningPathways);
+    socket.emit('assignments', assignments);
   });
 });
 
@@ -532,8 +533,8 @@ app.post('/runningPathways', async (req: any, res: any) => {
   }
 
   const tasksData = result.data.tasks;
-  const assignmentData: Assignments = result.data.assignments;
-  console.log(assignmentData);
+  assignments = result.data.assignments;
+  console.log(assignments);
 
   const newRunningPathway: RunningPathway = {
     id: newId,
@@ -581,15 +582,16 @@ app.post('/runningPathways', async (req: any, res: any) => {
           serverStartDate.valueOf() + tasksData[stage.id]['start'] * 60000,
         );
     }
-  }
-
-  //console.log('new running pathway', newRunningPathway);
-  res.json(newRunningPathway);
+  }  
 
   if (!runningPathways.some((p) => p.patient === req.body.form.patient)) {
     runningPathways.push(newRunningPathway);
     io.emit('runningPathways', runningPathways);
   }
+
+  io.emit('assignments', assignments);
+
+  res.json(newRunningPathway);
 });
 
 const completedStages: RunningStage[] = [];

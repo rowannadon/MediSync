@@ -92,7 +92,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
                 'start': solver.Value(task_starts[task_id]),
                 'end': solver.Value(task_ends[task_id])
             }
-            result['assignments'][task_id] = [m_id for m_id, assign in info.items() if (isinstance(assign, cp_model.IntVar) and solver.Value(assign) == 1)]
+            result['assignments'][task_id] = [m_id for m_id, assign in info.items() if (solver.Value(assign) == 1)]
         return result
     else:
         return None

@@ -204,7 +204,7 @@ const Calendar = () => {
         {assignedStaff.map((staff: any) => {
           const person = people.find((person) => person.username === staff);
           return (
-            <div className="text-[12px]">
+            <div className="text-[12px]" key={person?.username}>
               {person?.role}: {person?.name}
             </div>
           );

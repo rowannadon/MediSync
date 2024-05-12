@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useSocket } from './SocketProvider';
 import { instance, setAuthToken } from './AxiosInstance';
+
 interface LoginContextType {
   login: (username: string, password: string) => any;
   logout: () => void;
   getAccessToken: () => string | null;
   getRefreshToken: () => string | null;
+  getUsername: () => string | null;
 }
 
 const AuthContext = createContext<LoginContextType | null>(null);
@@ -13,7 +15,9 @@ const AuthContext = createContext<LoginContextType | null>(null);
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = (props: any) => {
-  const [username, setUsername] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(
+    localStorage.getItem('username'),
+  );
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem('accessToken'),
@@ -31,6 +35,7 @@ export const AuthProvider = (props: any) => {
     const res = await instance.post('/api/login', { username, password });
     if (res.status === 200) {
       localStorage.setItem('accessToken', res.data.accessToken);
+      localStorage.setItem('username', username);
       setUsername(username);
 
       setRefreshToken(res.data.refreshToken);
@@ -47,6 +52,7 @@ export const AuthProvider = (props: any) => {
       data: { token: currentRefreshToken },
     });
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('username');
     socket?.disconnect();
     setUsername(null);
     setAccessToken(null);
@@ -67,7 +73,7 @@ export const AuthProvider = (props: any) => {
 
   return (
     <AuthContext.Provider
-      value={{ login, logout, getAccessToken, getRefreshToken }}
+      value={{ login, logout, getAccessToken, getRefreshToken, getUsername }}
     >
       {props.children}
     </AuthContext.Provider>

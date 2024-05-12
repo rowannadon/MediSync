@@ -15,6 +15,10 @@ export type Equipment = {
   desc: string;
 };
 
+export interface Assignments {
+  [key: number]: string[];
+}
+
 export type Occupancy = {
   current: number;
   total: number;
