@@ -14,11 +14,12 @@ import {
   SelectValue,
 } from './components/ui/select';
 import { Separator } from './components/ui/separator';
+import { Person } from './DataTypes';
 
 interface PathwayLaunchEditorFormResourceFieldProps
   extends React.HTMLAttributes<HTMLElement> {
   name: string;
-  types: string[];
+  types: Person[];
   options: string[];
   initialValue: string;
   onFieldChange: (value: string) => void;
@@ -61,18 +62,18 @@ export const PathwayLaunchEditorFormResourceField = (
               </CommandGroup>
               <Separator />
               <CommandGroup>
-                {props.types.map((type: string) => {
+                {props.types.map((type: Person) => {
                   return (
                     <CommandItem
-                      key={type}
+                      key={type.username}
                       onSelect={() => {
                         //console.log(type);
-                        props.onFieldChange(type);
+                        props.onFieldChange(type.username);
                         setOpen(false);
-                        setSelectedType(type);
+                        setSelectedType(type.name);
                       }}
                     >
-                      <span>{type}</span>
+                      <span>{type.name}</span>
                     </CommandItem>
                   );
                 })}

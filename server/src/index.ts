@@ -418,8 +418,6 @@ const computeSchedule = async (tasks: any, people: any) => {
     people: people,
   });
 
-  assignments = result.data.assignments;
-
   return result;
 };
 
@@ -437,11 +435,12 @@ app.post('/runningPathways', async (req: any, res: any) => {
   );
 
   const staff = req.body.form.staff;
+  console.log(staff);
   const tasks = [];
   for (const stage of runnableStages) {
     const stageStaff = staff
       .filter((s: any) => s.stageId === stage.template.id)
-      .map((s: any) => ({ type: s.staff, count: 1 }));
+      .map((s: any) => (s.value === 'Automatic' ? { type: s.staff } : { id: s.value}));
 
     const output = req.body.form.outputs.find(
       (o: any) => o.stageId === stage.template.id,
@@ -479,14 +478,15 @@ app.post('/runningPathways', async (req: any, res: any) => {
       next: next,
     };
     tasks.push(task);
+    console.log('newtask', task);
   }
 
   for (const pathway of runningPathways) {
     for (const stage of pathway.stages.filter(
       (s) => !s.completed && s.runnable,
     )) {
-      const stageStaff = stage.assigned_staff.map((s: any) => ({
-        id: Number.parseInt(s),
+      const stageStaff = stage.assigned_staff.map((s: string) => ({
+        id: s,
       }));
 
       const offset =
@@ -507,17 +507,32 @@ app.post('/runningPathways', async (req: any, res: any) => {
       };
 
       tasks.push(task);
+      console.log('oldtask', task);
     }
   }
 
-  const people = (await User.find()).map((person: any, index: number) => ({
+  const users = await User.find();
+  const people = users.map((person: any, index: number) => ({
     id: person.username,
     type: person.role,
     name: person.name,
     available_hours: [8 * 60, 16 * 60],
   }));
 
-  const result = await computeSchedule(tasks, people);
+  console.log('tasks', tasks);
+
+  let result : any;
+  try {
+    result = await computeSchedule(tasks, people);
+
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: 'Failed to compute schedule' })
+  }
+
+  const tasksData = result.data.tasks;
+  const assignmentData: Assignments = result.data.assignments;
+  console.log(assignmentData)
 
   const newRunningPathway: RunningPathway = {
     id: newId,
@@ -533,14 +548,13 @@ app.post('/runningPathways', async (req: any, res: any) => {
       const assigned =
         result.data.assignments[stage.id + '-' + req.body.form.patient];
       const ms_offset =
-        result.data.tasks[stage.id + '-' + req.body.form.patient]['start'] *
-        60000;
+        tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000;
       return {
         ...stage,
         template: stage.template,
         id: stage.id + '-' + req.body.form.patient,
         timeOffset: dateOffsetMinutes,
-        assigned_staff: assigned ? Object.keys(assigned) : [],
+        assigned_staff: assigned ? assigned : [],
         assigned_room: '',
         date: new Date(serverStartDate.valueOf() + ms_offset),
         completed: false,
@@ -561,15 +575,15 @@ app.post('/runningPathways', async (req: any, res: any) => {
       if (stage.completed) {
         continue;
       }
-      if (result.data.tasks[stage.id]['start'])
+      if (tasksData[stage.id]['start'])
         stage.date = new Date(
-          serverStartDate.valueOf() +
-            result.data.tasks[stage.id]['start'] * 60000,
+          serverStartDate.valueOf() + tasksData[stage.id]['start'] * 60000,
         );
     }
   }
 
   //console.log('new running pathway', newRunningPathway);
+  res.json(newRunningPathway);
 
   if (!runningPathways.some((p) => p.patient === req.body.form.patient)) {
     runningPathways.push(newRunningPathway);
@@ -644,7 +658,7 @@ app.post('/login', async (req, res) => {
     _id: dbUser._id,
     username: username,
   };
-  
+
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign(user, refreshTokenSecret);
 

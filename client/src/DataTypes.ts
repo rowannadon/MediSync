@@ -6,6 +6,7 @@ export type Person = {
   email: string;
   admin: boolean;
   location: string;
+  username: string;
 };
 
 export type Equipment = {

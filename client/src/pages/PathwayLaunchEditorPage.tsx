@@ -19,7 +19,6 @@ import { PathwayLaunchEditorForm } from '../PathwayLaunchEditorForm';
 import { ScrollArea } from '../components/ui/scroll-area';
 import PathwayFlowDisplay from '../PathwayFlowDisplay';
 import { useLocalDataStore } from '@/LocalDataStore';
-import { Separator } from '@/components/ui/separator';
 
 const PathwayLaunchEditor = () => {
   const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
@@ -107,7 +106,7 @@ const PathwayLaunchEditor = () => {
               </div>
               <div className="flex flex-grow flex-row items-center justify-center p-1">
                 <h1 className="  text-lg font-bold">
-                  Pathway Template Manager
+                  {selectedPathway && selectedPathway.title}
                 </h1>
               </div>
               <div className="flex flex-1 flex-row-reverse items-center space-x-2 space-x-reverse p-4">

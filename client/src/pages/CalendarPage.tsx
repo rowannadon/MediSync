@@ -44,6 +44,8 @@ const Calendar = () => {
   const [fastForwardMode, setFastForwardMode] = useState<boolean>(false);
   const [fastForwardPaused, setFastForwardPaused] = useState<boolean>(false);
 
+  const people = useRemoteDataStore((state) => state.people);
+
   const pathways = useRemoteDataStore((state) => state.runningPathways);
   const getStageTemplate = useRemoteDataStore(
     (state) => state.getStageTemplate,
@@ -63,7 +65,7 @@ const Calendar = () => {
       socket?.emit('disableFastForward');
       try {
         timelineRef.current?.timeline.removeCustomTime('fastForward');
-      } catch (e) {}
+      } catch (e) { }
     }
 
     return () => {
@@ -115,24 +117,9 @@ const Calendar = () => {
               console.log('stage', stage);
               const color =
                 nodeColors[
-                  stage.template.type ? stage.template.type : 'default'
+                stage.template.type ? stage.template.type : 'default'
                 ];
               return [
-                // {
-                //   id: stage.id,
-                //   start: stage.date,
-                //   title: stage.template?.name ? stage.template.name : 'No Name',
-                //   end: add(stage.date, {
-                //     minutes: stage.template?.durationEstimate,
-                //   }),
-                //   content: stage.template?.name
-                //     ? stage.template.name
-                //     : 'No Name',
-                //   group: stage.patient,
-                //   selectable: false,
-                //   type: 'box',
-                //   style: `background-color: ${color}; border: 1px solid #999`,
-                // },
                 {
                   id: stage.id + '-background',
                   start: stage.date,
@@ -141,7 +128,7 @@ const Calendar = () => {
                     minutes: stage.template?.durationEstimate,
                   }),
                   content: stage.template?.name
-                    ? stage.template.name + '$' + stage.id
+                    ? stage.template.name + '$' + stage.assigned_staff.join(',')
                     : 'No Name',
                   group: stage.patient,
                   selectable: false,
@@ -209,9 +196,17 @@ const Calendar = () => {
   };
 
   const CalendarItemTemplate = (props: any) => {
+    const stageName = props.item.content.split('$')[0];
+    const assignedStaff = props.item.content.split('$')[1].split(',');
     return (
-      <div className="h-[25px] rounded-full">
-        <h1>{props.item.content}</h1>
+      <div className='flex flex-row space-x-4 h-full items-center'>
+        <h1 className=' text-[16px]'>{stageName}</h1>
+        {assignedStaff.map((staff: any) => {
+          const person = people.find((person) => person.username === staff);
+          return (
+            <div className='text-[12px]'>{person?.role}: {person?.name}</div>
+          );
+        })}
       </div>
     );
   };

@@ -2576,7 +2576,6 @@ export const displayedPeople = [
       Saturday: { start: 'Off', end: 'Off' },
       Sunday: { start: 'Off', end: 'Off' },
     },
-
   },
   // {
   //   name: 'Chloe White',

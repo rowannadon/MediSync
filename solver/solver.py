@@ -8,7 +8,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
 
     # Adjusting the person available hours to span multiple days
     min_start_time = 0
-    max_end_time = 24 * 60 * 7 * 10  # 7 days in minutes
+    max_end_time = 24 * 60 * 7 * 10  # 7 days
 
     # Task variables
     task_starts = {}
@@ -55,8 +55,8 @@ def solve_scheduling(tasks, people, unavailable_periods):
                     # Enforcing availability hours per person
                     # model.Add(intervals[task['name']].StartExpr() >= people[m_id]['available_hours'][0]).OnlyEnforceIf(bvar)
                     # model.Add(intervals[task['name']].EndExpr() <= people[m_id]['available_hours'][1]).OnlyEnforceIf(bvar)
-                # Require that exactly `req['count']` people of the specified type are used
-                model.Add(sum(bvars) == req['count'])
+                # Require that exactly 1 people of the specified type are used
+                model.Add(sum(bvars) == 1)
 
         for start, end in unavailable_periods:
             model.AddNoOverlap([model.NewIntervalVar(start, end - start, end, 'unavailable')])
@@ -92,7 +92,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
                 'start': solver.Value(task_starts[task_id]),
                 'end': solver.Value(task_ends[task_id])
             }
-            result['assignments'][task_id] = {m_id: solver.Value(assign) for m_id, assign in info.items() if isinstance(assign, cp_model.IntVar) and solver.Value(assign) == 1}
+            result['assignments'][task_id] = [m_id for m_id, assign in info.items() if (isinstance(assign, cp_model.IntVar) and solver.Value(assign) == 1)]
         return result
     else:
         return None

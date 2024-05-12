@@ -14,7 +14,7 @@ import { Button } from './components/ui/button';
 import { useEffect, useState } from 'react';
 import { Textarea } from './components/ui/textarea';
 import { outputTypes, Person, PathwayTemplate } from './DataTypes';
-import { ChevronDown, Rocket } from 'lucide-react';
+import { ChevronDown, LoaderCircle, Rocket, Search, X } from 'lucide-react';
 import { PathwayLaunchEditorFormResourceField } from './PathwayLaunchEditorFormResourceField';
 import { Card } from './components/ui/card';
 import { Table, TableBody, TableCell, TableRow } from './components/ui/table';
@@ -45,11 +45,16 @@ import {
 import { Input } from './components/ui/input';
 import { parseAbsolute, getLocalTimeZone } from '@internationalized/date';
 import { instance } from './AxiosInstance';
+import { navigate } from 'wouter/use-browser-location';
 
 const pathwayFormSchema = z.object({
   patient: z.string().min(1, 'Please select a patient.'),
   notes: z.string(),
-  startDate: z.string().min(1, 'Please select a start date.'),
+  startDate: z.string().min(1, 'Please select a start date.').refine(date => {
+    const inputDate = new Date(date);
+    const currentDate = new Date();
+    return inputDate > currentDate;
+  }, 'The start date must be in the future.'),
   staff: z.array(
     z.object({
       staff: z.string(),
@@ -120,10 +125,15 @@ export function PathwayLaunchEditorForm({
     startDate: '',
   };
 
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
   const people = useRemoteDataStore((state) => state.people);
   const getStageTemplate = useRemoteDataStore(
     (state) => state.getStageTemplate,
   );
+  const runningPathways = useRemoteDataStore((state) => state.runningPathways);
 
   const form = useForm<PathwayFormValues>({
     resolver: zodResolver(pathwayFormSchema),
@@ -184,6 +194,13 @@ export function PathwayLaunchEditorForm({
   }, [pathway, form]);
 
   function onSubmit(data: PathwayFormValues) {
+    setLoading(true);
+    setErrorMessage('');
+    if (runningPathways.find((p) => p.patient === data.patient)) {
+      setErrorMessage('Patient already has a pathway scheduled.');
+      setLoading(false);
+      return;
+    }
     const m = pathway?.stages.map((stage) => {
       return {
         ...stage,
@@ -197,9 +214,13 @@ export function PathwayLaunchEditorForm({
       .post('/api/runningPathways', d)
       .then((res) => {
         console.log(res);
+        setSuccessMessage('Pathway scheduled successfully.');
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
+        setErrorMessage('Failed to schedule pathway.')
       });
   }
 
@@ -433,9 +454,6 @@ export function PathwayLaunchEditorForm({
                                                             p.role ===
                                                             staff.staff,
                                                         )
-                                                        .map(
-                                                          (p: Person) => p.name,
-                                                        ),
                                                     ),
                                                   )}
                                                   options={['Automatic']}
@@ -585,13 +603,13 @@ export function PathwayLaunchEditorForm({
                                                         output.next,
                                                       )
                                                         ? parseAbsolute(
-                                                            getOutputValue(
-                                                              field.value,
-                                                              stage,
-                                                              output.next,
-                                                            ),
-                                                            getLocalTimeZone(),
-                                                          )
+                                                          getOutputValue(
+                                                            field.value,
+                                                            stage,
+                                                            output.next,
+                                                          ),
+                                                          getLocalTimeZone(),
+                                                        )
                                                         : null
                                                     }
                                                     onChange={(date) => {
@@ -622,10 +640,10 @@ export function PathwayLaunchEditorForm({
                                                         output.next,
                                                       )
                                                         ? getOutputValue(
-                                                            field.value,
-                                                            stage,
-                                                            output.next,
-                                                          )
+                                                          field.value,
+                                                          stage,
+                                                          output.next,
+                                                        )
                                                         : ''
                                                     }
                                                     onChange={(text) => {
@@ -658,9 +676,42 @@ export function PathwayLaunchEditorForm({
                 />
               )}
               <Button variant="default" size="sm" className="flex space-x-2">
-                <Rocket className="h-6 w-6" />
+                {loading ? <LoaderCircle className='h-6 w-6 animate-spin' /> : <Rocket className="h-6 w-6" />}
                 <div>Launch Pathway</div>
               </Button>
+              {errorMessage && (
+                <div className="mb-4 flex w-full flex-row justify-between rounded-lg bg-red-400 p-3">
+                  {errorMessage}
+                  <X
+                    className="text-white"
+                    onClick={() => {
+                      setErrorMessage('');
+                    }}
+                  />
+                </div>
+              )}
+              {successMessage && (
+                <div className="mb-4 flex w-full flex-row justify-between rounded-lg bg-green-400 p-3">
+                  <div className='space-x-2 flex flex-row'>
+                    <span>
+                    {successMessage}
+
+                    </span>
+                    <a className='hover:underline cursor-pointer text-slate-600' onClick={() => {
+                      navigate('/calendar')
+                    }}>
+                      View
+                    </a>
+                  </div>
+
+                  <X
+                    className="text-white"
+                    onClick={() => {
+                      setSuccessMessage('');
+                    }}
+                  />
+                </div>
+              )}
             </form>
           </Form>
         </div>

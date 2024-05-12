@@ -53,7 +53,7 @@ const ScheduleItem = ({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-        // className={isScheduled ? 'bg-blue-400' : 'bg-red-400'}
+          // className={isScheduled ? 'bg-blue-400' : 'bg-red-400'}
         >
           {day}: {start === 'None' ? 'Not scheduled' : `${start} - ${end}`}
         </Button>
@@ -151,11 +151,9 @@ const AccountPage = () => {
       .post('/api/user/schedule', schedule)
       .then((response) => {
         console.log('Schedule updated successfully: ', response.data);
-
       })
       .catch((error) => {
         console.error('Error updating schedule: ', error);
-
       });
   };
 
@@ -198,10 +196,20 @@ const AccountPage = () => {
             <strong>Schedule</strong>
           </p>
           {Object.keys(schedule).map((day) => (
-            <ScheduleItem key={day} day={day} start={schedule[day].start} end={schedule[day].end} setSchedule={setSchedule} />
+            <ScheduleItem
+              key={day}
+              day={day}
+              start={schedule[day].start}
+              end={schedule[day].end}
+              setSchedule={setSchedule}
+            />
           ))}
 
-          <Button variant="outline" className="mt-4 bg-black text-white" onClick={saveChanges}>
+          <Button
+            variant="outline"
+            className="mt-4 bg-black text-white"
+            onClick={saveChanges}
+          >
             Save Changes
           </Button>
         </div>
