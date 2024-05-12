@@ -6,7 +6,7 @@ import { displayedRooms } from './initialData';
 import PathwayTemplate from './models/pathwayTemplate';
 import StageTemplate from './models/stageTemplate';
 import HospitalRoom from './models/hospitalRoom';
-import Person from './models/person';
+// import Person from './models/person';
 import { User } from './models/user';
 import bcrypt from 'bcrypt';
 
@@ -80,7 +80,7 @@ export const loadDb = async (connection: Connection) => {
     (await PathwayTemplate.find()).length > 0 ||
     (await StageTemplate.find()).length > 0 ||
     (await HospitalRoom.find()).length > 0 ||
-    (await Person.find()).length > 0
+    (await User.find()).length > 0
   ) {
     console.log('Database not cleared');
     return;
@@ -88,7 +88,7 @@ export const loadDb = async (connection: Connection) => {
   await PathwayTemplate.insertMany(procedures);
   await StageTemplate.insertMany(stageTemplates);
   await HospitalRoom.insertMany(displayedRooms);
-  await Person.insertMany(displayedPeople);
+  await User.insertMany(displayedPeople);
 
   console.log('Database loaded');
 };

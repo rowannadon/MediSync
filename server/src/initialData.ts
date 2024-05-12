@@ -5,6 +5,8 @@ import {
   StageTemplate,
 } from './DataTypes';
 
+import bcrypt from 'bcrypt';
+
 export const stageTemplates: StageTemplate[] = [
   {
     id: 'ca2009a2-153c-4463-8d26-8f5ab10f4dbf',
@@ -1983,6 +1985,8 @@ export const displayedPeople = [
     email: 'john.d@hospital.org',
     admin: true,
     location: 'Room 101',
+    username: 'johndoe',
+    password: bcrypt.hashSync('johndoe', 10),
   },
   {
     name: 'Jane Doe',
@@ -1992,6 +1996,8 @@ export const displayedPeople = [
     email: 'jane.d@hospital.org',
     admin: false,
     location: 'Room 102',
+    username: 'janedoe',
+    password: bcrypt.hashSync('janedoe', 10),
   },
   {
     name: 'Jack Doe',
@@ -2001,6 +2007,8 @@ export const displayedPeople = [
     email: 'jack.d@hospital.org',
     admin: false,
     location: 'Room 103',
+    username: 'jackdoe',
+    password: bcrypt.hashSync('jackdoe', 10),
   },
   {
     name: 'Jill Doe',
@@ -2010,6 +2018,8 @@ export const displayedPeople = [
     email: 'j.doe@hospital.org',
     admin: false,
     location: 'Room 104',
+    username: 'jilldoe',
+    password: bcrypt.hashSync('jilldoe', 10),
   },
   {
     name: 'Emily Smith',
@@ -2019,6 +2029,8 @@ export const displayedPeople = [
     email: 'emily.s@hospital.org',
     admin: false,
     location: 'Room 215',
+    username: 'emilysmith',
+    password: bcrypt.hashSync('emilysmith', 10),
   },
   {
     name: 'Michael Johnson',
@@ -2028,6 +2040,8 @@ export const displayedPeople = [
     email: 'michael.j@hospital.org',
     admin: true,
     location: 'Operating Room 1',
+    username: 'michaeljohnson',
+    password: bcrypt.hashSync('michaeljohnson', 10),
   },
   {
     name: 'Sarah Williams',
@@ -2037,6 +2051,8 @@ export const displayedPeople = [
     email: 'sarah.w@hospital.org',
     admin: false,
     location: 'Operating Room 3',
+    username: 'sarahwilliams',
+    password: bcrypt.hashSync('sarahwilliams', 10),
   },
   {
     name: 'Christopher Brown',
@@ -2046,6 +2062,8 @@ export const displayedPeople = [
     email: 'christopher.b@hospital.org',
     admin: false,
     location: 'Emergency Department',
+    username: 'christopherbrown',
+    password: bcrypt.hashSync('christopherbrown', 10),
   },
   {
     name: 'Jessica Garcia',
@@ -2055,6 +2073,8 @@ export const displayedPeople = [
     email: 'jessica.g@hospital.org',
     admin: false,
     location: 'ICU Ward 2',
+    username: 'jessicagarcia',
+    password: bcrypt.hashSync('jessicagarcia', 10),
   },
   {
     name: 'William Martinez',
@@ -2064,6 +2084,8 @@ export const displayedPeople = [
     email: 'william.m@hospital.org',
     admin: false,
     location: 'Radiology Department',
+    username: 'williammartinez',
+    password: bcrypt.hashSync('williammartinez', 10),
   },
   {
     name: 'Amanda Davis',
@@ -2073,6 +2095,8 @@ export const displayedPeople = [
     email: 'amanda.d@hospital.org',
     admin: false,
     location: 'Waiting Room 1',
+    username: 'amandadavis',
+    password: bcrypt.hashSync('amandadavis', 10),
   },
   {
     name: 'James Wilson',
@@ -2082,6 +2106,8 @@ export const displayedPeople = [
     email: 'james.w@hospital.org',
     admin: false,
     location: 'Waiting Room 1',
+    username: 'jameswilson',
+    password: bcrypt.hashSync('jameswilson', 10),
   },
   {
     name: 'Jennifer Taylor',
@@ -2091,6 +2117,8 @@ export const displayedPeople = [
     email: 'jennifer.t@hospital.org',
     admin: false,
     location: 'Waiting Room 1',
+    username: 'jennifertaylor',
+    password: bcrypt.hashSync('jennifertaylor', 10),
   },
   {
     name: 'John Rodriguez',
@@ -2100,6 +2128,8 @@ export const displayedPeople = [
     email: 'john.r@hospital.org',
     admin: false,
     location: 'Waiting Room 1',
+    username: 'johnrodriguez',
+    password: bcrypt.hashSync('johnrodriguez', 10),
   },
   {
     name: 'Emily Thompson',
@@ -2109,6 +2139,8 @@ export const displayedPeople = [
     email: 'emily.t@hospital.org',
     admin: false,
     location: 'Emergency Room',
+    username: 'emilythompson',
+    password: bcrypt.hashSync('emilythompson', 10),
   },
   {
     name: 'Michael Nguyen',
@@ -2118,6 +2150,8 @@ export const displayedPeople = [
     email: 'michael.n@hospital.org',
     admin: false,
     location: 'Imaging Suite',
+    username: 'michaelnguyen',
+    password: bcrypt.hashSync('michaelnguyen', 10),
   },
   {
     name: 'Sarah Martinez',
@@ -2127,6 +2161,8 @@ export const displayedPeople = [
     email: 'sarah.m@hospital.org',
     admin: false,
     location: 'Occupational Therapy Room',
+    username: 'sarahmartinez',
+    password: bcrypt.hashSync('sarahmartinez', 10),
   },
   {
     name: 'Christopher Lee',
@@ -2136,6 +2172,8 @@ export const displayedPeople = [
     email: 'christopher.l@hospital.org',
     admin: false,
     location: 'Cardiology Department',
+    username: 'christopherlee',
+    password: bcrypt.hashSync('christopherlee', 10),
   },
   {
     name: 'Jessica Brown',
@@ -2145,6 +2183,8 @@ export const displayedPeople = [
     email: 'jessica.b@hospital.org',
     admin: false,
     location: 'Imaging Suite',
+    username: 'jessicabrown',
+    password: bcrypt.hashSync('jessicabrown', 10),
   },
   {
     name: 'Matthew Garcia',
@@ -2154,6 +2194,8 @@ export const displayedPeople = [
     email: 'matthew.g@hospital.org',
     admin: false,
     location: 'Imaging Suite',
+    username: 'matthewgarcia',
+    password: bcrypt.hashSync('matthewgarcia', 10),
   },
   {
     name: 'Amanda Clark',
@@ -2163,6 +2205,8 @@ export const displayedPeople = [
     email: 'amanda.c@hospital.org',
     admin: false,
     location: 'Laboratory',
+    username: 'amandaclark',
+    password: bcrypt.hashSync('amandaclark', 10),
   },
   {
     name: 'Ryan Baker',
@@ -2172,6 +2216,8 @@ export const displayedPeople = [
     email: 'ryan.b@hospital.org',
     admin: false,
     location: 'Imaging Suite',
+    username: 'ryanbaker',
+    password: bcrypt.hashSync('ryanbaker', 10),
   },
   {
     name: 'Lauren White',
@@ -2181,6 +2227,8 @@ export const displayedPeople = [
     email: 'lauren.w@hospital.org',
     admin: false,
     location: 'Oncology Department',
+    username: 'laurenwhite',
+    password: bcrypt.hashSync('laurenwhite', 10),
   },
   {
     name: 'Ethan Thomas',
@@ -2190,6 +2238,8 @@ export const displayedPeople = [
     email: 'ethan.t@hospital.org',
     admin: false,
     location: 'ICU',
+    username: 'ethanthomas',
+    password: bcrypt.hashSync('ethanthomas', 10),
   },
   {
     name: 'Sophia Martinez',
@@ -2199,6 +2249,8 @@ export const displayedPeople = [
     email: 'sophia.m@hospital.org',
     admin: false,
     location: 'Surgical Ward',
+    username: 'sophiamartinez',
+    password: bcrypt.hashSync('sophiamartinez', 10),
   },
   {
     name: 'Alexander Nguyen',
@@ -2208,6 +2260,8 @@ export const displayedPeople = [
     email: 'alexander.n@hospital.org',
     admin: false,
     location: 'Emergency Room',
+    username: 'alexandernguyen',
+    password: bcrypt.hashSync('alexandernguyen', 10),
   },
   {
     name: 'Isabella Garcia',
@@ -2217,6 +2271,8 @@ export const displayedPeople = [
     email: 'isabella.g@hospital.org',
     admin: false,
     location: 'Internal Medicine Clinic',
+    username: 'isabellagarcia',
+    password: bcrypt.hashSync('isabellagarcia', 10),
   },
   {
     name: 'Mason Lopez',
@@ -2226,6 +2282,8 @@ export const displayedPeople = [
     email: 'mason.l@hospital.org',
     admin: false,
     location: 'Family Medicine Clinic',
+    username: 'masonlopez',
+    password: bcrypt.hashSync('masonlopez', 10),
   },
   {
     name: 'Amelia Clark',
@@ -2235,6 +2293,8 @@ export const displayedPeople = [
     email: 'amelia.c@hospital.org',
     admin: false,
     location: 'OB/GYN Clinic',
+    username: 'ameliaclark',
+    password: bcrypt.hashSync('ameliaclark', 10),
   },
   {
     name: 'William Baker',
@@ -2244,6 +2304,9 @@ export const displayedPeople = [
     email: 'william.b@hospital.org',
     admin: false,
     location: 'Cardiology Clinic',
+    username: 'williambaker',
+    password: bcrypt.hashSync('williambaker', 10),
+
   },
   // {
   //   name: 'Chloe White',

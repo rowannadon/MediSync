@@ -1,11 +1,10 @@
 import { MongooseError } from 'mongoose';
 import express from 'express';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import PathwayTemplate from './models/pathwayTemplate';
 import StageTemplate from './models/stageTemplate';
 import { loadDb } from './loadDb';
-import Person from './models/person';
 import HospitalRoom from './models/hospitalRoom';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
@@ -203,7 +202,7 @@ io.on('connection', async (socket: any) => {
 
   socket.on('getPeople', async () => {
     console.log('sending people');
-    socket.emit('people', await Person.find());
+    socket.emit('people', await User.find());
   });
 
   socket.on('getRooms', async () => {
@@ -269,7 +268,7 @@ io.on('connection', async (socket: any) => {
 
   console.log('sending all data');
   socket.emit('pathwayTemplates', await PathwayTemplate.find());
-  socket.emit('people', await Person.find());
+  socket.emit('people', await User.find());
   socket.emit('rooms', await HospitalRoom.find());
   socket.emit('stageTemplates', await StageTemplate.find());
   socket.emit('runningPathways', runningPathways);
@@ -499,7 +498,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
     }
   }
 
-  const people = await Person.find();
+  const people = await User.find();
   const p = people.map((person: any, index: number) => ({
     id: index + 1,
     type: person.role,
@@ -631,6 +630,7 @@ app.post('/login', async (req, res) => {
   // find user in db
   const dbUser = await User.findOne({ username: username });
   if (!dbUser) {
+    console.log('User not found: searched username:', username);
     return res.status(400).json({ error: 'User not found' });
   }
 
@@ -735,8 +735,8 @@ app.post('/newUser', async (req, res) => {
       password: hashedPassword,
     });
 
-    const savedUser = await user.save();
-    res.json(savedUser);
+    const savedPerson = await user.save();
+    res.json(savedPerson);
   } catch {
     res.status(500).send();
   }
