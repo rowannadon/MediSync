@@ -753,6 +753,17 @@ app.get('/user', async (req: any, res) => {
   res.json(user[0]);
 });
 
+app.post('/user/schedule', async (req: any, res: any) => {
+  console.log('Received request to update schedule for', req.username);
+  const user = await User.findOne({ username: req.username });
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  user.schedule = req.body;
+  await user.save();
+  res.json(user);
+});
+
 export const cleanup = async () => {
   console.log('Cleaning up');
   await new Promise((resolve, reject) => {
