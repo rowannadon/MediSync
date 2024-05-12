@@ -109,11 +109,6 @@ export function DataTable<TData, TValue>({
             );
           })}
         </div>
-        <div className="space-x-2">
-          <Button variant="outline" size="icon">
-            <Plus className="h-6 w-6" />
-          </Button>
-        </div>
       </div>
       <Card className="flex flex-grow overflow-hidden">
         <ScrollArea className="flex-grow">
@@ -127,9 +122,9 @@ export function DataTable<TData, TValue>({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}

@@ -31,11 +31,11 @@ const ScheduleItem = ({
   const [isScheduled, setIsScheduled] = useState(false);
 
   useEffect(() => {
-    if (start !== 'None' && end !== 'None') {
-      setIsScheduled(true);
-    } else {
-      setIsScheduled(false);
-    }
+    // if (start !== 'None' || end !== 'None') {
+    //   setIsScheduled(true);
+    // } else {
+    //   setIsScheduled(false);
+    // }
 
     setSchedule((prev: any) => {
       return {

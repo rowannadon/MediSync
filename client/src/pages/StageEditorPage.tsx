@@ -1,4 +1,4 @@
-import { FilePlus, RefreshCcw, Save, Trash } from 'lucide-react';
+import { FilePlus, LoaderCircle, RefreshCcw, Save, Trash } from 'lucide-react';
 import NavMenu from '../NavMenu';
 
 import { Button } from '../components/ui/button';
@@ -19,6 +19,7 @@ import { useLocalDataStore } from '@/LocalDataStore';
 import { StageTemplate } from '@/DataTypes';
 import { v4 as uuid } from 'uuid';
 import { useRemoteDataStore } from '@/RemoteDataStore';
+import { instance } from '@/AxiosInstance';
 
 const StageEditor = () => {
   const selectedStage: StageTemplate | null = useLocalDataStore(
@@ -107,6 +108,33 @@ const StageEditor = () => {
     clearSelectedStage();
   };
 
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      instance
+        .get('/api/user')
+        .then((response) => {
+          const fetchedUser = response.data;
+          setUser(fetchedUser);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error(error);
+          setLoading(false);
+        });
+    }, 300);
+  }, []);
+
+  if (loading) {
+    return (
+    <div className="m-10 flex w-full flex-row justify-center">
+      <LoaderCircle className="h-5 w-5 animate-spin" />
+    </div>
+    );
+  };
+
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -140,13 +168,15 @@ const StageEditor = () => {
               <div className="flex flex-1 flex-row-reverse space-x-2 space-x-reverse p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={handleDeleteStage}
-                    >
-                      <Trash className="h-6 w-6" />
-                    </Button>
+                    {user && (user as { admin: boolean }).admin && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleDeleteStage}
+                      >
+                        <Trash className="h-6 w-6" />
+                      </Button>
+                    )}
                   </TooltipTrigger>
                   <TooltipContent side="bottom" sideOffset={5}>
                     <p>Delete Stage</p>

@@ -1,4 +1,4 @@
-import { FilePlus, Plus, RefreshCcw, Trash } from 'lucide-react';
+import { FilePlus, LoaderCircle, Plus, RefreshCcw, Trash } from 'lucide-react';
 import NavMenu from '../NavMenu';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { instance } from '@/AxiosInstance';
 
 const PathwayEditor = () => {
   const selectedPathway = useLocalDataStore((state) => state.selectedPathway);
@@ -78,6 +79,33 @@ const PathwayEditor = () => {
     clearSelectedPathway();
   };
 
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      instance
+        .get('/api/user')
+        .then((response) => {
+          const fetchedUser = response.data;
+          setUser(fetchedUser);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error(error);
+          setLoading(false);
+        });
+    }, 300);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="m-10 flex w-full flex-row justify-center">
+        <LoaderCircle className="h-5 w-5 animate-spin" />
+      </div>
+    );
+  };
+
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -128,13 +156,15 @@ const PathwayEditor = () => {
               <div className="flex flex-1 flex-row-reverse space-x-2 space-x-reverse p-4">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={handleDeletePathway}
-                    >
-                      <Trash className="h-6 w-6" />
-                    </Button>
+                    {user && (user as { admin: boolean }).admin && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={handleDeletePathway}
+                      >
+                        <Trash className="h-6 w-6" />
+                      </Button>
+                    )}
                   </TooltipTrigger>
                   <TooltipContent side="bottom" sideOffset={5}>
                     <p>Delete Node</p>
