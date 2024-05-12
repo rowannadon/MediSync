@@ -644,7 +644,7 @@ app.post('/login', async (req, res) => {
     _id: dbUser._id,
     username: username,
   };
-  // const refreshTokenSecret = refreshTokenS;
+  
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign(user, refreshTokenSecret);
 
