@@ -39,9 +39,7 @@ export const SocketProvider = (props: any) => {
   const setRunningPathways = useRemoteDataStore(
     (state) => state.setRunningPathways,
   );
-  const setAssignments = useRemoteDataStore(
-    (state) => state.setAssignments,
-  );
+  const setAssignments = useRemoteDataStore((state) => state.setAssignments);
 
   const setLockedPathways = useRemoteDataStore(
     (state) => state.setLockedPathways,

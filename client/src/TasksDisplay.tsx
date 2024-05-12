@@ -32,7 +32,9 @@ const TasksDisplay = () => {
     const tasks = [];
     for (const [key, value] of Object.entries(assignments)) {
       if (value.includes(auth?.getUsername())) {
-        const task = runningPathways.flatMap(p => p.stages).find((pathway) => pathway.id === key);
+        const task = runningPathways
+          .flatMap((p) => p.stages)
+          .find((pathway) => pathway.id === key);
         if (task) {
           tasks.push(task);
         }
@@ -61,8 +63,9 @@ const TasksDisplay = () => {
     return (
       <TableRow
         key={task.id}
-        className={`cursor-pointer hover:bg-slate-100 ${task.id === selectedTask?.id ? 'bg-slate-200' : 'bg-white'
-          }`}
+        className={`cursor-pointer hover:bg-slate-100 ${
+          task.id === selectedTask?.id ? 'bg-slate-200' : 'bg-white'
+        }`}
         onClick={() => {
           setSelectedTask(task);
         }}
@@ -75,26 +78,37 @@ const TasksDisplay = () => {
 
   const SelectedTaskDisplay = (props: { task: RunningStage }) => {
     const date = new Date(props.task.date);
-    const staffNames = props.task.assigned_staff.map((staff) => people.find(p => p.username === staff))
-    const parentPathway = runningPathways.find(p => p.stages.find(s => s.id === props.task.id));
+    const staffNames = props.task.assigned_staff.map((staff) =>
+      people.find((p) => p.username === staff),
+    );
+    const parentPathway = runningPathways.find((p) =>
+      p.stages.find((s) => s.id === props.task.id),
+    );
     return (
-      <div className='space-y-2 p-4'>
-        <h1 className=' font-extrabold'>{props.task.template.name}</h1>
+      <div className="space-y-2 p-4">
+        <h1 className=" font-extrabold">{props.task.template.name}</h1>
         <p>Date: {date.toLocaleDateString()}</p>
         <p>Scheduled Time: {date.toLocaleTimeString()}</p>
         <p>Location: {props.task.assigned_room}</p>
         <p>Estimated duration: {props.task.template.durationEstimate} min</p>
-        <p>Completed {props.task.completed ? "Yes" : "No"} </p>
+        <p>Completed {props.task.completed ? 'Yes' : 'No'} </p>
         <p>Staff:</p>
-        <ul className='list-disc'>
+        <ul className="list-disc">
           {staffNames.map((staff) => (
-            <li key={staff?.username}>{staff?.role} - {staff?.name}</li>
+            <li key={staff?.username}>
+              {staff?.role} - {staff?.name}
+            </li>
           ))}
         </ul>
         <p>Notes:</p>
-        <Textarea className='w-full' placeholder='No notes...' value={parentPathway?.notes}/>
-        <div><Button>
-          Complete Task</Button></div>
+        <Textarea
+          className="w-full"
+          placeholder="No notes..."
+          value={parentPathway?.notes}
+        />
+        <div>
+          <Button>Complete Task</Button>
+        </div>
       </div>
     );
   };
@@ -107,11 +121,17 @@ const TasksDisplay = () => {
       <div className="flex flex-grow flex-col items-center justify-center">
         <Card className="flex h-[600x] w-[600px] flex-grow space-x-4 p-4">
           <Card className="flex min-w-[250px]">
-            <ScrollArea className='flex flex-grow'>
-              {taskList.length > 0 && <Table className='w-full'>
-                <TableBody className='w-full'>{taskList}</TableBody>
-              </Table>}
-              {taskList.length === 0 && <div className='p-4'><p>No tasks scheduled...</p></div>}
+            <ScrollArea className="flex flex-grow">
+              {taskList.length > 0 && (
+                <Table className="w-full">
+                  <TableBody className="w-full">{taskList}</TableBody>
+                </Table>
+              )}
+              {taskList.length === 0 && (
+                <div className="p-4">
+                  <p>No tasks scheduled...</p>
+                </div>
+              )}
             </ScrollArea>
           </Card>
           {selectedTask && <SelectedTaskDisplay task={selectedTask} />}

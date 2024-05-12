@@ -582,7 +582,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
           serverStartDate.valueOf() + tasksData[stage.id]['start'] * 60000,
         );
     }
-  }  
+  }
 
   if (!runningPathways.some((p) => p.patient === req.body.form.patient)) {
     runningPathways.push(newRunningPathway);
