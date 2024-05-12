@@ -131,6 +131,8 @@ export const SocketProvider = (props: any) => {
       navigate('/login');
     });
 
+    socket.emit('getInitialData');
+
     return () => {
       socket.disconnect();
     };

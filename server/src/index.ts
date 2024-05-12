@@ -5,16 +5,13 @@ import mongoose from 'mongoose';
 import PathwayTemplate from './models/pathwayTemplate';
 import StageTemplate from './models/stageTemplate';
 import { loadDb } from './loadDb';
-import Person from './models/person';
 import HospitalRoom from './models/hospitalRoom';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import dotenv from 'dotenv';
 import { User } from './models/user';
 import axios from 'axios';
 import {
   Assignments,
-  NextType,
   PathwayStage,
   RunningPathway,
   RunningStage,
@@ -149,9 +146,10 @@ function getMostRecentMonday() {
 }
 
 const runningPathways: RunningPathway[] = [];
+let assignments = new Map<string, string[]>();
 let lockedPathways: { user: string; pathway: string }[] = [];
 let lockedStages: { user: string; stage: string }[] = [];
-//const sockets: Socket[] = [];
+const sockets: { socket: Socket; username: string }[] = [];
 
 const serverStartDate = getMostRecentMonday();
 
@@ -161,12 +159,12 @@ let fastForwardTimePaused = false;
 
 io.on('connection', async (socket: any) => {
   console.log('a new user connected:', socket.handshake.auth.username);
-  //sockets.push(socket);
+  sockets.push({ socket: socket, username: socket.handshake.auth.username });
   socket.on('disconnect', () => {
     lockedPathways = lockedPathways.filter(
       (p) => p.user !== socket.handshake.auth.username,
     );
-    //sockets.splice(sockets.indexOf(socket), 1);
+    sockets.splice(sockets.indexOf(socket), 1);
     console.log('a user disconnected:', socket.handshake.auth.username);
   });
 
@@ -203,7 +201,8 @@ io.on('connection', async (socket: any) => {
 
   socket.on('getPeople', async () => {
     console.log('sending people');
-    socket.emit('people', await Person.find());
+    const users = await User.find();
+    socket.emit('people', users);
   });
 
   socket.on('getRooms', async () => {
@@ -267,12 +266,14 @@ io.on('connection', async (socket: any) => {
     );
   });
 
-  console.log('sending all data');
-  socket.emit('pathwayTemplates', await PathwayTemplate.find());
-  socket.emit('people', await Person.find());
-  socket.emit('rooms', await HospitalRoom.find());
-  socket.emit('stageTemplates', await StageTemplate.find());
-  socket.emit('runningPathways', runningPathways);
+  socket.on('getInitialData', async () => {
+    console.log('sending all data');
+    socket.emit('pathwayTemplates', await PathwayTemplate.find());
+    socket.emit('people', await User.find());
+    socket.emit('rooms', await HospitalRoom.find());
+    socket.emit('stageTemplates', await StageTemplate.find());
+    socket.emit('runningPathways', runningPathways);
+  });
 });
 
 app.get('/test', async (req: any, res: any) => {
@@ -412,6 +413,17 @@ const findRunnableStages = (stages: PathwayStage[]): string[] => {
   return runnableStages;
 };
 
+const computeSchedule = async (tasks: any, people: any) => {
+  const result = await axios.post(solverDomain + '/schedule', {
+    tasks: tasks,
+    people: people,
+  });
+
+  assignments = result.data.assignments;
+
+  return result;
+};
+
 app.post('/runningPathways', async (req: any, res: any) => {
   console.log('creating new running pathway from: ', req.body);
   const newId = uuid();
@@ -499,50 +511,14 @@ app.post('/runningPathways', async (req: any, res: any) => {
     }
   }
 
-  const people = await Person.find();
-  const p = people.map((person: any, index: number) => ({
-    id: index + 1,
+  const people = (await User.find()).map((person: any, index: number) => ({
+    id: person.username,
     type: person.role,
     name: person.name,
     available_hours: [8 * 60, 16 * 60],
   }));
 
-  console.log('tasks', tasks);
-
-  let result;
-  try {
-    result = await axios.post(solverDomain + '/schedule', {
-      tasks: tasks,
-      people: p,
-    });
-  } catch (e) {
-    //console.log(e);
-    return res.status(500).json({ error: 'Error scheduling pathway' });
-  }
-  //console.log(result.data);
-
-  const tasksData = result.data.tasks;
-  const assignmentData: Assignments = result.data.assignments;
-
-  const assignments = new Map<string, string[]>();
-
-  // Iterate over each user and their tasks
-  for (const [tasks, peopleIds] of Object.entries(assignmentData)) {
-    for (const personId of Object.keys(peopleIds)) {
-      console.log('personId', personId);
-      console.log('person', people[Number.parseInt(personId) + 1]);
-      const name = people[Number.parseInt(personId) + 1].name;
-
-      const n = name ? name : 'Unknown';
-
-      if (!assignments.has(n)) {
-        assignments.set(n, []);
-      }
-      assignments.get(n)?.push(tasks);
-    }
-  }
-
-  console.log(assignments);
+  const result = await computeSchedule(tasks, people);
 
   const newRunningPathway: RunningPathway = {
     id: newId,
@@ -558,7 +534,8 @@ app.post('/runningPathways', async (req: any, res: any) => {
       const assigned =
         result.data.assignments[stage.id + '-' + req.body.form.patient];
       const ms_offset =
-        tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000;
+        result.data.tasks[stage.id + '-' + req.body.form.patient]['start'] *
+        60000;
       return {
         ...stage,
         template: stage.template,
@@ -585,9 +562,10 @@ app.post('/runningPathways', async (req: any, res: any) => {
       if (stage.completed) {
         continue;
       }
-      if (tasksData[stage.id]['start'])
+      if (result.data.tasks[stage.id]['start'])
         stage.date = new Date(
-          serverStartDate.valueOf() + tasksData[stage.id]['start'] * 60000,
+          serverStartDate.valueOf() +
+            result.data.tasks[stage.id]['start'] * 60000,
         );
     }
   }
@@ -621,6 +599,28 @@ const mainInterval = setInterval(() => {
   }
 }, 500);
 
+app.get('/tasks', async (req: any, res: any) => {
+  const username = req.username;
+  console.log('getting tasks for', username);
+  console.log('assignments', assignments);
+  const tasks = assignments.get(username);
+  const taskData = [];
+
+  if (!tasks) {
+    return;
+  }
+  for (const task of tasks) {
+    const t = runningPathways
+      .flatMap((p) => p.stages)
+      .find((s) => s.id === task);
+    if (t) {
+      taskData.push(t);
+    }
+  }
+
+  return res.json(taskData);
+});
+
 // ------------------------------------------------- User account routes ------------------------------------------------- //
 
 // authenticate and assign access token to user
@@ -635,7 +635,7 @@ app.post('/login', async (req, res) => {
   }
 
   // compare passwords
-  const match = await bcrypt.compare(password, dbUser.password);
+  const match = await bcrypt.compare(password, dbUser?.password);
   if (!match) {
     return res.status(400).json({ error: 'Invalid password' });
   }

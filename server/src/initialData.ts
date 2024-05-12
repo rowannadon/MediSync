@@ -1983,6 +1983,7 @@ export const displayedPeople = [
     email: 'john.d@hospital.org',
     admin: true,
     location: 'Room 101',
+    username: 'johndoe',
   },
   {
     name: 'Jane Doe',
@@ -1992,6 +1993,7 @@ export const displayedPeople = [
     email: 'jane.d@hospital.org',
     admin: false,
     location: 'Room 102',
+    username: 'janedoe',
   },
   {
     name: 'Jack Doe',
@@ -2001,6 +2003,7 @@ export const displayedPeople = [
     email: 'jack.d@hospital.org',
     admin: false,
     location: 'Room 103',
+    username: 'jackdoe',
   },
   {
     name: 'Jill Doe',
@@ -2010,6 +2013,7 @@ export const displayedPeople = [
     email: 'j.doe@hospital.org',
     admin: false,
     location: 'Room 104',
+    username: 'jilldoe',
   },
   {
     name: 'Emily Smith',
@@ -2019,6 +2023,7 @@ export const displayedPeople = [
     email: 'emily.s@hospital.org',
     admin: false,
     location: 'Room 215',
+    username: 'emilysmith',
   },
   {
     name: 'Michael Johnson',
@@ -2028,6 +2033,7 @@ export const displayedPeople = [
     email: 'michael.j@hospital.org',
     admin: true,
     location: 'Operating Room 1',
+    username: 'michaeljohnson',
   },
   {
     name: 'Sarah Williams',
@@ -2037,6 +2043,7 @@ export const displayedPeople = [
     email: 'sarah.w@hospital.org',
     admin: false,
     location: 'Operating Room 3',
+    username: 'sarahwilliams',
   },
   {
     name: 'Christopher Brown',
@@ -2046,6 +2053,7 @@ export const displayedPeople = [
     email: 'christopher.b@hospital.org',
     admin: false,
     location: 'Emergency Department',
+    username: 'chrisbrown',
   },
   {
     name: 'Jessica Garcia',
@@ -2055,6 +2063,7 @@ export const displayedPeople = [
     email: 'jessica.g@hospital.org',
     admin: false,
     location: 'ICU Ward 2',
+    username: 'jessicagarcia',
   },
   {
     name: 'William Martinez',
@@ -2064,6 +2073,7 @@ export const displayedPeople = [
     email: 'william.m@hospital.org',
     admin: false,
     location: 'Radiology Department',
+    username: 'williammartinez',
   },
   {
     name: 'Amanda Davis',
@@ -2073,6 +2083,7 @@ export const displayedPeople = [
     email: 'amanda.d@hospital.org',
     admin: false,
     location: 'Waiting Room 1',
+    username: 'amandadavis',
   },
   {
     name: 'James Wilson',
@@ -2082,6 +2093,7 @@ export const displayedPeople = [
     email: 'james.w@hospital.org',
     admin: false,
     location: 'Waiting Room 1',
+    username: 'jameswilson',
   },
   {
     name: 'Jennifer Taylor',
@@ -2091,6 +2103,7 @@ export const displayedPeople = [
     email: 'jennifer.t@hospital.org',
     admin: false,
     location: 'Waiting Room 1',
+    username: 'jennifertaylor',
   },
   {
     name: 'John Rodriguez',
@@ -2100,6 +2113,7 @@ export const displayedPeople = [
     email: 'john.r@hospital.org',
     admin: false,
     location: 'Waiting Room 1',
+    username: 'johnrodriguez',
   },
   {
     name: 'Emily Thompson',
@@ -2109,6 +2123,7 @@ export const displayedPeople = [
     email: 'emily.t@hospital.org',
     admin: false,
     location: 'Emergency Room',
+    username: 'emilythompson',
   },
   {
     name: 'Michael Nguyen',
@@ -2118,6 +2133,7 @@ export const displayedPeople = [
     email: 'michael.n@hospital.org',
     admin: false,
     location: 'Imaging Suite',
+    username: 'michaelnguyen',
   },
   {
     name: 'Sarah Martinez',
@@ -2127,6 +2143,7 @@ export const displayedPeople = [
     email: 'sarah.m@hospital.org',
     admin: false,
     location: 'Occupational Therapy Room',
+    username: 'sarahmartinez',
   },
   {
     name: 'Christopher Lee',
@@ -2136,6 +2153,7 @@ export const displayedPeople = [
     email: 'christopher.l@hospital.org',
     admin: false,
     location: 'Cardiology Department',
+    username: 'christopherlee',
   },
   {
     name: 'Jessica Brown',
@@ -2145,6 +2163,7 @@ export const displayedPeople = [
     email: 'jessica.b@hospital.org',
     admin: false,
     location: 'Imaging Suite',
+    username: 'jessicabrown',
   },
   {
     name: 'Matthew Garcia',
@@ -2154,6 +2173,7 @@ export const displayedPeople = [
     email: 'matthew.g@hospital.org',
     admin: false,
     location: 'Imaging Suite',
+    username: 'matthewgarcia',
   },
   {
     name: 'Amanda Clark',
@@ -2163,6 +2183,7 @@ export const displayedPeople = [
     email: 'amanda.c@hospital.org',
     admin: false,
     location: 'Laboratory',
+    username: 'amandaclark',
   },
   {
     name: 'Ryan Baker',
@@ -2172,6 +2193,7 @@ export const displayedPeople = [
     email: 'ryan.b@hospital.org',
     admin: false,
     location: 'Imaging Suite',
+    username: 'ryanbaker',
   },
   {
     name: 'Lauren White',
@@ -2181,6 +2203,7 @@ export const displayedPeople = [
     email: 'lauren.w@hospital.org',
     admin: false,
     location: 'Oncology Department',
+    username: 'laurenwhite',
   },
   {
     name: 'Ethan Thomas',
@@ -2190,6 +2213,7 @@ export const displayedPeople = [
     email: 'ethan.t@hospital.org',
     admin: false,
     location: 'ICU',
+    username: 'ethanthomas',
   },
   {
     name: 'Sophia Martinez',
@@ -2199,6 +2223,7 @@ export const displayedPeople = [
     email: 'sophia.m@hospital.org',
     admin: false,
     location: 'Surgical Ward',
+    username: 'sophiamartinez',
   },
   {
     name: 'Alexander Nguyen',
@@ -2208,6 +2233,7 @@ export const displayedPeople = [
     email: 'alexander.n@hospital.org',
     admin: false,
     location: 'Emergency Room',
+    username: 'alexandernguyen',
   },
   {
     name: 'Isabella Garcia',
@@ -2217,6 +2243,7 @@ export const displayedPeople = [
     email: 'isabella.g@hospital.org',
     admin: false,
     location: 'Internal Medicine Clinic',
+    username: 'isabellagarcia',
   },
   {
     name: 'Mason Lopez',
@@ -2226,6 +2253,7 @@ export const displayedPeople = [
     email: 'mason.l@hospital.org',
     admin: false,
     location: 'Family Medicine Clinic',
+    username: 'masonlopez',
   },
   {
     name: 'Amelia Clark',
@@ -2235,6 +2263,7 @@ export const displayedPeople = [
     email: 'amelia.c@hospital.org',
     admin: false,
     location: 'OB/GYN Clinic',
+    username: 'ameliaclark',
   },
   {
     name: 'William Baker',
@@ -2244,6 +2273,7 @@ export const displayedPeople = [
     email: 'william.b@hospital.org',
     admin: false,
     location: 'Cardiology Clinic',
+    username: 'williambaker',
   },
   // {
   //   name: 'Chloe White',

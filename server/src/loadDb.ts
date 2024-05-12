@@ -88,7 +88,22 @@ export const loadDb = async (connection: Connection) => {
   await PathwayTemplate.insertMany(procedures);
   await StageTemplate.insertMany(stageTemplates);
   await HospitalRoom.insertMany(displayedRooms);
-  await Person.insertMany(displayedPeople);
+  //await Person.insertMany(displayedPeople);
+  displayedPeople.forEach((person) => {
+    const password = bcrypt.hashSync(person.username, 10);
+    const user = new User({
+      name: person.name,
+      role: person.role,
+      department: person.department,
+      phone: person.phone,
+      email: person.email,
+      admin: person.admin,
+      location: person.location,
+      username: person.username,
+      password: password,
+    });
+    user.save();
+  });
 
   console.log('Database loaded');
 };

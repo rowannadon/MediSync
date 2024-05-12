@@ -8,7 +8,7 @@ def solve_scheduling(tasks, people, unavailable_periods):
 
     # Adjusting the person available hours to span multiple days
     min_start_time = 0
-    max_end_time = 24 * 60 * 7 * 10  # 7 days
+    max_end_time = 24 * 60 * 7 * 10  # 7 days in minutes
 
     # Task variables
     task_starts = {}
@@ -114,7 +114,7 @@ def test():
 def schedule():
     data = request.json
     tasks = data['tasks']
-    people = {int(i['id']): {'name': i['name'], 'type': i['type'], 'available_hours': i['available_hours']} for i in data['people']}
+    people = {i['id']: {'name': i['name'], 'type': i['type'], 'available_hours': i['available_hours']} for i in data['people']}
     unavailable_periods = []
 
     app.logger.info(f"Tasks: {tasks}")

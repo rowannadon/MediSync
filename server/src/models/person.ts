@@ -8,6 +8,8 @@ export const personSchema = new mongoose.Schema({
   email: String,
   admin: Boolean,
   location: String,
+  username: String,
+  password: { type: String, required: false },
 });
 
 const Person = mongoose.model('Person', personSchema);
