@@ -201,8 +201,7 @@ io.on('connection', async (socket: any) => {
 
   socket.on('getPeople', async () => {
     console.log('sending people');
-    const users = await User.find();
-    socket.emit('people', users);
+    socket.emit('people', await User.find());
   });
 
   socket.on('getRooms', async () => {
@@ -631,6 +630,7 @@ app.post('/login', async (req, res) => {
   // find user in db
   const dbUser = await User.findOne({ username: username });
   if (!dbUser) {
+    console.log('User not found: searched username:', username);
     return res.status(400).json({ error: 'User not found' });
   }
 
@@ -644,7 +644,7 @@ app.post('/login', async (req, res) => {
     _id: dbUser._id,
     username: username,
   };
-  // const refreshTokenSecret = refreshTokenS;
+  
   const accessToken = generateAccessToken(user);
   const refreshToken = jwt.sign(user, refreshTokenSecret);
 
@@ -735,8 +735,8 @@ app.post('/newUser', async (req, res) => {
       password: hashedPassword,
     });
 
-    const savedUser = await user.save();
-    res.json(savedUser);
+    const savedPerson = await user.save();
+    res.json(savedPerson);
   } catch {
     res.status(500).send();
   }
@@ -751,6 +751,17 @@ app.get('/user', async (req: any, res) => {
   }
   console.log('User data:', user[0]);
   res.json(user[0]);
+});
+
+app.post('/user/schedule', async (req: any, res: any) => {
+  console.log('Received request to update schedule for', req.username);
+  const user = await User.findOne({ username: req.username });
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  user.schedule = req.body;
+  await user.save();
+  res.json(user);
 });
 
 export const cleanup = async () => {
