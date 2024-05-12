@@ -146,7 +146,7 @@ function getMostRecentMonday() {
 }
 
 const runningPathways: RunningPathway[] = [];
-let assignments = new Map<string, string[]>();
+const assignments = new Map<string, string[]>();
 let lockedPathways: { user: string; pathway: string }[] = [];
 let lockedStages: { user: string; stage: string }[] = [];
 const sockets: { socket: Socket; username: string }[] = [];
@@ -440,7 +440,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
   for (const stage of runnableStages) {
     const stageStaff = staff
       .filter((s: any) => s.stageId === stage.template.id)
-      .map((s: any) => (s.value === 'Automatic' ? { type: s.staff } : { id: s.value}));
+      .map((s: any) =>
+        s.value === 'Automatic' ? { type: s.staff } : { id: s.value },
+      );
 
     const output = req.body.form.outputs.find(
       (o: any) => o.stageId === stage.template.id,
@@ -521,18 +523,17 @@ app.post('/runningPathways', async (req: any, res: any) => {
 
   console.log('tasks', tasks);
 
-  let result : any;
+  let result: any;
   try {
     result = await computeSchedule(tasks, people);
-
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: 'Failed to compute schedule' })
+    res.status(400).json({ error: 'Failed to compute schedule' });
   }
 
   const tasksData = result.data.tasks;
   const assignmentData: Assignments = result.data.assignments;
-  console.log(assignmentData)
+  console.log(assignmentData);
 
   const newRunningPathway: RunningPathway = {
     id: newId,

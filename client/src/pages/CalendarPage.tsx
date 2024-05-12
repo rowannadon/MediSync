@@ -65,7 +65,7 @@ const Calendar = () => {
       socket?.emit('disableFastForward');
       try {
         timelineRef.current?.timeline.removeCustomTime('fastForward');
-      } catch (e) { }
+      } catch (e) {}
     }
 
     return () => {
@@ -117,7 +117,7 @@ const Calendar = () => {
               console.log('stage', stage);
               const color =
                 nodeColors[
-                stage.template.type ? stage.template.type : 'default'
+                  stage.template.type ? stage.template.type : 'default'
                 ];
               return [
                 {
@@ -199,12 +199,14 @@ const Calendar = () => {
     const stageName = props.item.content.split('$')[0];
     const assignedStaff = props.item.content.split('$')[1].split(',');
     return (
-      <div className='flex flex-row space-x-4 h-full items-center'>
-        <h1 className=' text-[16px]'>{stageName}</h1>
+      <div className="flex h-full flex-row items-center space-x-4">
+        <h1 className=" text-[16px]">{stageName}</h1>
         {assignedStaff.map((staff: any) => {
           const person = people.find((person) => person.username === staff);
           return (
-            <div className='text-[12px]'>{person?.role}: {person?.name}</div>
+            <div className="text-[12px]">
+              {person?.role}: {person?.name}
+            </div>
           );
         })}
       </div>

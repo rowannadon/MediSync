@@ -50,11 +50,14 @@ import { navigate } from 'wouter/use-browser-location';
 const pathwayFormSchema = z.object({
   patient: z.string().min(1, 'Please select a patient.'),
   notes: z.string(),
-  startDate: z.string().min(1, 'Please select a start date.').refine(date => {
-    const inputDate = new Date(date);
-    const currentDate = new Date();
-    return inputDate > currentDate;
-  }, 'The start date must be in the future.'),
+  startDate: z
+    .string()
+    .min(1, 'Please select a start date.')
+    .refine((date) => {
+      const inputDate = new Date(date);
+      const currentDate = new Date();
+      return inputDate > currentDate;
+    }, 'The start date must be in the future.'),
   staff: z.array(
     z.object({
       staff: z.string(),
@@ -220,7 +223,7 @@ export function PathwayLaunchEditorForm({
       .catch((err) => {
         console.log(err);
         setLoading(false);
-        setErrorMessage('Failed to schedule pathway.')
+        setErrorMessage('Failed to schedule pathway.');
       });
   }
 
@@ -448,12 +451,11 @@ export function PathwayLaunchEditorForm({
                                                   }}
                                                   types={Array.from(
                                                     new Set(
-                                                      people
-                                                        .filter(
-                                                          (p: Person) =>
-                                                            p.role ===
-                                                            staff.staff,
-                                                        )
+                                                      people.filter(
+                                                        (p: Person) =>
+                                                          p.role ===
+                                                          staff.staff,
+                                                      ),
                                                     ),
                                                   )}
                                                   options={['Automatic']}
@@ -603,13 +605,13 @@ export function PathwayLaunchEditorForm({
                                                         output.next,
                                                       )
                                                         ? parseAbsolute(
-                                                          getOutputValue(
-                                                            field.value,
-                                                            stage,
-                                                            output.next,
-                                                          ),
-                                                          getLocalTimeZone(),
-                                                        )
+                                                            getOutputValue(
+                                                              field.value,
+                                                              stage,
+                                                              output.next,
+                                                            ),
+                                                            getLocalTimeZone(),
+                                                          )
                                                         : null
                                                     }
                                                     onChange={(date) => {
@@ -640,10 +642,10 @@ export function PathwayLaunchEditorForm({
                                                         output.next,
                                                       )
                                                         ? getOutputValue(
-                                                          field.value,
-                                                          stage,
-                                                          output.next,
-                                                        )
+                                                            field.value,
+                                                            stage,
+                                                            output.next,
+                                                          )
                                                         : ''
                                                     }
                                                     onChange={(text) => {
@@ -676,7 +678,11 @@ export function PathwayLaunchEditorForm({
                 />
               )}
               <Button variant="default" size="sm" className="flex space-x-2">
-                {loading ? <LoaderCircle className='h-6 w-6 animate-spin' /> : <Rocket className="h-6 w-6" />}
+                {loading ? (
+                  <LoaderCircle className="h-6 w-6 animate-spin" />
+                ) : (
+                  <Rocket className="h-6 w-6" />
+                )}
                 <div>Launch Pathway</div>
               </Button>
               {errorMessage && (
@@ -692,14 +698,14 @@ export function PathwayLaunchEditorForm({
               )}
               {successMessage && (
                 <div className="mb-4 flex w-full flex-row justify-between rounded-lg bg-green-400 p-3">
-                  <div className='space-x-2 flex flex-row'>
-                    <span>
-                    {successMessage}
-
-                    </span>
-                    <a className='hover:underline cursor-pointer text-slate-600' onClick={() => {
-                      navigate('/calendar')
-                    }}>
+                  <div className="flex flex-row space-x-2">
+                    <span>{successMessage}</span>
+                    <a
+                      className="cursor-pointer text-slate-600 hover:underline"
+                      onClick={() => {
+                        navigate('/calendar');
+                      }}
+                    >
                       View
                     </a>
                   </div>
