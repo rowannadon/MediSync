@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   phone: String,
   email: String,
   admin: Boolean,
-  location: String,
+  location: { type: String, default: 'none'},
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   refreshTokens: { type: [String], default: [] },
