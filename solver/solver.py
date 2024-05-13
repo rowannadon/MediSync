@@ -39,6 +39,8 @@ def solve_scheduling(tasks, people, unavailable_periods):
                 # Specific person by ID
                 assignments[task['id']][req['id']] = True
                 person_tasks[req['id']].append(task_intervals[task['id']])
+                for [start, end] in people[req['id']]['non_available_hours']:
+                    model.AddNoOverlap([interval_var, model.NewIntervalVar(start, end - start, end, 'non_available')])
             elif 'type' in req:
                 # Any person of a specific type, create a temporary list for possible person IDs
                 possible_people = [m_id for m_id, m in people.items() if m['type'] == req['type']]
@@ -52,9 +54,11 @@ def solve_scheduling(tasks, people, unavailable_periods):
                     person_interval = model.NewOptionalIntervalVar(start_var, duration, end_var, bvar, f"person_interval_{m_id}_{task['id']}")
                     person_tasks[m_id].append(person_interval)
 
-                    # Enforcing availability hours per person
-                    # model.Add(intervals[task['name']].StartExpr() >= people[m_id]['available_hours'][0]).OnlyEnforceIf(bvar)
-                    # model.Add(intervals[task['name']].EndExpr() <= people[m_id]['available_hours'][1]).OnlyEnforceIf(bvar)
+                    for start, end in people[m_id]['non_available_hours']:
+                        non_available_interval = model.NewOptionalIntervalVar(start, end - start, end, bvar, f"non_available_{m_id}_{start}_{end}")
+                        model.AddNoOverlap([person_interval, non_available_interval])
+        
+
                 # Require that exactly 1 people of the specified type are used
                 model.Add(sum(bvars) == 1)
 
@@ -114,7 +118,7 @@ def test():
 def schedule():
     data = request.json
     tasks = data['tasks']
-    people = {i['id']: {'name': i['name'], 'type': i['type'], 'available_hours': i['available_hours']} for i in data['people']}
+    people = {i['id']: {'name': i['name'], 'type': i['type'], 'non_available_hours': i['non_available_hours']} for i in data['people']}
     unavailable_periods = []
 
     app.logger.info(f"Tasks: {tasks}")
