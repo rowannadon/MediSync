@@ -15,10 +15,6 @@ export type Equipment = {
   desc: string;
 };
 
-export interface Assignments {
-  [key: number]: string[];
-}
-
 export type Occupancy = {
   current: number;
   total: number;
@@ -95,15 +91,22 @@ export type NextType = {
   value?: string;
 };
 
+export interface Assignments {
+  [key: number]: string[];
+}
+
 export interface RunningStage {
   id: string;
   template: StageTemplate;
-  assigned_staff: string[];
+  assigned_staff: {id?: string, type?: string}[];
   assigned_room: string;
   date: Date;
+  timeOffset: number;
   completed: boolean;
-  progress: number;
+  runnable: boolean;
   next: NextType[];
+  delay: number;
+  scheduleOffset: number;
 }
 
 export interface PathwayTemplate {

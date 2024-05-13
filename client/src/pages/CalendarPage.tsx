@@ -112,7 +112,7 @@ const Calendar = () => {
                 ...stage,
                 patient: procedure.patient,
               })),
-            )
+            ).filter(stage => stage.runnable)
             .flatMap((stage) => {
               console.log('stage', stage);
               const color =
@@ -128,7 +128,7 @@ const Calendar = () => {
                     minutes: stage.template?.durationEstimate,
                   }),
                   content: stage.template?.name
-                    ? stage.template.name + '$' + stage.assigned_staff.join(',')
+                    ? stage.template.name + '$' + stage.assigned_staff.map((s: any) => s.id).join(',')
                     : 'No Name',
                   group: stage.patient,
                   selectable: false,
@@ -137,6 +137,8 @@ const Calendar = () => {
                 },
               ];
             });
+
+            console.log('items2', items2)
 
           const groups2 = displayedPathways.current.map(
             (procedure: RunningPathway) => {

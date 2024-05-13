@@ -32,7 +32,7 @@ const LoginPage = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="username">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
                 data-cy="LoginUsername"
                 id="username"

@@ -13,11 +13,12 @@ import axios from 'axios';
 import {
   Assignments,
   PathwayStage,
+  Person,
   RunningPathway,
   RunningStage,
 } from './DataTypes';
 import { v4 as uuid } from 'uuid';
-import _ from 'lodash';
+import _, { update } from 'lodash';
 import DatabaseTest from './models/databaseTest';
 
 const httpPort = 3001;
@@ -265,6 +266,61 @@ io.on('connection', async (socket: any) => {
     );
   });
 
+  socket.on('completeStage', async ({ next, stage, pathway, notes }: { next: string, stage: string, pathway: string, notes: string }) => {
+    console.log('completing stage', stage);
+    const pathwayIndex = runningPathways.findIndex((p) => p.id === pathway);
+    const pwy = runningPathways[pathwayIndex];
+
+    const stageIndex = pwy.stages.findIndex(
+      (s) => s.id === stage,
+    );
+    const stg = pwy.stages[stageIndex];
+
+    pwy.notes = notes;
+
+    stg.next = stg.next.filter((n) => n.next === next.split('$')[0]);
+    console.log('stage', stg);
+
+    if (next) {
+      const newRunnableStages = findRunnableStages2(pwy.stages, next);
+      console.log('newRunnableStages', newRunnableStages);
+
+      for (const runnableStage of newRunnableStages) {
+        const index = pwy.stages.findIndex((s) => s.id === runnableStage);
+        pwy.stages[index].runnable = true;
+        console.log(pwy.stages[index].required_staff)
+        pwy.stages[index].assigned_staff = pwy.stages[index].required_staff;
+      }
+
+      const prevTasks = generateSolverTasksFromRunningStages(runningPathways);
+      const people = await generatePeople();
+
+      console.log('prevTasks', prevTasks);
+      //const completedTaskIndex = prevTasks.findIndex((t) => t.id === stage);
+      //prevTasks[completedTaskIndex].next = [next]
+
+      let result: any;
+      try {
+        result = await computeSchedule(prevTasks, people);
+      } catch (err) {
+        console.error(err);
+      }
+
+      for (const runnableStage of newRunnableStages) {
+        const index = pwy.stages.findIndex((s) => s.id === runnableStage);
+        pwy.stages[index].assigned_staff = result.data.assignments[runnableStage].map((a: string) => ({id: a}));
+      }
+
+      const tasksData = result.data.tasks;
+      console.log(tasksData);
+      updateRunningPathways(tasksData);
+    }
+    //stg.completed = true;
+    io.emit('runningPathways', runningPathways);
+    io.emit('assignments', assignments);
+
+  });
+
   socket.on('getInitialData', async () => {
     console.log('sending all data');
     socket.emit('pathwayTemplates', await PathwayTemplate.find());
@@ -275,6 +331,28 @@ io.on('connection', async (socket: any) => {
     socket.emit('assignments', assignments);
   });
 });
+
+const findRunnableStages2 = (stages: RunningStage[], root: string): string[] => {
+  const runnableStages: string[] = [];
+
+  // traverse from root until a stage with more than one next is found
+  const findNext = (id: string) => {
+    const stage = stages.find((s) => s.id.split('$')[0] === id.split('$')[0]);
+    if (!stage) {
+      return;
+    }
+    runnableStages.push(stage.id);
+    const next = stage.next;
+    // return if there are multiple next stages or no next stages
+    if (next.length > 1 || next.length === 0) {
+      return;
+    }
+    findNext(next[0].next);
+  };
+
+  findNext(root);
+  return runnableStages;
+};
 
 app.get('/test', async (req: any, res: any) => {
   return res.send('API response: This is a response from the server!');
@@ -387,20 +465,25 @@ app.get('/time', async (req: any, res: any) => {
   res.json(dbTest);
 });
 
-const findRunnableStages = (stages: PathwayStage[]): string[] => {
+const findRoot = (stages: PathwayStage[]): string => {
   const allIds = stages.map((s) => s.id);
   const nextIds = stages.map((s) => s.next.map((n) => n.next)).flat();
-  const root = _.difference(allIds, nextIds)[0];
+  return _.difference(allIds, nextIds)[0];
+};
+
+const findRunnableStages = (stages: PathwayStage[], root: string): string[] => {
   const runnableStages: string[] = [];
 
   // traverse from root until a stage with more than one next is found
   const findNext = (id: string) => {
     const stage = stages.find((s) => s.id === id);
+    console.log('stage', stage)
     if (!stage) {
       return;
     }
     runnableStages.push(stage.id);
     const next = stage.next;
+    console.log('next', next)
     // return if there are multiple next stages or no next stages
     if (next.length > 1 || next.length === 0) {
       return;
@@ -409,7 +492,6 @@ const findRunnableStages = (stages: PathwayStage[]): string[] => {
   };
 
   findNext(root);
-  console.log('runnable stages', runnableStages);
   return runnableStages;
 };
 
@@ -419,33 +501,23 @@ const computeSchedule = async (tasks: any, people: any) => {
     people: people,
   });
 
+  assignments = result.data.assignments;
+  console.log('assignments', assignments);
+
   return result;
 };
 
-app.post('/runningPathways', async (req: any, res: any) => {
-  console.log('creating new running pathway from: ', req.body);
-  const newId = uuid();
-
-  const pathwayStartDate = new Date(req.body.form.startDate);
-  const dateOffsetMinutes =
-    Math.abs(pathwayStartDate.valueOf() - serverStartDate.valueOf()) / 60000;
-
-  const runnableStageIds = findRunnableStages(req.body.stages);
-  const runnableStages = req.body.stages.filter((s: PathwayStage) =>
-    runnableStageIds.includes(s.id),
-  );
-
-  const staff = req.body.form.staff;
-  console.log(staff);
+const generateSolverTasksFromFormData = (form: any, stages: RunningStage[], dateOffsetMinutes: number) => {
   const tasks = [];
-  for (const stage of runnableStages) {
-    const stageStaff = staff
+
+  for (const stage of stages) {
+    const stageStaff = form.staff
       .filter((s: any) => s.stageId === stage.template.id)
       .map((s: any) =>
         s.value === 'Automatic' ? { type: s.staff } : { id: s.value },
       );
 
-    const output = req.body.form.outputs.find(
+    const output = form.outputs.find(
       (o: any) => o.stageId === stage.template.id,
     );
     console.log(stage);
@@ -468,12 +540,12 @@ app.post('/runningPathways', async (req: any, res: any) => {
     const next =
       stage.next.length > 1
         ? []
-        : stage.next.map((n: any) => n.next + '-' + req.body.form.patient);
+        : stage.next.map((n: any) => n.next + '$' + form.patient);
 
     const task = {
       name: stage.template.name,
-      id: stage.id + '-' + req.body.form.patient,
-      patient: req.body.form.patient,
+      id: stage.id + '$' + form.patient,
+      patient: form.patient,
       duration: stage.template.durationEstimate,
       offset: offset,
       delay: delay,
@@ -484,13 +556,16 @@ app.post('/runningPathways', async (req: any, res: any) => {
     console.log('newtask', task);
   }
 
+  return tasks;
+};
+
+const generateSolverTasksFromRunningStages = (runningPathways: RunningPathway[]) => {
+  const tasks = [];
   for (const pathway of runningPathways) {
     for (const stage of pathway.stages.filter(
       (s) => !s.completed && s.runnable,
     )) {
-      const stageStaff = stage.assigned_staff.map((s: string) => ({
-        id: s,
-      }));
+      const stageStaff = stage.assigned_staff
 
       const offset =
         stage.scheduleOffset > 0 ? stage.scheduleOffset : stage.timeOffset;
@@ -506,35 +581,67 @@ app.post('/runningPathways', async (req: any, res: any) => {
         next:
           stage.next.length > 1
             ? []
-            : stage.next.map((n: any) => n.next + '-' + pathway.patient),
+            : stage.next.map((n: any) => n.next + '$' + pathway.patient),
       };
 
       tasks.push(task);
       console.log('oldtask', task);
     }
   }
+  return tasks;
+};
 
+const updateRunningPathways = (tasksData: any) => {
+  for (const pathway of runningPathways) {
+    for (const stage of pathway.stages) {
+      if (stage.completed || !stage.runnable) {
+        continue;
+      }
+      if (tasksData[stage.id]['start'])
+        stage.date = new Date(
+          serverStartDate.valueOf() + tasksData[stage.id]['start'] * 60000,
+        );
+    }
+  }
+}
+
+const generatePeople = async () => {
   const users = await User.find();
-  const people = users.map((person: any, index: number) => ({
+  return users.map((person: any) => ({
     id: person.username,
     type: person.role,
     name: person.name,
     available_hours: [8 * 60, 16 * 60],
   }));
+};
 
-  console.log('tasks', tasks);
+app.post('/runningPathways', async (req: any, res: any) => {
+  console.log('creating new running pathway from: ', req.body);
+  const newId = uuid();
+
+  const pathwayStartDate = new Date(req.body.form.startDate);
+  const dateOffsetMinutes =
+    Math.abs(pathwayStartDate.valueOf() - serverStartDate.valueOf()) / 60000;
+
+  const root = findRoot(req.body.stages);
+  const runnableStageIds = findRunnableStages(req.body.stages, root);
+  const runnableStages = req.body.stages.filter((s: PathwayStage) =>
+    runnableStageIds.includes(s.id),
+  );
+
+  const formTasks = generateSolverTasksFromFormData(req.body.form, runnableStages, dateOffsetMinutes);
+  const prevTasks = generateSolverTasksFromRunningStages(runningPathways);
+  const people = await generatePeople();
 
   let result: any;
   try {
-    result = await computeSchedule(tasks, people);
+    result = await computeSchedule([...formTasks, ...prevTasks], people);
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: 'Failed to compute schedule' });
   }
 
   const tasksData = result.data.tasks;
-  assignments = result.data.assignments;
-  console.log(assignments);
 
   const newRunningPathway: RunningPathway = {
     id: newId,
@@ -543,20 +650,27 @@ app.post('/runningPathways', async (req: any, res: any) => {
     notes: req.body.form.notes,
     title: req.body.pathway.title,
     desc: req.body.pathway.desc,
-    stages: runnableStages.map((stage: RunningStage) => {
+    stages: req.body.stages.map((stage: RunningStage) => {
       const output = req.body.form.outputs.find(
         (o: any) => o.stageId === stage.template.id,
       );
       const assigned =
-        result.data.assignments[stage.id + '-' + req.body.form.patient];
-      const ms_offset =
-        tasksData[stage.id + '-' + req.body.form.patient]['start'] * 60000;
+        result.data.assignments[stage.id + '$' + req.body.form.patient];
+      const ms_offset = tasksData[stage.id + '$' + req.body.form.patient] ?
+        tasksData[stage.id + '$' + req.body.form.patient]['start'] * 60000 : 0;
+
+      const staff = req.body.form.staff
+        .filter((s: any) => s.stageId === stage.template.id)
+        .map((s: any) =>
+          s.value === 'Automatic' ? { type: s.staff } : { id: s.value },
+        );
       return {
         ...stage,
         template: stage.template,
-        id: stage.id + '-' + req.body.form.patient,
+        id: stage.id + '$' + req.body.form.patient,
         timeOffset: dateOffsetMinutes,
-        assigned_staff: assigned ? assigned : [],
+        assigned_staff: assigned ? assigned.map((a: string) => ({id: a})) : [],
+        required_staff: staff,
         assigned_room: '',
         date: new Date(serverStartDate.valueOf() + ms_offset),
         completed: false,
@@ -566,23 +680,13 @@ app.post('/runningPathways', async (req: any, res: any) => {
         scheduleOffset:
           output && output.type === 'Scheduled'
             ? (new Date(output.value).valueOf() - serverStartDate.valueOf()) /
-              60000
+            60000
             : 0,
       };
     }),
   };
 
-  for (const pathway of runningPathways) {
-    for (const stage of pathway.stages) {
-      if (stage.completed) {
-        continue;
-      }
-      if (tasksData[stage.id]['start'])
-        stage.date = new Date(
-          serverStartDate.valueOf() + tasksData[stage.id]['start'] * 60000,
-        );
-    }
-  }
+  updateRunningPathways(tasksData);
 
   if (!runningPathways.some((p) => p.patient === req.body.form.patient)) {
     runningPathways.push(newRunningPathway);
@@ -803,3 +907,13 @@ export const cleanup = async () => {
   });
   await mongoose.connection.close();
 };
+
+// Catch uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+// Catch unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled Rejection:', err);
+});
