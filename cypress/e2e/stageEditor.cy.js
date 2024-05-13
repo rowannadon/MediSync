@@ -1,6 +1,6 @@
 describe('Tests Creating a Stage Template', () => {
    it('Visit Webpage', () => {
-    cy.login('test','test')  
+    cy.login('test3','test3')  
     cy.wait(1000)  
     cy.visit('http://localhost:5173/stage-editor')  
     cy.get('[data-cy="NewStageButton"]').click()

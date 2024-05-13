@@ -957,6 +957,7 @@ export const cleanup = async () => {
     });
   });
   await mongoose.connection.close();
+  clearInterval(mainInterval);
 };
 
 // Catch uncaught exceptions

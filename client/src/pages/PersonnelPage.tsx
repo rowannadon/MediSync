@@ -160,12 +160,12 @@ export const columns: ColumnDef<Person>[] = [
 
       const handleDelete = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
-      
+
         instance
           .delete(`/api/user/${user.username}`)
           .then(() => {
             alert('User deleted');
-            
+
           })
           .catch((error) => {
             console.error(error);
@@ -236,7 +236,7 @@ const Personnel = () => {
         setSuccessMessage('New user created');
 
         alert('New user created');
-        
+
         setName('');
         setRole('');
         setDepartment('');
@@ -279,14 +279,6 @@ const Personnel = () => {
     }, 300);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="m-10 flex w-full flex-row justify-center">
-        <LoaderCircle className="h-5 w-5 animate-spin" />
-      </div>
-    );
-  };
-
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -324,8 +316,11 @@ const Personnel = () => {
 
 
         />
+        {loading && <div className="absolute z-10 right-7 top-7 h-6 w-6">
+          <LoaderCircle className="h-5 w-5 animate-spin" />
+        </div>}
         {user && (user as { admin: boolean }).admin && (
-          <div className="space-x-2 pt-4 pr-4">
+          <div className="absolute z-10 right-7 top-7">
             <Dialog key={dialogKey}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="icon">

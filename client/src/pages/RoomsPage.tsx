@@ -206,14 +206,6 @@ const Rooms = () => {
     }, 300);
   }, []);
 
-  if (loading) {
-    return (
-    <div className="m-10 flex w-full flex-row justify-center">
-      <LoaderCircle className="h-5 w-5 animate-spin" />
-    </div>
-    );
-  };
-  
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -242,8 +234,11 @@ const Rooms = () => {
             },
           ]}
         />
+        {loading && <div className="absolute z-10 right-7 top-7 h-6 w-6">
+          <LoaderCircle className="h-5 w-5 animate-spin" />
+        </div>}
         {user && (user as { admin: boolean }).admin && (
-          <div className="space-x-2 pt-4 pr-4">
+          <div className="absolute z-10 right-7 top-7">
             <Button variant="outline" size="icon">
               <Plus className="h-6 w-6" />
             </Button>
