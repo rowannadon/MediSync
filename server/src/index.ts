@@ -961,6 +961,21 @@ app.post('/newRoom', async (req: any, res: any) => {
   }
 });
 
+app.delete('/room/:room_number', async (req: any, res: any) => {
+  try {
+    const room = await HospitalRoom.findOne({ room_number: req.params.room_number });
+
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+
+    await HospitalRoom.deleteOne({ room_number: req.params.room_number });
+    res.json({ message: 'Room deleted' });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 export const cleanup = async () => {
   console.log('Cleaning up');
   await new Promise((resolve, reject) => {

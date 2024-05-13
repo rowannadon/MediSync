@@ -179,6 +179,22 @@ export const columns: ColumnDef<HospitalRoom>[] = [
     cell: ({ row }) => {
       const user = row.original;
 
+      const handleDelete = (event: { preventDefault: () => void; }) => {
+        event.preventDefault();
+      
+        const roomNumber = row.original.room_number; // the room_number of the current row
+      
+        instance
+          .delete(`/api/room/${roomNumber}`)
+          .then(() => {
+            alert('Room deleted');
+          })
+          .catch((error) => {
+            console.error(error);
+            alert('Failed to delete room');
+          });
+      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -194,7 +210,7 @@ export const columns: ColumnDef<HospitalRoom>[] = [
             </DropdownMenuItem>
             <DropdownMenuItem>Edit room</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Delete room</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDelete}>Delete room</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
