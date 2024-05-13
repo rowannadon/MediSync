@@ -19,12 +19,30 @@ import {
   MoreHorizontal,
   Plus,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { DataTable } from '../DataTable';
 import { Equipment, HospitalRoom, Occupancy } from '../DataTypes';
 import { Badge } from '../components/ui/badge';
 import { useRemoteDataStore } from '@/RemoteDataStore';
 import { useEffect, useState } from 'react';
 import { instance } from '@/AxiosInstance';
+import { Input } from '@/components/ui/input';
 
 export const columns: ColumnDef<HospitalRoom>[] = [
   {
@@ -186,9 +204,60 @@ export const columns: ColumnDef<HospitalRoom>[] = [
 
 const Rooms = () => {
   const rooms = useRemoteDataStore((state) => state.rooms);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [dialogKey, setDialogKey] = useState(0);
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [roomNumber, setRoomNumber] = useState("");
+  const [roomType, setRoomType] = useState("");
+  const [roomCapacity, setRoomCapacity] = useState(0);
+
+  const handleSubmit = (event: { preventDefault: () => void; }) => {
+    event.preventDefault();
+
+    if (!roomNumber || !roomType ) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    const newRoom = {
+      room_number: roomNumber,
+      type: roomType,
+      equipment: [],
+      occupancy: {
+        current: 0,
+        total: roomCapacity,
+      },
+    };
+
+    instance.post('/api/newRoom', newRoom)
+      .then(response => {
+        console.log(response.data);
+        setSuccessMessage('New room created');
+
+        alert('New room created');
+        
+        setRoomNumber('');
+        setRoomType('');
+        setRoomCapacity(0);
+        
+        setDialogKey(dialogKey + 1);
+      })
+      .catch(error => {
+        if (error.response && error.response.status === 400) {
+          alert(error.response.data.message);
+        } else {
+          console.log(error);
+        }
+      });
+    {
+      successMessage && (
+        <div>{successMessage}</div>
+      )
+    }
+    console.log('new room created');
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -206,6 +275,14 @@ const Rooms = () => {
     }, 300);
   }, []);
 
+  if (loading) {
+    return (
+    <div className="m-10 flex w-full flex-row justify-center">
+      <LoaderCircle className="h-5 w-5 animate-spin" />
+    </div>
+    );
+  };
+  
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -240,10 +317,26 @@ const Rooms = () => {
           </div>
         )}
         {user && (user as { admin: boolean }).admin && (
-          <div className="absolute right-7 top-7 z-10">
-            <Button variant="outline" size="icon">
-              <Plus className="h-6 w-6" />
-            </Button>
+          <div className="space-x-2 pt-4 pr-4">
+            <Dialog key={dialogKey}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Plus className="h-6 w-6" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Room</DialogTitle>
+                  <DialogDescription>Fill in every box</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit}>
+                  <Input placeholder="Room Number" className="mb-4" value={roomNumber} onChange={(e) => setRoomNumber(e.target.value)} />
+                  <Input placeholder="Type" className="mb-4" value={roomType} onChange={(e) => setRoomType(e.target.value)} />
+                  <Input placeholder="Capacity" className="mb-4" value={roomCapacity || ''} onChange={(e) => setRoomCapacity(Number(e.target.value))} /> 
+                  <Button variant="outline" type="submit">Submit</Button>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </Card>
