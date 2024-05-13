@@ -937,9 +937,10 @@ app.post('/user/schedule', async (req: any, res: any) => {
 
 app.post('/newRoom', async (req: any, res: any) => {
   try {
-
     // Check if a room with the same room number already exists
-    const existingRoom = await HospitalRoom.findOne({ room_number: req.body.room_number });
+    const existingRoom = await HospitalRoom.findOne({
+      room_number: req.body.room_number,
+    });
 
     if (existingRoom) {
       return res.status(400).json({ message: 'Room already exists' });
@@ -951,7 +952,6 @@ app.post('/newRoom', async (req: any, res: any) => {
       equipment: req.body.equipment,
       occupancy: req.body.occupancy,
     });
-    
 
     const savedRoom = await room.save();
     res.json(savedRoom);
