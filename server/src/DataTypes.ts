@@ -99,6 +99,7 @@ export interface RunningStage {
   id: string;
   template: StageTemplate;
   assigned_staff: string[];
+  required_staff: string[];
   assigned_room: string;
   date: Date;
   timeOffset: number;

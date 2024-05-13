@@ -1,23 +1,14 @@
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
-import Task from './TaskDisplay';
 import { Card } from './components/ui/card';
-import { Checkbox } from './components/ui/checkbox';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { useEffect, useState } from 'react';
-import { instance } from './AxiosInstance';
 import { RunningStage } from './DataTypes';
 import { Table, TableBody, TableCell, TableRow } from './components/ui/table';
 import { useRemoteDataStore } from './RemoteDataStore';
-import { useLocalDataStore } from './LocalDataStore';
 import { useAuth } from './AuthProvider';
 import { Textarea } from './components/ui/textarea';
 import { Button } from './components/ui/button';
+import { Separator } from './components/ui/separator';
+import { useSocket } from './SocketProvider';
 
 const TasksDisplay = () => {
   const [tasks, setTasks] = useState<RunningStage[]>([]);
@@ -27,6 +18,8 @@ const TasksDisplay = () => {
   const runningPathways = useRemoteDataStore((state) => state.runningPathways);
   const people = useRemoteDataStore((state) => state.people);
   const [sortedTasks, setSortedTasks] = useState<RunningStage[]>([]);
+  const [selectedNext, setSelectedNext] = useState('');
+  const socket = useSocket();
 
   useEffect(() => {
     const tasks = [];
@@ -79,19 +72,43 @@ const TasksDisplay = () => {
   const SelectedTaskDisplay = (props: { task: RunningStage }) => {
     const date = new Date(props.task.date);
     const staffNames = props.task.assigned_staff.map((staff) =>
-      people.find((p) => p.username === staff),
+      people.find((p) => p.username === staff.id),
     );
     const parentPathway = runningPathways.find((p) =>
       p.stages.find((s) => s.id === props.task.id),
     );
+
+    const [notes, setNotes] = useState(parentPathway?.notes);
+
+    const nextOptions = props.task.next.map((next) => {
+      const nextStage = parentPathway?.stages.find(
+        (s) => s.id === next.next + '$' + parentPathway.patient,
+      );
+      return (
+        <Card
+          className={`cursor-pointer p-2 hover:bg-slate-50 ${
+            selectedNext === nextStage?.id
+              ? 'border-slate-300 bg-slate-200 hover:bg-slate-200'
+              : ''
+          }`}
+          onClick={() => {
+            if (nextStage) {
+              setSelectedNext(nextStage.id);
+            }
+          }}
+        >
+          <p>{nextStage?.template.name}</p>
+        </Card>
+      );
+    });
+
     return (
-      <div className="space-y-2 p-4">
+      <div className="space-y-2 p-2">
         <h1 className=" font-extrabold">{props.task.template.name}</h1>
         <p>Date: {date.toLocaleDateString()}</p>
         <p>Scheduled Time: {date.toLocaleTimeString()}</p>
         <p>Location: {props.task.assigned_room}</p>
         <p>Estimated duration: {props.task.template.durationEstimate} min</p>
-        <p>Completed {props.task.completed ? 'Yes' : 'No'} </p>
         <p>Staff:</p>
         <ul className="list-disc">
           {staffNames.map((staff) => (
@@ -100,14 +117,33 @@ const TasksDisplay = () => {
             </li>
           ))}
         </ul>
-        <p>Notes:</p>
         <Textarea
           className="w-full"
-          placeholder="No notes..."
-          value={parentPathway?.notes}
+          placeholder="Add notes..."
+          value={notes}
+          onChange={(e) => {
+            setNotes(e.target.value);
+          }}
         />
-        <div>
-          <Button>Complete Task</Button>
+        {props.task.next.length > 1 && (
+          <Card className="flex flex-col space-y-2 p-2">{nextOptions}</Card>
+        )}
+        <Separator />
+        <div className="flex flex-grow flex-row-reverse">
+          <Button
+            onClick={() => {
+              const completionData = {
+                next: selectedNext,
+                stage: props.task.id,
+                pathway: parentPathway?.id,
+                notes: notes,
+              };
+              console.log(completionData);
+              socket?.emit('completeStage', completionData);
+            }}
+          >
+            Complete Task
+          </Button>
         </div>
       </div>
     );
@@ -120,7 +156,7 @@ const TasksDisplay = () => {
       </p>
       <div className="flex flex-grow flex-col items-center justify-center">
         <Card className="flex h-[600x] w-[600px] flex-grow space-x-4 p-4">
-          <Card className="flex min-w-[250px]">
+          <Card className="flex min-w-[300px] max-w-[300px]">
             <ScrollArea className="flex flex-grow">
               {taskList.length > 0 && (
                 <Table className="w-full">
