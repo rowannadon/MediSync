@@ -15,12 +15,16 @@ import {
   Circle,
   CircleAlert,
   CircleX,
+  LoaderCircle,
   MoreHorizontal,
+  Plus,
 } from 'lucide-react';
 import { DataTable } from '../DataTable';
 import { Equipment, HospitalRoom, Occupancy } from '../DataTypes';
 import { Badge } from '../components/ui/badge';
 import { useRemoteDataStore } from '@/RemoteDataStore';
+import { useEffect, useState } from 'react';
+import { instance } from '@/AxiosInstance';
 
 export const columns: ColumnDef<HospitalRoom>[] = [
   {
@@ -182,6 +186,34 @@ export const columns: ColumnDef<HospitalRoom>[] = [
 
 const Rooms = () => {
   const rooms = useRemoteDataStore((state) => state.rooms);
+
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      instance
+        .get('/api/user')
+        .then((response) => {
+          const fetchedUser = response.data;
+          setUser(fetchedUser);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error(error);
+          setLoading(false);
+        });
+    }, 300);
+  }, []);
+
+  if (loading) {
+    return (
+    <div className="m-10 flex w-full flex-row justify-center">
+      <LoaderCircle className="h-5 w-5 animate-spin" />
+    </div>
+    );
+  };
+  
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -210,6 +242,13 @@ const Rooms = () => {
             },
           ]}
         />
+        {user && (user as { admin: boolean }).admin && (
+          <div className="space-x-2 pt-4 pr-4">
+            <Button variant="outline" size="icon">
+              <Plus className="h-6 w-6" />
+            </Button>
+          </div>
+        )}
       </Card>
     </div>
   );
