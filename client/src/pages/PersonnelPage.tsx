@@ -158,6 +158,21 @@ export const columns: ColumnDef<Person>[] = [
         }, 300);
       }, []);
 
+      const handleDelete = (event: { preventDefault: () => void; }) => {
+        event.preventDefault();
+      
+        instance
+          .delete(`/api/user/${user.username}`)
+          .then(() => {
+            alert('User deleted');
+            
+          })
+          .catch((error) => {
+            console.error(error);
+            alert('Failed to delete user');
+          });
+      };
+
       return currUser && (currUser as { admin: boolean }).admin ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -173,7 +188,7 @@ export const columns: ColumnDef<Person>[] = [
             </DropdownMenuItem>
             <DropdownMenuItem>Edit account</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Delete account</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDelete}>Delete account</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null;

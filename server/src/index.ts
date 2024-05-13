@@ -736,7 +736,7 @@ function generateAccessToken(user: any) {
 // add a new user and store password hash
 app.post('/newUser', async (req, res) => {
   try {
-    
+
     // Check if a user with the provided username already exists
     const existingUser = await User.findOne({ username: req.body.username });
 
@@ -776,6 +776,21 @@ app.get('/user', async (req: any, res) => {
   }
   console.log('User data:', user[0]);
   res.json(user[0]);
+});
+
+app.delete('/user/:username', async (req: any, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await User.deleteOne({ username: req.params.username });
+    res.json({ message: 'User deleted' });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 app.post('/user/schedule', async (req: any, res: any) => {
