@@ -9,8 +9,8 @@ beforeAll(async () => {
   // delay starting tests to allow server to start
   await new Promise((resolve) => setTimeout(resolve, 2000));
   const res = await axios.post('http://localhost:3001/login', {
-    username: 'test',
-    password: 'test',
+    username: 'test3',
+    password: 'test3',
   });
   token = res.data.accessToken;
 });

@@ -1,4 +1,11 @@
-import { FilePlus, LoaderCircle, RefreshCcw, Rocket, Save, Trash } from 'lucide-react';
+import {
+  FilePlus,
+  LoaderCircle,
+  RefreshCcw,
+  Rocket,
+  Save,
+  Trash,
+} from 'lucide-react';
 import NavMenu from '../NavMenu';
 
 import { Button } from '../components/ui/button';
@@ -84,14 +91,6 @@ const PathwayLaunchEditor = () => {
     }, 300);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="m-10 flex w-full flex-row justify-center">
-        <LoaderCircle className="h-5 w-5 animate-spin" />
-      </div>
-    );
-  };
-
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -138,6 +137,11 @@ const PathwayLaunchEditor = () => {
                 </h1>
               </div>
               <div className="flex flex-1 flex-row-reverse items-center space-x-2 space-x-reverse p-4">
+                {loading && (
+                  <div>
+                    <LoaderCircle className="h-5 w-5 animate-spin" />
+                  </div>
+                )}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     {user && (user as { admin: boolean }).admin && (

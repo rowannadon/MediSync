@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -35,7 +35,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from '@/components/ui/select';
 import { DataTable } from '../DataTable';
 import { Equipment, HospitalRoom, Occupancy } from '../DataTypes';
 import { Badge } from '../components/ui/badge';
@@ -225,15 +225,15 @@ const Rooms = () => {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [roomNumber, setRoomNumber] = useState("");
-  const [roomType, setRoomType] = useState("");
+  const [roomNumber, setRoomNumber] = useState('');
+  const [roomType, setRoomType] = useState('');
   const [roomCapacity, setRoomCapacity] = useState(0);
 
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
 
-    if (!roomNumber || !roomType ) {
-      alert("Please fill in all fields");
+    if (!roomNumber || !roomType) {
+      alert('Please fill in all fields');
       return;
     }
 
@@ -247,20 +247,21 @@ const Rooms = () => {
       },
     };
 
-    instance.post('/api/newRoom', newRoom)
-      .then(response => {
+    instance
+      .post('/api/newRoom', newRoom)
+      .then((response) => {
         console.log(response.data);
         setSuccessMessage('New room created');
 
         alert('New room created');
-        
+
         setRoomNumber('');
         setRoomType('');
         setRoomCapacity(0);
-        
+
         setDialogKey(dialogKey + 1);
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response && error.response.status === 400) {
           alert(error.response.data.message);
         } else {
@@ -268,9 +269,7 @@ const Rooms = () => {
         }
       });
     {
-      successMessage && (
-        <div>{successMessage}</div>
-      )
+      successMessage && <div>{successMessage}</div>;
     }
     console.log('new room created');
   };
@@ -293,12 +292,12 @@ const Rooms = () => {
 
   if (loading) {
     return (
-    <div className="m-10 flex w-full flex-row justify-center">
-      <LoaderCircle className="h-5 w-5 animate-spin" />
-    </div>
+      <div className="m-10 flex w-full flex-row justify-center">
+        <LoaderCircle className="h-5 w-5 animate-spin" />
+      </div>
     );
-  };
-  
+  }
+
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -327,8 +326,13 @@ const Rooms = () => {
             },
           ]}
         />
+        {loading && (
+          <div className="absolute right-7 top-7 z-10 h-6 w-6">
+            <LoaderCircle className="h-5 w-5 animate-spin" />
+          </div>
+        )}
         {user && (user as { admin: boolean }).admin && (
-          <div className="space-x-2 pt-4 pr-4">
+          <div className="space-x-2 pr-4 pt-4">
             <Dialog key={dialogKey}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -341,10 +345,27 @@ const Rooms = () => {
                   <DialogDescription>Fill in every box</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
-                  <Input placeholder="Room Number" className="mb-4" value={roomNumber} onChange={(e) => setRoomNumber(e.target.value)} />
-                  <Input placeholder="Type" className="mb-4" value={roomType} onChange={(e) => setRoomType(e.target.value)} />
-                  <Input placeholder="Capacity" className="mb-4" value={roomCapacity || ''} onChange={(e) => setRoomCapacity(Number(e.target.value))} /> 
-                  <Button variant="outline" type="submit">Submit</Button>
+                  <Input
+                    placeholder="Room Number"
+                    className="mb-4"
+                    value={roomNumber}
+                    onChange={(e) => setRoomNumber(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Type"
+                    className="mb-4"
+                    value={roomType}
+                    onChange={(e) => setRoomType(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Capacity"
+                    className="mb-4"
+                    value={roomCapacity || ''}
+                    onChange={(e) => setRoomCapacity(Number(e.target.value))}
+                  />
+                  <Button variant="outline" type="submit">
+                    Submit
+                  </Button>
                 </form>
               </DialogContent>
             </Dialog>

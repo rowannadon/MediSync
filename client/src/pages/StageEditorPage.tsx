@@ -127,14 +127,6 @@ const StageEditor = () => {
     }, 300);
   }, []);
 
-  if (loading) {
-    return (
-    <div className="m-10 flex w-full flex-row justify-center">
-      <LoaderCircle className="h-5 w-5 animate-spin" />
-    </div>
-    );
-  };
-
   return (
     <div className="flex h-screen max-h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -166,6 +158,11 @@ const StageEditor = () => {
                 </h1>
               </div>
               <div className="flex flex-1 flex-row-reverse space-x-2 space-x-reverse p-4">
+                {loading && (
+                  <div>
+                    <LoaderCircle className="h-5 w-5 animate-spin" />
+                  </div>
+                )}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     {user && (user as { admin: boolean }).admin && (

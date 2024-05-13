@@ -24,7 +24,7 @@ export const loadDb = async (connection: Connection) => {
       const user = new User({
         id: 2222,
         name: 'Test User 4',
-        role: 'Physician',
+        role: 'Admin',
         department: 'Cardiology',
         phone: '1234567890',
         email: 'testExample4@gmail.com',

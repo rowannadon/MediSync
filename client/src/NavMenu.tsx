@@ -110,7 +110,7 @@ const NavMenu: React.FC = () => {
                 <p>Calendar</p>
               </TooltipContent>
             </Tooltip>
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger>
                 <StyledLink href="/conflict">
                   <CircleX className="h-7 w-7" />
@@ -119,7 +119,7 @@ const NavMenu: React.FC = () => {
               <TooltipContent side="right" sideOffset={5}>
                 <p>Conflict Manager</p>
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
           </div>
           <div className="flex flex-col items-center space-y-4 pb-3">
             <Tooltip>

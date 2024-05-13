@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -26,8 +26,15 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Check, ChevronsUpDown, LoaderCircle, MoreHorizontal, Plus, X } from 'lucide-react';
+} from '@/components/ui/select';
+import {
+  Check,
+  ChevronsUpDown,
+  LoaderCircle,
+  MoreHorizontal,
+  Plus,
+  X,
+} from 'lucide-react';
 import { DataTable } from '../DataTable';
 import { Person } from '../DataTypes';
 import { useRemoteDataStore } from '@/RemoteDataStore';
@@ -158,14 +165,13 @@ export const columns: ColumnDef<Person>[] = [
         }, 300);
       }, []);
 
-      const handleDelete = (event: { preventDefault: () => void; }) => {
+      const handleDelete = (event: { preventDefault: () => void }) => {
         event.preventDefault();
-      
+
         instance
           .delete(`/api/user/${user.username}`)
           .then(() => {
             alert('User deleted');
-            
           })
           .catch((error) => {
             console.error(error);
@@ -188,7 +194,9 @@ export const columns: ColumnDef<Person>[] = [
             </DropdownMenuItem>
             <DropdownMenuItem>Edit account</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleDelete}>Delete account</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDelete}>
+              Delete account
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null;
@@ -203,20 +211,30 @@ const Personnel = () => {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
-  const [role, setRole] = useState("");
-  const [department, setDepartment] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [adminStatus, setAdminStatus] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('');
+  const [department, setDepartment] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [adminStatus, setAdminStatus] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleSubmit = (event: { preventDefault: () => void; }) => {
+  const handleSubmit = (event: { preventDefault: () => void }) => {
     event.preventDefault();
 
-    if (!name || !role || !department || !phone || !email || !adminStatus || !location || !username || !password) {
-      alert("Please fill in all fields");
+    if (
+      !name ||
+      !role ||
+      !department ||
+      !phone ||
+      !email ||
+      !adminStatus ||
+      !location ||
+      !username ||
+      !password
+    ) {
+      alert('Please fill in all fields');
       return;
     }
     const newUser = {
@@ -230,13 +248,14 @@ const Personnel = () => {
       password,
     };
 
-    instance.post('/api/newUser', newUser)
-      .then(response => {
+    instance
+      .post('/api/newUser', newUser)
+      .then((response) => {
         console.log(response.data);
         setSuccessMessage('New user created');
 
         alert('New user created');
-        
+
         setName('');
         setRole('');
         setDepartment('');
@@ -247,7 +266,7 @@ const Personnel = () => {
         setPassword('');
         setDialogKey(dialogKey + 1);
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.response && error.response.status === 400) {
           alert(error.response.data.message);
         } else {
@@ -255,12 +274,9 @@ const Personnel = () => {
         }
       });
     {
-      successMessage && (
-        <div>{successMessage}</div>
-      )
+      successMessage && <div>{successMessage}</div>;
     }
     console.log('new user created');
-
   };
 
   useEffect(() => {
@@ -279,25 +295,15 @@ const Personnel = () => {
     }, 300);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="m-10 flex w-full flex-row justify-center">
-        <LoaderCircle className="h-5 w-5 animate-spin" />
-      </div>
-    );
-  };
-
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
       <Card className="mb-2 mr-2 mt-2 flex flex-grow">
-
         <DataTable
           pages={8}
           filterColumn="name"
           columns={columns}
           data={people}
-
           singleSelectFilterColumns={[
             {
               column: 'role',
@@ -317,15 +323,16 @@ const Personnel = () => {
               options: Array.from(
                 new Set(people.map((person) => person.location)),
               ),
-
             },
-
           ]}
-
-
         />
+        {loading && (
+          <div className="absolute right-7 top-7 z-10 h-6 w-6">
+            <LoaderCircle className="h-5 w-5 animate-spin" />
+          </div>
+        )}
         {user && (user as { admin: boolean }).admin && (
-          <div className="space-x-2 pt-4 pr-4">
+          <div className="absolute right-7 top-7 z-10">
             <Dialog key={dialogKey}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -338,35 +345,75 @@ const Personnel = () => {
                   <DialogDescription>Fill in every box</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
-                  <Input placeholder="Name" className="mb-4" value={name} onChange={(e) => setName(e.target.value)} />
-                  <Input placeholder="Role" className="mb-4" value={role} onChange={(e) => setRole(e.target.value)} />
-                  <Input placeholder="Department" className="mb-4" value={department} onChange={(e) => setDepartment(e.target.value)} />
-                  <Input placeholder="Phone" className="mb-4" value={phone} onChange={(e) => setPhone(e.target.value)} />
-                  <Input placeholder="Email" className="mb-4" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input
+                    placeholder="Name"
+                    className="mb-4"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Role"
+                    className="mb-4"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Department"
+                    className="mb-4"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Phone"
+                    className="mb-4"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Email"
+                    className="mb-4"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                   <div className="mb-4">
-                    <Select
-                      value={adminStatus}
-                      onValueChange={setAdminStatus}>
+                    <Select value={adminStatus} onValueChange={setAdminStatus}>
                       <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Admin Status" className="pb-4" />
+                        <SelectValue
+                          placeholder="Admin Status"
+                          className="pb-4"
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
                           <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="standard">Standard User</SelectItem>
+                          <SelectItem value="standard">
+                            Standard User
+                          </SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
                   </div>
-                  <Input placeholder="Username" className="mb-4" value={username} onChange={(e) => setUsername(e.target.value)} />
-                  <Input placeholder="Password" className="mb-4" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                  <Button variant="outline" type="submit">Submit</Button>
+                  <Input
+                    placeholder="Username"
+                    className="mb-4"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                  <Input
+                    placeholder="Password"
+                    className="mb-4"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <Button variant="outline" type="submit">
+                    Submit
+                  </Button>
                 </form>
               </DialogContent>
             </Dialog>
           </div>
         )}
-
       </Card>
     </div>
   );
