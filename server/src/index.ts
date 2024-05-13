@@ -266,60 +266,72 @@ io.on('connection', async (socket: any) => {
     );
   });
 
-  socket.on('completeStage', async ({ next, stage, pathway, notes }: { next: string, stage: string, pathway: string, notes: string }) => {
-    console.log('completing stage', stage);
-    const pathwayIndex = runningPathways.findIndex((p) => p.id === pathway);
-    const pwy = runningPathways[pathwayIndex];
+  socket.on(
+    'completeStage',
+    async ({
+      next,
+      stage,
+      pathway,
+      notes,
+    }: {
+      next: string;
+      stage: string;
+      pathway: string;
+      notes: string;
+    }) => {
+      console.log('completing stage', stage);
+      const pathwayIndex = runningPathways.findIndex((p) => p.id === pathway);
+      const pwy = runningPathways[pathwayIndex];
 
-    const stageIndex = pwy.stages.findIndex(
-      (s) => s.id === stage,
-    );
-    const stg = pwy.stages[stageIndex];
+      const stageIndex = pwy.stages.findIndex((s) => s.id === stage);
+      const stg = pwy.stages[stageIndex];
 
-    pwy.notes = notes;
+      pwy.notes = notes;
 
-    stg.next = stg.next.filter((n) => n.next === next.split('$')[0]);
-    console.log('stage', stg);
+      stg.next = stg.next.filter((n) => n.next === next.split('$')[0]);
+      console.log('stage', stg);
 
-    if (next) {
-      const newRunnableStages = findRunnableStages2(pwy.stages, next);
-      console.log('newRunnableStages', newRunnableStages);
+      if (next) {
+        const newRunnableStages = findRunnableStages2(pwy.stages, next);
+        console.log('newRunnableStages', newRunnableStages);
 
-      for (const runnableStage of newRunnableStages) {
-        const index = pwy.stages.findIndex((s) => s.id === runnableStage);
-        pwy.stages[index].runnable = true;
-        console.log(pwy.stages[index].required_staff)
-        pwy.stages[index].assigned_staff = pwy.stages[index].required_staff;
+        for (const runnableStage of newRunnableStages) {
+          const index = pwy.stages.findIndex((s) => s.id === runnableStage);
+          pwy.stages[index].runnable = true;
+          console.log(pwy.stages[index].required_staff);
+          pwy.stages[index].assigned_staff = pwy.stages[index].required_staff;
+        }
+
+        const prevTasks = generateSolverTasksFromRunningStages(runningPathways);
+        const people = await generatePeople();
+
+        console.log('prevTasks', prevTasks);
+        //const completedTaskIndex = prevTasks.findIndex((t) => t.id === stage);
+        //prevTasks[completedTaskIndex].next = [next]
+
+        let result: any;
+        try {
+          result = await computeSchedule(prevTasks, people);
+        } catch (err) {
+          console.error(err);
+        }
+
+        for (const runnableStage of newRunnableStages) {
+          const index = pwy.stages.findIndex((s) => s.id === runnableStage);
+          pwy.stages[index].assigned_staff = result.data.assignments[
+            runnableStage
+          ].map((a: string) => ({ id: a }));
+        }
+
+        const tasksData = result.data.tasks;
+        console.log(tasksData);
+        updateRunningPathways(tasksData);
       }
-
-      const prevTasks = generateSolverTasksFromRunningStages(runningPathways);
-      const people = await generatePeople();
-
-      console.log('prevTasks', prevTasks);
-      //const completedTaskIndex = prevTasks.findIndex((t) => t.id === stage);
-      //prevTasks[completedTaskIndex].next = [next]
-
-      let result: any;
-      try {
-        result = await computeSchedule(prevTasks, people);
-      } catch (err) {
-        console.error(err);
-      }
-
-      for (const runnableStage of newRunnableStages) {
-        const index = pwy.stages.findIndex((s) => s.id === runnableStage);
-        pwy.stages[index].assigned_staff = result.data.assignments[runnableStage].map((a: string) => ({id: a}));
-      }
-
-      const tasksData = result.data.tasks;
-      console.log(tasksData);
-      updateRunningPathways(tasksData);
-    }
-    //stg.completed = true;
-    io.emit('runningPathways', runningPathways);
-    io.emit('assignments', assignments);
-
-  });
+      //stg.completed = true;
+      io.emit('runningPathways', runningPathways);
+      io.emit('assignments', assignments);
+    },
+  );
 
   socket.on('getInitialData', async () => {
     console.log('sending all data');
@@ -332,7 +344,10 @@ io.on('connection', async (socket: any) => {
   });
 });
 
-const findRunnableStages2 = (stages: RunningStage[], root: string): string[] => {
+const findRunnableStages2 = (
+  stages: RunningStage[],
+  root: string,
+): string[] => {
   const runnableStages: string[] = [];
 
   // traverse from root until a stage with more than one next is found
@@ -477,13 +492,13 @@ const findRunnableStages = (stages: PathwayStage[], root: string): string[] => {
   // traverse from root until a stage with more than one next is found
   const findNext = (id: string) => {
     const stage = stages.find((s) => s.id === id);
-    console.log('stage', stage)
+    console.log('stage', stage);
     if (!stage) {
       return;
     }
     runnableStages.push(stage.id);
     const next = stage.next;
-    console.log('next', next)
+    console.log('next', next);
     // return if there are multiple next stages or no next stages
     if (next.length > 1 || next.length === 0) {
       return;
@@ -507,7 +522,11 @@ const computeSchedule = async (tasks: any, people: any) => {
   return result;
 };
 
-const generateSolverTasksFromFormData = (form: any, stages: RunningStage[], dateOffsetMinutes: number) => {
+const generateSolverTasksFromFormData = (
+  form: any,
+  stages: RunningStage[],
+  dateOffsetMinutes: number,
+) => {
   const tasks = [];
 
   for (const stage of stages) {
@@ -559,13 +578,15 @@ const generateSolverTasksFromFormData = (form: any, stages: RunningStage[], date
   return tasks;
 };
 
-const generateSolverTasksFromRunningStages = (runningPathways: RunningPathway[]) => {
+const generateSolverTasksFromRunningStages = (
+  runningPathways: RunningPathway[],
+) => {
   const tasks = [];
   for (const pathway of runningPathways) {
     for (const stage of pathway.stages.filter(
       (s) => !s.completed && s.runnable,
     )) {
-      const stageStaff = stage.assigned_staff
+      const stageStaff = stage.assigned_staff;
 
       const offset =
         stage.scheduleOffset > 0 ? stage.scheduleOffset : stage.timeOffset;
@@ -603,7 +624,7 @@ const updateRunningPathways = (tasksData: any) => {
         );
     }
   }
-}
+};
 
 const generatePeople = async () => {
   const users = await User.find();
@@ -629,7 +650,11 @@ app.post('/runningPathways', async (req: any, res: any) => {
     runnableStageIds.includes(s.id),
   );
 
-  const formTasks = generateSolverTasksFromFormData(req.body.form, runnableStages, dateOffsetMinutes);
+  const formTasks = generateSolverTasksFromFormData(
+    req.body.form,
+    runnableStages,
+    dateOffsetMinutes,
+  );
   const prevTasks = generateSolverTasksFromRunningStages(runningPathways);
   const people = await generatePeople();
 
@@ -656,8 +681,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
       );
       const assigned =
         result.data.assignments[stage.id + '$' + req.body.form.patient];
-      const ms_offset = tasksData[stage.id + '$' + req.body.form.patient] ?
-        tasksData[stage.id + '$' + req.body.form.patient]['start'] * 60000 : 0;
+      const ms_offset = tasksData[stage.id + '$' + req.body.form.patient]
+        ? tasksData[stage.id + '$' + req.body.form.patient]['start'] * 60000
+        : 0;
 
       const staff = req.body.form.staff
         .filter((s: any) => s.stageId === stage.template.id)
@@ -669,7 +695,9 @@ app.post('/runningPathways', async (req: any, res: any) => {
         template: stage.template,
         id: stage.id + '$' + req.body.form.patient,
         timeOffset: dateOffsetMinutes,
-        assigned_staff: assigned ? assigned.map((a: string) => ({id: a})) : [],
+        assigned_staff: assigned
+          ? assigned.map((a: string) => ({ id: a }))
+          : [],
         required_staff: staff,
         assigned_room: '',
         date: new Date(serverStartDate.valueOf() + ms_offset),
@@ -680,7 +708,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
         scheduleOffset:
           output && output.type === 'Scheduled'
             ? (new Date(output.value).valueOf() - serverStartDate.valueOf()) /
-            60000
+              60000
             : 0,
       };
     }),

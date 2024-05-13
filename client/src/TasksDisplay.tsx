@@ -1,4 +1,3 @@
-
 import { Card } from './components/ui/card';
 import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { useEffect, useState } from 'react';
@@ -57,8 +56,9 @@ const TasksDisplay = () => {
     return (
       <TableRow
         key={task.id}
-        className={`cursor-pointer hover:bg-slate-100 ${task.id === selectedTask?.id ? 'bg-slate-200' : 'bg-white'
-          }`}
+        className={`cursor-pointer hover:bg-slate-100 ${
+          task.id === selectedTask?.id ? 'bg-slate-200' : 'bg-white'
+        }`}
         onClick={() => {
           setSelectedTask(task);
         }}
@@ -81,16 +81,25 @@ const TasksDisplay = () => {
     const [notes, setNotes] = useState(parentPathway?.notes);
 
     const nextOptions = props.task.next.map((next) => {
-      const nextStage = parentPathway?.stages.find((s) => s.id === next.next + '$' + parentPathway.patient);
+      const nextStage = parentPathway?.stages.find(
+        (s) => s.id === next.next + '$' + parentPathway.patient,
+      );
       return (
-        <Card className={`p-2 hover:bg-slate-50 cursor-pointer ${selectedNext === nextStage?.id ? 'border-slate-300 bg-slate-200 hover:bg-slate-200' : ''}`} onClick={() => {
-          if (nextStage) {
-            setSelectedNext(nextStage.id);
-          }
-        }}>
+        <Card
+          className={`cursor-pointer p-2 hover:bg-slate-50 ${
+            selectedNext === nextStage?.id
+              ? 'border-slate-300 bg-slate-200 hover:bg-slate-200'
+              : ''
+          }`}
+          onClick={() => {
+            if (nextStage) {
+              setSelectedNext(nextStage.id);
+            }
+          }}
+        >
           <p>{nextStage?.template.name}</p>
         </Card>
-      )
+      );
     });
 
     return (
@@ -116,14 +125,25 @@ const TasksDisplay = () => {
             setNotes(e.target.value);
           }}
         />
-        {props.task.next.length > 1 && <Card className='p-2 space-y-2 flex flex-col'>{nextOptions}</Card>}
+        {props.task.next.length > 1 && (
+          <Card className="flex flex-col space-y-2 p-2">{nextOptions}</Card>
+        )}
         <Separator />
-        <div className='flex-grow flex flex-row-reverse'>
-          <Button onClick={() => {
-            const completionData = {next: selectedNext, stage: props.task.id, pathway: parentPathway?.id, notes: notes};
-            console.log(completionData);
-            socket?.emit('completeStage', completionData);
-          }}>Complete Task</Button>
+        <div className="flex flex-grow flex-row-reverse">
+          <Button
+            onClick={() => {
+              const completionData = {
+                next: selectedNext,
+                stage: props.task.id,
+                pathway: parentPathway?.id,
+                notes: notes,
+              };
+              console.log(completionData);
+              socket?.emit('completeStage', completionData);
+            }}
+          >
+            Complete Task
+          </Button>
         </div>
       </div>
     );

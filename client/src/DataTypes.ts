@@ -98,7 +98,7 @@ export interface Assignments {
 export interface RunningStage {
   id: string;
   template: StageTemplate;
-  assigned_staff: {id?: string, type?: string}[];
+  assigned_staff: { id?: string; type?: string }[];
   assigned_room: string;
   date: Date;
   timeOffset: number;

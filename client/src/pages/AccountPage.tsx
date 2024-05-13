@@ -55,7 +55,10 @@ const ScheduleItem = ({
           variant="outline"
           // className={isScheduled ? 'bg-blue-400' : 'bg-red-400'}
         >
-          {day}: {start === 'Off' || end === 'Off' ? 'Not scheduled' : `${start} - ${end}`}
+          {day}:{' '}
+          {start === 'Off' || end === 'Off'
+            ? 'Not scheduled'
+            : `${start} - ${end}`}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-200">
