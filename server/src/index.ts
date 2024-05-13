@@ -804,6 +804,31 @@ app.post('/user/schedule', async (req: any, res: any) => {
   res.json(user);
 });
 
+app.post('/newRoom', async (req: any, res: any) => {
+  try {
+
+    // Check if a room with the same room number already exists
+    const existingRoom = await HospitalRoom.findOne({ room_number: req.body.room_number });
+
+    if (existingRoom) {
+      return res.status(400).json({ message: 'Room already exists' });
+    }
+
+    const room = new HospitalRoom({
+      room_number: req.body.room_number,
+      type: req.body.type,
+      equipment: req.body.equipment,
+      occupancy: req.body.occupancy,
+    });
+    
+
+    const savedRoom = await room.save();
+    res.json(savedRoom);
+  } catch {
+    res.status(500).send();
+  }
+});
+
 export const cleanup = async () => {
   console.log('Cleaning up');
   await new Promise((resolve, reject) => {
