@@ -630,63 +630,73 @@ const scheduleToNonWorkingIntervals = (schedule: any) => {
 
   // Helper function to convert time in "h:MM AM/PM" format to minutes since midnight
   function timeToMinutes(time: string) {
-      if (time === 'Off') {
-          return -1;  // -1 indicates a non-working day
-      }
-      const [hours, minutesPart] = time.split(':');
-      const [minutes, period] = minutesPart.split(' ');
-      let totalMinutes = parseInt(hours) % 12 * 60 + parseInt(minutes);
-      if (period === 'PM' && hours !== '12') {
-          totalMinutes += 12 * 60;
-      }
-      return totalMinutes;
+    if (time === 'Off') {
+      return -1; // -1 indicates a non-working day
+    }
+    const [hours, minutesPart] = time.split(':');
+    const [minutes, period] = minutesPart.split(' ');
+    let totalMinutes = (parseInt(hours) % 12) * 60 + parseInt(minutes);
+    if (period === 'PM' && hours !== '12') {
+      totalMinutes += 12 * 60;
+    }
+    return totalMinutes;
   }
 
   // Calculate non-working intervals
-  let previousEnd = 0;  // Start of the week, Monday 12AM
+  let previousEnd = 0; // Start of the week, Monday 12AM
   for (let day = 0; day < 7; day++) {
-      const dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][day];
-      const { start, end } = schedule[dayName];
-      const startMinutes = timeToMinutes(start);
-      const endMinutes = timeToMinutes(end);
+    const dayName = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ][day];
+    const { start, end } = schedule[dayName];
+    const startMinutes = timeToMinutes(start);
+    const endMinutes = timeToMinutes(end);
 
-      // If the whole day is off, mark the entire day as non-working
-      if (startMinutes === -1 && endMinutes === -1) {
-          nonWorkingIntervals.push([previousEnd, previousEnd + minutesInADay]);
-          previousEnd += minutesInADay;
-          continue;
-      }
+    // If the whole day is off, mark the entire day as non-working
+    if (startMinutes === -1 && endMinutes === -1) {
+      nonWorkingIntervals.push([previousEnd, previousEnd + minutesInADay]);
+      previousEnd += minutesInADay;
+      continue;
+    }
 
-      // Add the non-working interval from the previous day's end to today's start
-      if (startMinutes + day * minutesInADay > previousEnd) {
-          nonWorkingIntervals.push([previousEnd, startMinutes + day * minutesInADay]);
-      }
+    // Add the non-working interval from the previous day's end to today's start
+    if (startMinutes + day * minutesInADay > previousEnd) {
+      nonWorkingIntervals.push([
+        previousEnd,
+        startMinutes + day * minutesInADay,
+      ]);
+    }
 
-      // Update previousEnd to the end of the working period of the current day
-      previousEnd = endMinutes + day * minutesInADay;
+    // Update previousEnd to the end of the working period of the current day
+    previousEnd = endMinutes + day * minutesInADay;
   }
 
   // Add the final non-working interval from the end of Sunday to the end of the week (if necessary)
   if (previousEnd < 7 * minutesInADay) {
-      nonWorkingIntervals.push([previousEnd, 7 * minutesInADay]);
+    nonWorkingIntervals.push([previousEnd, 7 * minutesInADay]);
   }
 
   return nonWorkingIntervals;
-}
+};
 
 const generatePeople = async () => {
   const users = await User.find();
   return users.map((person: any) => {
-    console.log('person', person)
+    console.log('person', person);
 
     return {
       id: person.username,
       type: person.role,
       name: person.name,
       non_available_hours: scheduleToNonWorkingIntervals(person.schedule),
-    }
-
-});
+    };
+  });
 };
 
 app.post('/runningPathways', async (req: any, res: any) => {
@@ -761,7 +771,7 @@ app.post('/runningPathways', async (req: any, res: any) => {
         scheduleOffset:
           output && output.type === 'Scheduled'
             ? (new Date(output.value).valueOf() - serverStartDate.valueOf()) /
-            60000
+              60000
             : 0,
       };
     }),
@@ -1015,7 +1025,9 @@ app.post('/newRoom', async (req: any, res: any) => {
 
 app.delete('/room/:room_number', async (req: any, res: any) => {
   try {
-    const room = await HospitalRoom.findOne({ room_number: req.params.room_number });
+    const room = await HospitalRoom.findOne({
+      room_number: req.params.room_number,
+    });
 
     if (!room) {
       return res.status(404).json({ error: 'Room not found' });
