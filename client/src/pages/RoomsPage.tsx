@@ -292,14 +292,6 @@ const Rooms = () => {
     }, 300);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="m-10 flex w-full flex-row justify-center">
-        <LoaderCircle className="h-5 w-5 animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-screen w-screen flex-row bg-secondary">
       <NavMenu />
@@ -334,7 +326,7 @@ const Rooms = () => {
           </div>
         )}
         {user && (user as { admin: boolean }).admin && (
-          <div className="space-x-2 pr-4 pt-4">
+          <div className="absolute right-7 top-7 z-10">
             <Dialog key={dialogKey}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="icon">
