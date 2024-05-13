@@ -234,11 +234,13 @@ const Rooms = () => {
             },
           ]}
         />
-        {loading && <div className="absolute z-10 right-7 top-7 h-6 w-6">
-          <LoaderCircle className="h-5 w-5 animate-spin" />
-        </div>}
+        {loading && (
+          <div className="absolute right-7 top-7 z-10 h-6 w-6">
+            <LoaderCircle className="h-5 w-5 animate-spin" />
+          </div>
+        )}
         {user && (user as { admin: boolean }).admin && (
-          <div className="absolute z-10 right-7 top-7">
+          <div className="absolute right-7 top-7 z-10">
             <Button variant="outline" size="icon">
               <Plus className="h-6 w-6" />
             </Button>

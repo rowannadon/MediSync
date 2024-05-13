@@ -1,4 +1,11 @@
-import { FilePlus, LoaderCircle, RefreshCcw, Rocket, Save, Trash } from 'lucide-react';
+import {
+  FilePlus,
+  LoaderCircle,
+  RefreshCcw,
+  Rocket,
+  Save,
+  Trash,
+} from 'lucide-react';
 import NavMenu from '../NavMenu';
 
 import { Button } from '../components/ui/button';
@@ -130,16 +137,18 @@ const PathwayLaunchEditor = () => {
                 </h1>
               </div>
               <div className="flex flex-1 flex-row-reverse items-center space-x-2 space-x-reverse p-4">
-                {loading && <div>
-                  <LoaderCircle className="h-5 w-5 animate-spin" />
-                </div>}
+                {loading && (
+                  <div>
+                    <LoaderCircle className="h-5 w-5 animate-spin" />
+                  </div>
+                )}
                 <Tooltip>
                   <TooltipTrigger asChild>
                     {user && (user as { admin: boolean }).admin && (
                       <Button
                         variant="outline"
                         size="icon"
-                      // onClick={handleDeletePathway}
+                        // onClick={handleDeletePathway}
                       >
                         <Trash className="h-6 w-6" />
                       </Button>

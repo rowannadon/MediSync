@@ -158,11 +158,12 @@ const StageEditor = () => {
                 </h1>
               </div>
               <div className="flex flex-1 flex-row-reverse space-x-2 space-x-reverse p-4">
-                {loading && <div>
-                  <LoaderCircle className="h-5 w-5 animate-spin" />
-                </div>}
+                {loading && (
+                  <div>
+                    <LoaderCircle className="h-5 w-5 animate-spin" />
+                  </div>
+                )}
                 <Tooltip>
-
                   <TooltipTrigger asChild>
                     {user && (user as { admin: boolean }).admin && (
                       <Button
